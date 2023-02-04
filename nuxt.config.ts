@@ -6,13 +6,12 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
-          content: 'PseudoRESTAPI is a web application that helps developers create fake API endpoints for their projects.' 
+          content:
+            'PseudoRESTAPI is a web application that helps developers create fake API endpoints for their projects.',
         },
       ],
       title: 'PseudoRESTAPI',
-      noscript: [
-        { children: 'JavaScript is required' },
-      ],
+      noscript: [{ children: 'JavaScript is required' }],
     },
   },
   css: ['~/assets/css/main.css'],
@@ -22,4 +21,4 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-})
+});
