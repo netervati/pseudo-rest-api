@@ -1,4 +1,4 @@
-name: project build
+name: pseudo-rest-api
 
 on: [workflow_call]
 
