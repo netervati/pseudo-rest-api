@@ -5,11 +5,11 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/build.yml
 
   lint:
 
+    runs-on: ubuntu-latest
     name: lint
     needs: [build]
 
