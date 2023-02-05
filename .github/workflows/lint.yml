@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - names: Setup
+      - name: Setup
         uses: ./.github/workflows/build.yml
       - name: ESLint and Prettier
         run: npm run lint
