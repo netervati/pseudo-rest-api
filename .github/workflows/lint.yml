@@ -3,10 +3,6 @@ name: eslint-prettier
 on: [push]
 
 jobs:
-  build:
-
-    uses: ./.github/workflows/build.yml
-
   lint:
 
     runs-on: ubuntu-latest
@@ -14,6 +10,8 @@ jobs:
     needs: [build]
 
     steps:
+      - name: Setup
+        uses: ./.github/workflows/build.yml
       - name: ESLint and Prettier
         run: npm run lint
 
