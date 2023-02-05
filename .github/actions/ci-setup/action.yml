@@ -1,0 +1,19 @@
+name: CI setup
+description: 'Sets up the environment for jobs during CI workflow'
+
+inputs:
+  node-version:
+    description: 'The Node version to be setup'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install dependencies
+      run: npm install
+
