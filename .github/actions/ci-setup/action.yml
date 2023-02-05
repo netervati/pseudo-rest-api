@@ -16,4 +16,5 @@ runs:
         node-version: ${{ inputs.node-version }}
     - name: Install dependencies
       run: npm install
+      shell: bash
 
