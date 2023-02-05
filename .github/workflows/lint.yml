@@ -3,15 +3,17 @@ name: eslint-prettier
 on: [push]
 
 jobs:
+  build:
+
+    uses: ./.github/workflows/build.yml
+
   lint:
 
     runs-on: ubuntu-latest
-    name: lint
-    needs: [build]
 
     steps:
-      - name: Setup
-        uses: ./.github/workflows/build.yml
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: ESLint and Prettier
         run: npm run lint
 
