@@ -17,6 +17,8 @@ module.exports = {
   ],
   plugins: ['@typescript-eslint'],
   rules: {
+    '@typescript-eslint/ban-ts-comment': 0,
+    'vue/html-self-closing': 0,
     'vue/multi-word-component-names': 0,
     'vue/singleline-html-element-content-newline': 'off',
   },
