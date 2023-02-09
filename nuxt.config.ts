@@ -15,21 +15,11 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css'],
-  modules: ['@sidebase/nuxt-auth'],
-  // @ts-ignore
-  auth: {
-    origin: process.env.ORIGIN,
-    enableGlobalAppMiddleware: true,
-  },
+  modules: ['@nuxtjs/supabase'],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
-    },
-  },
-  runtimeConfig: {
-    public: {
-      environment: '',
     },
   },
 });
