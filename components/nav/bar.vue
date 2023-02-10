@@ -9,7 +9,7 @@
 </script>
 
 <template>
-  <div class="navbar bg-base-100 shadow-md">
+  <div class="bg-base-100 border-b border-gray-300 navbar">
     <div class="flex-1">
       <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">
         PseudoRESTAPI
