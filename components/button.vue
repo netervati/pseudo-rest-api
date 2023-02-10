@@ -1,15 +1,10 @@
 <script lang="ts" setup>
-  import classBuilder from '../utils/classBuilder';
-
-  type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
-  type ButtonType = 'button' | 'submit';
-
   type Props = {
-    class?: string | undefined;
+    color?: '' | 'error' | 'info' | 'success' | 'warning';
     disabled?: boolean;
     loading?: boolean;
-    size?: ButtonSize;
-    type?: ButtonType;
+    size?: 'xs' | 'sm' | 'md' | 'lg';
+    type?: 'button' | 'submit';
   };
 
   const emit = defineEmits<{
@@ -17,28 +12,47 @@
   }>();
 
   const props = withDefaults(defineProps<Props>(), {
-    class: undefined,
+    color: '',
     disabled: false,
     loading: false,
     size: 'md',
     type: 'button',
   });
 
-  const { class: className, disabled, loading, size } = toRefs(props);
+  type ClassProps = { [key: string]: string | undefined };
 
-  const mergedClass = computed(() =>
-    classBuilder(`btn btn-${size.value}`, {
-      [`${className}`]: typeof className === 'string',
-      loading: loading.value,
-    })
-  );
+  const COLORS: ClassProps = {
+    error: 'btn-error',
+    info: 'btn-info',
+    success: 'btn-success',
+    warning: 'btn-warning',
+  };
+
+  const SIZES: ClassProps = {
+    md: 'btn-md',
+    lg: 'btn-lg',
+    sm: 'btn-sm',
+    xs: 'btn-xs',
+  };
+
+  const mergedClass = computed(() => {
+    const btnColor = COLORS[props.color] ?? '';
+    const btnSize = SIZES[props.size] ?? '';
+
+    return {
+      [btnColor]: btnColor !== '',
+      [btnSize]: btnSize !== '',
+      loading: props.loading,
+    };
+  });
 </script>
-
+a
 <template>
   <button
     :class="mergedClass"
     :disabled="loading || disabled"
     :type="type"
+    class="btn"
     @click="emit('click')"
   >
     <slot />
