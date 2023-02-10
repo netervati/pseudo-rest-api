@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+  const emit = defineEmits<{
+    (e: 'click'): void;
+  }>();
+
   type Props = {
     color?: '' | 'error' | 'info' | 'success' | 'warning';
     disabled?: boolean;
@@ -6,10 +10,6 @@
     size?: 'xs' | 'sm' | 'md' | 'lg';
     type?: 'button' | 'submit';
   };
-
-  const emit = defineEmits<{
-    (e: 'click'): void;
-  }>();
 
   const props = withDefaults(defineProps<Props>(), {
     color: '',
@@ -49,10 +49,10 @@
 
 <template>
   <button
+    class="btn"
     :class="mergedClass"
     :disabled="loading || disabled"
     :type="type"
-    class="btn"
     @click="emit('click')"
   >
     <slot />
