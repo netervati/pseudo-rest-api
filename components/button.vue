@@ -19,16 +19,16 @@
     type: 'button',
   });
 
-  type ClassProps = { [key: string]: string | undefined };
+  type ClassLibrary = { [key: string]: string | undefined };
 
-  const COLORS: ClassProps = {
+  const COLORS: ClassLibrary = {
     error: 'btn-error',
     info: 'btn-info',
     success: 'btn-success',
     warning: 'btn-warning',
   };
 
-  const SIZES: ClassProps = {
+  const SIZES: ClassLibrary = {
     md: 'btn-md',
     lg: 'btn-lg',
     sm: 'btn-sm',
@@ -46,7 +46,7 @@
     };
   });
 </script>
-a
+
 <template>
   <button
     :class="mergedClass"
