@@ -5,5 +5,5 @@
 </script>
 
 <template>
-  <section>Protected</section>
+  <div class="p-6">Protected</div>
 </template>
