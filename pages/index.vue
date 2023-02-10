@@ -5,5 +5,7 @@
 </script>
 
 <template>
-  <div class="p-6">Protected</div>
+  <div class="p-6">
+    <Button color="success" size="sm">New Project</Button>
+  </div>
 </template>
