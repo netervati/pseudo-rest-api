@@ -2,19 +2,10 @@
   definePageMeta({
     middleware: 'auth',
   });
-
-  const client = useSupabaseAuthClient();
-
-  const handleLogout = async () => {
-    await client.auth.signOut();
-
-    navigateTo('/login');
-  };
 </script>
 
 <template>
-  <section>
-    <button @click="handleLogout">Sign Out</button>
-    Protected
-  </section>
+  <div class="p-6">
+    <Button color="success" size="sm">New Project</Button>
+  </div>
 </template>
