@@ -4,6 +4,6 @@ import { NotAuthenticatedError } from '../errors';
 
 export function authValidation(event: H3Event): Result<never, APIError> {
   if (get(event, 'context.auth.user', null) === null) {
-    return NotAuthenticatedError;
+    return new NotAuthenticatedError();
   }
 }
