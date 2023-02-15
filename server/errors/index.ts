@@ -1,1 +1,2 @@
-export { default as NotAuthenticatedError } from './notAuthenticated.error';
+export { default as InvalidParameterError } from './invalidParameterError';
+export { default as NotAuthenticatedError } from './notAuthenticatedError';
