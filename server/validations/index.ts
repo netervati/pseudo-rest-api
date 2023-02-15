@@ -1,1 +1,2 @@
-export { authValidation } from './auth.validations';
+export { authValidation } from './authValidations';
+export { postProjectValidation } from './projectsValidations';
