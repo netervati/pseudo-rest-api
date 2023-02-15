@@ -1,4 +1,6 @@
-export default class InvalidParameterError extends Error implements APIError {
+import BaseError from './baseError';
+
+export default class InvalidParameterError extends BaseError {
   statusCode = 400;
   statusMessage = '';
 

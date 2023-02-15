@@ -1,4 +1,6 @@
-export default class NotAuthenticatedError extends Error implements APIError {
+import BaseError from './baseError';
+
+export default class NotAuthenticatedError extends BaseError {
   statusCode = 401;
   statusMessage = '';
 
