@@ -29,7 +29,7 @@ export interface Database {
           is_deleted?: boolean;
           project_id: string;
           secret_key: string;
-          updated_at: string;
+          updated_at?: string;
           user_id: string;
         };
         Update: {
