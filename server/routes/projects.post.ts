@@ -43,14 +43,20 @@ async function handleRequest(
   const { name, description } = await readBody(event);
   const client = serverSupabaseClient<Database>(event);
 
+  const projectObject = {
+    id: uuidv4(),
+    name,
+    description,
+    user_id: userId,
+  };
+
+  if (description) {
+    projectObject.description = description;
+  }
+
   const { data: projects, error: projectError } = await client
     .from('projects')
-    .insert({
-      id: uuidv4(),
-      name,
-      description,
-      user_id: userId,
-    })
+    .insert(projectObject)
     .select();
 
   if (projectError || projects.length === 0) {
@@ -66,7 +72,6 @@ async function handleRequest(
       secret_key: await hashPassword(secretKey),
       project_id: projects[0].id,
       user_id: userId,
-      updated_at: Date.now().toString(),
     })
     .select();
 
@@ -74,12 +79,11 @@ async function handleRequest(
     return new FailedDatabaseQueryError('Failed to generate project keys.');
   }
 
-  return secretKey[0];
+  return secretKey;
 }
 
 async function validate(event: H3Event): Promise<ValidationResult> {
-  const eventCopy = structuredClone(event);
-  let error = authValidation(eventCopy);
+  let error = authValidation(event);
 
   if (error) {
     return error;
