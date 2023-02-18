@@ -22,12 +22,13 @@ const VALIDATION_RULES: { [key: string]: (value: AnyValue) => boolean } = {
 
 export function validateByRules(validations: string, value: AnyValue) {
   const validationRules = validations.split(',');
+  let withError = false;
 
   validationRules.forEach((rule) => {
     if (VALIDATION_RULES[rule](value)) {
-      return true;
+      withError = true;
     }
   });
 
-  return false;
+  return withError;
 }
