@@ -1,14 +1,20 @@
 <script lang="ts" setup>
+  const emit = defineEmits<{
+    (e: 'close'): void;
+  }>();
+
   defineProps<{
     id: string;
   }>();
 
   const form = reactive({
-    name: '',
+    loading: false,
     nameError: false,
+    name: '',
+    showConfirm: false,
   });
 
-  const showConfirm = ref(false);
+  const toast = useToast();
 
   const validateForm = () => {
     if (form.name.trim() === '') {
@@ -20,36 +26,59 @@
     return false;
   };
 
+  const unsetForm = () => {
+    emit('close');
+
+    form.loading = false;
+    form.nameError = false;
+    form.name = '';
+    form.showConfirm = false;
+  };
+
   const handleCancel = () => {
-    showConfirm.value = false;
+    form.showConfirm = false;
   };
 
   const handleChange = () => {
     form.nameError = false;
   };
 
-  const handleProceed = () => {
-    const projectKey = useFetch('/projects', {
+  const handleProceed = async () => {
+    form.loading = true;
+
+    const { data, error } = await useFetch('/projects', {
       method: 'post',
       body: {
         name: form.name,
       },
     });
 
-    console.log(projectKey);
+    form.loading = false;
+
+    if (error.value) {
+      toast.show('Failed to create project.', { color: 'error' });
+    } else {
+      toast.show('Created a project!', { color: 'success' });
+    }
+
+    unsetForm();
+  };
+
+  const handleClose = () => {
+    unsetForm();
   };
 
   const handleSave = () => {
     const errors = validateForm();
 
     if (!errors) {
-      showConfirm.value = true;
+      form.showConfirm = true;
     }
   };
 </script>
 
 <template>
-  <ModalBase :id="id">
+  <ModalBase :id="id" @close="handleClose">
     <h3 class="text-lg font-bold">Create a new Project</h3>
     <section class="form-control mt-2">
       <Input
@@ -62,7 +91,7 @@
     </section>
     <section class="mt-10">
       <Button
-        v-if="!showConfirm"
+        v-if="!form.showConfirm"
         class="float-right"
         color="success"
         size="sm"
@@ -70,9 +99,17 @@
       >
         Save
       </Button>
-      <Button v-if="showConfirm" size="sm" @click="handleCancel">Cancel</Button>
       <Button
-        v-if="showConfirm"
+        v-if="form.showConfirm"
+        :disabled="form.loading"
+        size="sm"
+        @click="handleCancel"
+      >
+        Cancel
+      </Button>
+      <Button
+        v-if="form.showConfirm"
+        :loading="form.loading"
         class="float-right"
         color="success"
         size="sm"
