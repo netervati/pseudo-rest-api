@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+  const emit = defineEmits<{
+    (e: 'close'): void;
+  }>();
+
   type Props = {
     id: string;
     size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -31,13 +35,13 @@
     <input :id="id" type="checkbox" class="modal-toggle" />
     <div class="modal">
       <div class="modal-box" :class="mergedClass">
-        <ModalButton
-          :for="id"
+        <Button
           class="btn-circle absolute right-2 top-2"
           size="sm"
+          @click="emit('close')"
         >
           ✕
-        </ModalButton>
+        </Button>
         <slot />
       </div>
     </div>
