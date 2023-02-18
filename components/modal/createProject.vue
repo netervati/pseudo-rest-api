@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   const emit = defineEmits<{
     (e: 'close'): void;
+    (e: 'success', secretKey: string): void;
   }>();
 
   defineProps<{
@@ -61,6 +62,7 @@
       toast.show('Created a project!', { color: 'success' });
     }
 
+    emit('success', data.value?.attributes.secretKey);
     unsetForm();
   };
 
