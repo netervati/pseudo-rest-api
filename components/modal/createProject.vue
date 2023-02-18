@@ -9,6 +9,7 @@
   }>();
 
   const form = reactive({
+    description: '',
     loading: false,
     nameError: false,
     name: '',
@@ -30,6 +31,7 @@
   const unsetForm = () => {
     emit('close');
 
+    form.description = '';
     form.loading = false;
     form.nameError = false;
     form.name = '';
@@ -50,14 +52,22 @@
     const { data, error } = await useFetch('/projects', {
       method: 'post',
       body: {
-        name: form.name,
+        name: form.name.trim(),
+        description: form.description.trim(),
       },
     });
 
     form.loading = false;
 
     if (error.value) {
-      toast.show('Failed to create project.', { color: 'error' });
+      const message = error.value.statusMessage;
+
+      toast.show(
+        message
+          ? message.replace(/^./, message[0].toUpperCase())
+          : 'Failed to create project.',
+        { color: 'error' }
+      );
     } else {
       toast.show('Created a project!', { color: 'success' });
     }
@@ -90,6 +100,13 @@
         @change="handleChange"
       />
       <p v-if="form.nameError" class="text-red-600">Name cannot be blank.</p>
+    </section>
+    <section class="form-control mt-2">
+      <textarea
+        v-model="form.description"
+        class="textarea textarea-bordered"
+        placeholder="Enter project description"
+      />
     </section>
     <section class="mt-10">
       <Button
