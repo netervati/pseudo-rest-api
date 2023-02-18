@@ -11,7 +11,7 @@ export function postProjectValidation({
     return new InvalidParameterError('name');
   }
 
-  if (validateByRules('required,string,blank', description)) {
+  if (validateByRules('string', description)) {
     return new InvalidParameterError('description');
   }
 }
