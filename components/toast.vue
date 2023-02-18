@@ -39,8 +39,8 @@
   });
 
   const toastMergedClass = computed(() => {
-    const toastPositionY = POSITIONS_Y[props.positionY];
-    const toastPositionX = POSITIONS_X[props.positionX];
+    const toastPositionY = POSITIONS_Y[props.positionY] ?? '';
+    const toastPositionX = POSITIONS_X[props.positionX] ?? '';
 
     return {
       [toastPositionY]: toastPositionY !== '',
@@ -50,7 +50,7 @@
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="#toast-container">
     <div class="toast" :class="toastMergedClass">
       <div class="alert" :class="alertMergedClass">
         <div>
