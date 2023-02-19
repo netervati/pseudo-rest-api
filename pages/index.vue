@@ -5,10 +5,12 @@
     middleware: 'auth',
   });
 
+  const refreshKey = ref(Date.now());
   const secretKey = ref('');
 
   const modal = useModal(ModalCreateProject, {
     onSuccess: (key: string) => {
+      refreshKey.value = Date.now();
       secretKey.value = key;
     },
   });
@@ -26,5 +28,6 @@
         <input class="bg-emerald-300 input w-full" :value="secretKey" />
       </div>
     </article>
+    <ProjectGrid :refresh-key="refreshKey" />
   </div>
 </template>
