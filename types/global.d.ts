@@ -6,6 +6,14 @@ declare global {
 
   type Result<T, E> = Ok<T, E> | Err<T, E>;
   type ValidationResult = Result<void, APIError>;
+
+  type APIBody<T> = {
+    attributes: T;
+  };
+
+  type APIBodyArray<T> = {
+    data: APIBody<T>[];
+  }
 }
 
 export {};
