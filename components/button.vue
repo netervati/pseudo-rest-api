@@ -4,7 +4,7 @@
   }>();
 
   type Props = {
-    color?: '' | 'error' | 'info' | 'success' | 'warning';
+    color?: '' | 'error' | 'ghost' | 'info' | 'success' | 'warning';
     disabled?: boolean;
     loading?: boolean;
     size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -23,6 +23,7 @@
 
   const COLORS: ClassLibrary = {
     error: 'btn-error',
+    ghost: 'btn-ghost',
     info: 'btn-info',
     success: 'btn-success',
     warning: 'btn-warning',
