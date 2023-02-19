@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   const emit = defineEmits<{
     (e: 'close'): void;
-    (e: 'success', secretKey: string): void;
+    (e: 'success', key: string): void;
   }>();
 
   defineProps<{
@@ -46,10 +46,14 @@
     form.nameError = false;
   };
 
+  type ProjectKey = {
+    secretKey: string;
+  };
+
   const handleProceed = async () => {
     form.loading = true;
 
-    const { data, error } = await useFetch('/projects', {
+    const { data, error } = await useFetch<APIBody<ProjectKey>>('/projects', {
       method: 'post',
       body: {
         name: form.name.trim(),
@@ -62,17 +66,17 @@
     if (error.value) {
       const message = error.value.statusMessage;
 
-      toast.show(
-        message
-          ? message.replace(/^./, message[0].toUpperCase())
-          : 'Failed to create project.',
-        { color: 'error' }
-      );
+      toast.show(message ? titleize(message) : 'Failed to create project.', {
+        color: 'error',
+      });
     } else {
       toast.show('Created a project!', { color: 'success' });
     }
 
-    emit('success', data.value?.attributes.secretKey);
+    if (data.value) {
+      emit('success', data.value?.attributes.secretKey);
+    }
+
     unsetForm();
   };
 
