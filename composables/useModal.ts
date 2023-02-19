@@ -2,7 +2,7 @@ import { Component, render } from 'vue';
 
 type ModalProps = {
   onError?: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (arg: string) => void;
 };
 
 type UseModal = {
