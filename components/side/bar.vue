@@ -1,12 +1,20 @@
 <script lang="ts" setup>
   import { HomeIcon, ServerStackIcon } from '@heroicons/vue/24/outline';
 
-  const links = [
-    { name: 'Home', to: '/' },
-    { name: 'APIs', to: '/apis' },
-  ];
-
   const iconClass = 'h-4 w-4';
+  const route = useRoute();
+
+  const links = computed(() => {
+    const base = [{ name: 'Home', to: '/' }];
+
+    if (route.path.includes('apis') && route.params.urlpath !== null) {
+      base.push(
+        ...[{ name: 'APIs', to: `/project/${route.params.urlpath}/apis` }]
+      );
+    }
+
+    return base;
+  });
 </script>
 
 <template>
@@ -20,8 +28,8 @@
       :data-tip="link.name"
     >
       <Button color="ghost" @click="navigateTo(link.to)">
-        <HomeIcon v-if="link.to === '/'" :class="iconClass" />
-        <ServerStackIcon v-if="link.to === '/apis'" :class="iconClass" />
+        <HomeIcon v-if="link.name === 'Home'" :class="iconClass" />
+        <ServerStackIcon v-if="link.name === 'APIs'" :class="iconClass" />
       </Button>
     </div>
   </div>
