@@ -1,5 +1,6 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
+import shortuuid from 'short-uuid';
 import { authValidation, postProjectValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
 import { Database } from '~~/types/supabase';
@@ -47,6 +48,7 @@ async function handleRequest(
     id: uuidv4(),
     name,
     description,
+    url_path: shortuuid.generate(),
     user_id: userId,
   };
 
