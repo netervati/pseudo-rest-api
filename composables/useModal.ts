@@ -42,14 +42,14 @@ export default function (
     display.value = false;
   };
 
+  const open = () => {
+    display.value = true;
+  };
+
   const vnode = h(component, {
     ...options,
     onClose: close,
   });
-
-  const open = () => {
-    display.value = true;
-  };
 
   watch(display, () => {
     const checkbox = document.getElementById(options.id) as HTMLInputElement;
