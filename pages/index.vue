@@ -9,6 +9,7 @@
   const secretKey = ref('');
 
   const modal = useModal(ModalCreateProject, {
+    id: 'create-project',
     onSuccess: (key: string) => {
       refreshKey.value = Date.now();
       secretKey.value = key;
@@ -29,5 +30,8 @@
       </div>
     </article>
     <ProjectGrid :refresh-key="refreshKey" />
+    <ClientOnly>
+      <modal.component />
+    </ClientOnly>
   </div>
 </template>
