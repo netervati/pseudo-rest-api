@@ -7,12 +7,16 @@
     id: string;
     description: string;
     name: string;
-    create_at: string;
+    url_path: string;
   };
 
   const { refreshKey } = toRefs(props);
   const projects = ref<APIBody<Project>[] | []>([]);
   const toast = useToast();
+
+  const handleOpen = (urlPath: string) => {
+    navigateTo(`/project/${urlPath}/apis`);
+  };
 
   const handleRequest = async () => {
     const { data, error } = await useFetch<APIBodyArray<Project>>('/projects', {
@@ -49,6 +53,7 @@
       v-for="project in projects"
       :key="project.attributes.id"
       class="card border border-gray-300 hover:bg-gray-300"
+      @click="handleOpen(project.attributes.url_path)"
     >
       <div class="card-body cursor-pointer">
         <h3 class="font-bold">{{ project.attributes.name }}</h3>

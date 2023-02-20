@@ -1,11 +1,13 @@
-import { Component, render } from 'vue';
+import { Component } from 'vue';
 
 type ModalProps = {
+  id: string;
   onError?: () => void;
   onSuccess?: (arg: string) => void;
 };
 
 type UseModal = {
+  component: Component;
   open: () => void;
 };
 
@@ -13,10 +15,18 @@ type UseModal = {
  * A composable for managing modals.
  *
  * @example
- *   import Modal from '~~/components/modal.vue';
+ *   <script setup>
+ *     import Modal from '~~/components/modal.vue';
  *
- *   const modal = useModal(modal);
- *   modal.open();
+ *     const modal = useModal(modal);
+ *     modal.open();
+ *   </script>
+ *
+ *   <template>
+ *     <ClientOnly>
+ *       <modal.component />
+ *     </ClientOnly>
+ *   </template>
  *
  * @param component
  * @param options
@@ -24,37 +34,33 @@ type UseModal = {
  **/
 export default function (
   component: Component,
-  options: ModalProps = {}
+  options: ModalProps = { id: 'base' }
 ): UseModal {
   const display = ref(false);
-  const modalId = `modal-${Date.now()}`;
 
   const close = () => {
     display.value = false;
   };
 
-  onMounted(() => {
-    const body = document.body;
-    const vnode = h(component, {
-      ...options,
-      id: modalId,
-      onClose: close,
-    });
-
-    render(vnode, body);
-  });
-
   const open = () => {
     display.value = true;
   };
 
-  watch(display, () => {
-    const checkbox = document.getElementById(modalId) as HTMLInputElement;
+  const vnode = h(component, {
+    ...options,
+    onClose: close,
+  });
 
-    if (checkbox) {
+  watch(display, () => {
+    const checkbox = document.getElementById(options.id) as HTMLInputElement;
+
+    if (checkbox !== null) {
       checkbox.checked = display.value;
     }
   });
 
-  return { open };
+  return {
+    component: vnode,
+    open,
+  };
 }

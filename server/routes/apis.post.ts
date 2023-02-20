@@ -1,14 +1,13 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
-import shortuuid from 'short-uuid';
-import { authValidation, postProjectValidation } from '../validations';
+import { authValidation, postApiValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
 import { Database } from '~~/types/supabase';
 import { serverSupabaseClient } from '#supabase/server';
 
-type ProjectBodyParams = {
-  name: string;
+type ApiBodyParams = {
   description?: string;
+  urlPath: string;
 };
 
 export default defineEventHandler(async (event) => {
@@ -31,9 +30,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    attributes: {
-      secretKey: response,
-    },
+    attributes: response,
   };
 });
 
@@ -41,47 +38,37 @@ async function handleRequest(
   event: H3Event
 ): Promise<Result<string, APIError>> {
   const userId = event.context.auth.user.id;
-  const { name, description } = await readBody(event);
+  const { description, projectUrlPath, urlPath } = await readBody(event);
   const client = serverSupabaseClient<Database>(event);
-
-  const projectObject = {
-    id: uuidv4(),
-    name,
-    description,
-    url_path: shortuuid.generate(),
-    user_id: userId,
-  };
-
-  if (description) {
-    projectObject.description = description;
-  }
 
   const { data: projects, error: projectError } = await client
     .from('projects')
-    .insert(projectObject)
-    .select();
+    .select()
+    .eq('url_path', projectUrlPath)
+    .eq('user_id', userId);
 
   if (projectError || projects.length === 0) {
-    return new FailedDatabaseQueryError('Failed to create project.');
+    return new FailedDatabaseQueryError('Failed to retrieve project.');
   }
 
-  const secretKey = generateSecretKey();
-  const { data: projectKeys, error: projectKeysError } = await client
-    .from('project_keys')
-    .insert({
-      id: uuidv4(),
-      api_key: uuidv4(),
-      secret_key: await hashPassword(secretKey),
-      project_id: projects[0].id,
-      user_id: userId,
-    })
+  const apiObject = {
+    id: uuidv4(),
+    description,
+    project_id: projects[0].id,
+    url_path: urlPath,
+    user_id: userId,
+  };
+
+  const { data: apis, error: apiError } = await client
+    .from('apis')
+    .insert(apiObject)
     .select();
 
-  if (projectKeysError || projectKeys.length === 0) {
-    return new FailedDatabaseQueryError('Failed to generate project keys.');
+  if (apiError || apis.length === 0) {
+    return new FailedDatabaseQueryError('Failed to create api endpoint.');
   }
 
-  return secretKey;
+  return apis[0];
 }
 
 async function validate(event: H3Event): Promise<ValidationResult> {
@@ -91,8 +78,8 @@ async function validate(event: H3Event): Promise<ValidationResult> {
     return error;
   }
 
-  const body: ProjectBodyParams = await readBody(event);
-  error = postProjectValidation(body);
+  const body: ApiBodyParams = await readBody(event);
+  error = postApiValidation(body);
 
   if (error) {
     return error;

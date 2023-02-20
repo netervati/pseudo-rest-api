@@ -9,6 +9,41 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      apis: {
+        Row: {
+          created_at: string;
+          deleted_at: string | null;
+          description: string | null;
+          id: string;
+          is_deleted: boolean;
+          project_id: string | null;
+          updated_at: string;
+          url_path: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string | null;
+          id: string;
+          is_deleted?: boolean;
+          project_id?: string | null;
+          updated_at?: string;
+          url_path: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string | null;
+          id?: string;
+          is_deleted?: boolean;
+          project_id?: string | null;
+          updated_at?: string;
+          url_path?: string;
+          user_id?: string;
+        };
+      };
       project_keys: {
         Row: {
           api_key: string;
@@ -53,6 +88,7 @@ export interface Database {
           is_deleted: boolean;
           name: string;
           updated_at: string;
+          url_path: string;
           user_id: string;
         };
         Insert: {
@@ -63,6 +99,7 @@ export interface Database {
           is_deleted?: boolean;
           name: string;
           updated_at?: string;
+          url_path?: string;
           user_id: string;
         };
         Update: {
@@ -73,6 +110,7 @@ export interface Database {
           is_deleted?: boolean;
           name?: string;
           updated_at?: string;
+          url_path?: string;
           user_id?: string;
         };
       };

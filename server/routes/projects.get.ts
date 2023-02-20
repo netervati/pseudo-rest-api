@@ -35,7 +35,7 @@ async function handleRequest(
 
   const { data: projects, error: projectError } = await client
     .from('projects')
-    .select('id, description, name')
+    .select('id, description, name, url_path')
     .eq('is_deleted', false);
 
   if (projectError) {

@@ -31,7 +31,7 @@
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="#modal-container">
     <input :id="id" type="checkbox" class="modal-toggle" />
     <div class="modal">
       <div class="modal-box" :class="mergedClass">

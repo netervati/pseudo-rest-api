@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+  import {
+    ArrowRightOnRectangleIcon,
+    UserIcon,
+  } from '@heroicons/vue/24/outline';
+
   const client = useSupabaseAuthClient();
 
   const handleLogout = async () => {
@@ -17,14 +22,15 @@
     </div>
     <div class="flex-none">
       <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img src="@/assets/images/empty-profile.png" />
-          </div>
+        <label
+          class="avatar border-gray-300 btn btn-ghost rounded-lg"
+          tabindex="0"
+        >
+          <UserIcon class="h-4 m-auto w-4" />
         </label>
         <NavProfileDropdown>
           <NavProfileDropdownButton @click="handleLogout">
-            logout
+            <ArrowRightOnRectangleIcon class="h-4 w-4" /> logout
           </NavProfileDropdownButton>
         </NavProfileDropdown>
       </div>
