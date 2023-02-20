@@ -3,8 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import shortuuid from 'short-uuid';
 import { authValidation, postProjectValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
-import { Database } from '~~/types/supabase';
-import { serverSupabaseClient } from '#supabase/server';
+import { ProjectKeyRepository, ProjectRepository } from '../repositories';
 
 type ProjectBodyParams = {
   name: string;
@@ -42,7 +41,6 @@ async function handleRequest(
 ): Promise<Result<string, APIError>> {
   const userId = event.context.auth.user.id;
   const { name, description } = await readBody(event);
-  const client = serverSupabaseClient<Database>(event);
 
   const projectObject = {
     id: uuidv4(),
@@ -52,30 +50,28 @@ async function handleRequest(
     user_id: userId,
   };
 
-  if (description) {
+  if (description !== null) {
     projectObject.description = description;
   }
 
-  const { data: projects, error: projectError } = await client
-    .from('projects')
-    .insert(projectObject)
-    .select();
+  const { data: projects, error: projectError } = await new ProjectRepository(
+    event
+  ).insert(projectObject);
 
   if (projectError || projects.length === 0) {
     return new FailedDatabaseQueryError('Failed to create project.');
   }
 
   const secretKey = generateSecretKey();
-  const { data: projectKeys, error: projectKeysError } = await client
-    .from('project_keys')
-    .insert({
+
+  const { data: projectKeys, error: projectKeysError } =
+    await new ProjectKeyRepository(event).insert({
       id: uuidv4(),
       api_key: uuidv4(),
       secret_key: await hashPassword(secretKey),
       project_id: projects[0].id,
       user_id: userId,
-    })
-    .select();
+    });
 
   if (projectKeysError || projectKeys.length === 0) {
     return new FailedDatabaseQueryError('Failed to generate project keys.');

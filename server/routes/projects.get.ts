@@ -1,8 +1,7 @@
 import { H3Event } from 'h3';
 import { authValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
-import { Database } from '~~/types/supabase';
-import { serverSupabaseClient } from '#supabase/server';
+import ProjectRepository from '../repositories/projectRepository';
 
 export default defineEventHandler(async (event) => {
   const validateError = await validate(event);
@@ -31,12 +30,11 @@ export default defineEventHandler(async (event) => {
 async function handleRequest(
   event: H3Event
 ): Promise<Result<string, APIError>> {
-  const client = serverSupabaseClient<Database>(event);
-
-  const { data: projects, error: projectError } = await client
-    .from('projects')
-    .select('id, description, name, url_path')
-    .eq('is_deleted', false);
+  const { data: projects, error: projectError } = await new ProjectRepository(
+    event
+  ).get({
+    is_deleted: false,
+  });
 
   if (projectError) {
     return new FailedDatabaseQueryError('Failed to retrieve projects.');
