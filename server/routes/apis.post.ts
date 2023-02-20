@@ -38,12 +38,23 @@ async function handleRequest(
   event: H3Event
 ): Promise<Result<string, APIError>> {
   const userId = event.context.auth.user.id;
-  const { description, urlPath } = await readBody(event);
+  const { description, projectUrlPath, urlPath } = await readBody(event);
   const client = serverSupabaseClient<Database>(event);
+
+  const { data: projects, error: projectError } = await client
+    .from('projects')
+    .select()
+    .eq('url_path', projectUrlPath)
+    .eq('user_id', userId);
+
+  if (projectError || projects.length === 0) {
+    return new FailedDatabaseQueryError('Failed to retrieve project.');
+  }
 
   const apiObject = {
     id: uuidv4(),
     description,
+    project_id: projects[0].id,
     url_path: urlPath,
     user_id: userId,
   };
