@@ -1,14 +1,11 @@
 <script lang="ts" setup>
+  import { Database } from '~~/types/supabase';
+
   const props = defineProps<{
     refreshKey: number;
   }>();
 
-  type Project = {
-    id: string;
-    description: string;
-    name: string;
-    url_path: string;
-  };
+  type Project = Database['public']['Tables']['projects']['Row'];
 
   const { refreshKey } = toRefs(props);
   const projects = ref<APIBody<Project>[] | []>([]);
