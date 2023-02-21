@@ -4,7 +4,21 @@ import { Database } from '~~/types/supabase';
 type ProjectKeysTable = Database['public']['Tables']['project_keys'];
 
 export default class ProjectKeyRepository extends BaseRepository {
-  async insert(data: ProjectKeysTable['Insert']) {
-    return await this.client.from('project_keys').insert(data).select();
+  get table() {
+    return 'project_keys';
+  }
+
+  async insert(data: ProjectKeysTable['Insert']): RepositoryQueryResponse {
+    return await this.create(data);
+  }
+
+  async getWithProject(options = {}): RepositoryQueryResponse {
+    const query = this.client.from(this.table).select('*, projects(*)');
+
+    for (const [key, value] of Object.entries(options)) {
+      query.eq(key, value);
+    }
+
+    return await query.eq('user_id', this.userId);
   }
 }

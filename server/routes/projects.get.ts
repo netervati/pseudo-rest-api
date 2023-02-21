@@ -32,7 +32,7 @@ async function handleRequest(
 ): Promise<Result<string, APIError>> {
   const { data: projects, error: projectError } = await new ProjectRepository(
     event
-  ).get({
+  ).getWithProjectKey({
     is_deleted: false,
   });
 

@@ -2,7 +2,7 @@ import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { authValidation, postApiValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
-import { ApiRepository, ProjectRepository } from '../repositories';
+import { ApiRepository, ProjectKeyRepository } from '../repositories';
 
 type ApiBodyParams = {
   description?: string;
@@ -37,23 +37,24 @@ async function handleRequest(
   event: H3Event
 ): Promise<Result<string, APIError>> {
   const userId = event.context.auth.user.id;
-  const { description, projectUrlPath, urlPath } = await readBody(event);
+  const { description, projectApiKey, urlPath } = await readBody(event);
 
-  const { data: projects, error: projectError } = await new ProjectRepository(
-    event
-  ).get({
-    url_path: projectUrlPath,
-  });
+  const { data: projectKeys, error: projectKeyError } =
+    await new ProjectKeyRepository(event).getWithProject({
+      api_key: projectApiKey,
+    });
 
-  if (projectError || projects.length === 0) {
-    return new FailedDatabaseQueryError('Failed to retrieve project.');
+  if (projectKeyError || projectKeys.length === 0) {
+    return new FailedDatabaseQueryError(
+      'Failed to retrieve project key with project.'
+    );
   }
 
   const { data: apis, error: apiError } = await new ApiRepository(event).insert(
     {
       id: uuidv4(),
       description,
-      project_id: projects[0].id,
+      project_id: projectKeys[0].projects.id,
       url_path: urlPath,
       user_id: userId,
     }
