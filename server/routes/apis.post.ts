@@ -37,11 +37,11 @@ async function handleRequest(
   event: H3Event
 ): Promise<Result<string, APIError>> {
   const userId = event.context.auth.user.id;
-  const { description, projectUrlPath, urlPath } = await readBody(event);
+  const { description, projectApiKey, urlPath } = await readBody(event);
 
   const { data: projectKeys, error: projectKeyError } =
     await new ProjectKeyRepository(event).getWithProject({
-      api_key: projectUrlPath,
+      api_key: projectApiKey,
     });
 
   if (projectKeyError || projectKeys.length === 0) {
