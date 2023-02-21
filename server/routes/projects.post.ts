@@ -46,7 +46,6 @@ async function handleRequest(
     id: uuidv4(),
     name,
     description,
-    url_path: shortuuid.generate(),
     user_id: userId,
   };
 
@@ -67,7 +66,7 @@ async function handleRequest(
   const { data: projectKeys, error: projectKeysError } =
     await new ProjectKeyRepository(event).insert({
       id: uuidv4(),
-      api_key: uuidv4(),
+      api_key: shortuuid.generate(),
       secret_key: await hashPassword(secretKey),
       project_id: projects[0].id,
       user_id: userId,
