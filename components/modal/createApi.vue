@@ -8,7 +8,7 @@
     id: string;
   }>();
 
-  const projectUrlPath = useProjectUrlPath();
+  const projectApiKey = useProjectApiKey();
   const SPECIAL_CHARACTERS = '`~!@#$%^&*()_+={}[];"\'\\|<,>.?'
     .split('')
     .concat(['//', '--', '/-', '-/']);
@@ -70,7 +70,7 @@
       method: 'post',
       body: {
         description: form.description.trim(),
-        projectUrlPath,
+        projectApiKey,
         urlPath: form.urlPath.trim(),
       },
     });

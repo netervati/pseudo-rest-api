@@ -5,7 +5,9 @@
     refreshKey: number;
   }>();
 
-  type Project = Database['public']['Tables']['projects']['Row'];
+  type Project = Database['public']['Tables']['projects']['Row'] & {
+    project_keys: Database['public']['Tables']['project_keys']['Row'][];
+  };
 
   const { refreshKey } = toRefs(props);
   const projects = ref<APIBody<Project>[] | []>([]);
@@ -50,7 +52,7 @@
       v-for="project in projects"
       :key="project.attributes.id"
       class="card border border-gray-300 hover:bg-gray-300"
-      @click="handleOpen(project.attributes.url_path)"
+      @click="handleOpen(project.attributes.project_keys[0].api_key)"
     >
       <div class="card-body cursor-pointer">
         <h3 class="font-bold">{{ project.attributes.name }}</h3>
