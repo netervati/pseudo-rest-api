@@ -1,8 +1,5 @@
 import { Database } from './supabase';
-import {
-  PostgrestSingleResponse,
-  PostgrestQueryBuilder,
-} from '@supabase/postgrest-js';
+import { PostgrestSingleResponse } from '@supabase/postgrest-js';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 declare global {
@@ -22,17 +19,7 @@ declare global {
     data: APIBody<T>[];
   }
 
-  type GetOptions = {
-    [key: string]: string | number | boolean;
-  };
   type RepositoryQueryResponse = Promise<PostgrestSingleResponse<any[]>>
-
-  interface PseudoBaseRepository {
-    client: SupabaseClient<Database>;
-    userId: string;
-    get?: (options: GetOptions) => RepositoryQueryResponse;
-    insert?: (data: T) => RepositoryQueryResponse;
-  };
 }
 
 export {};
