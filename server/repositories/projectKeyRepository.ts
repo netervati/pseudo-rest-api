@@ -13,9 +13,7 @@ export default class ProjectKeyRepository extends BaseRepository {
   }
 
   async getWithProject(options = {}): RepositoryQueryResponse {
-    const query = this.client
-      .from(this.table)
-      .select('*, projects(*)');
+    const query = this.client.from(this.table).select('*, projects(*)');
 
     for (const [key, value] of Object.entries(options)) {
       query.eq(key, value);
