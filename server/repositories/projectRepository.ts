@@ -12,10 +12,10 @@ export default class ProjectRepository extends BaseRepository {
     return await this.create(data);
   }
 
-  async getWithProjectKey(options = {}): RepositoryQueryResponse {
+  async getWithProjectKey(options = {}, select = '*'): RepositoryQueryResponse {
     const query = this.client
       .from(this.table)
-      .select('*, project_keys(*)')
+      .select(`${select}, project_keys(api_key)`)
       .eq('project_keys.is_deleted', false);
 
     for (const [key, value] of Object.entries(options)) {
