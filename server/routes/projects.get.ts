@@ -32,9 +32,12 @@ async function handleRequest(
 ): Promise<Result<string, APIError>> {
   const { data: projects, error: projectError } = await new ProjectRepository(
     event
-  ).getWithProjectKey({
-    is_deleted: false,
-  });
+  ).getWithProjectKey(
+    {
+      is_deleted: false,
+    },
+    'name, description'
+  );
 
   if (projectError) {
     return new FailedDatabaseQueryError('Failed to retrieve projects.');

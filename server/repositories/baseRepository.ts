@@ -15,10 +15,10 @@ export default class BaseRepository {
     return '';
   }
 
-  async get(options = {}): RepositoryQueryResponse {
-    const query = this.client.from(this.table).select();
+  async get(conditions = {}, select = '*'): RepositoryQueryResponse {
+    const query = this.client.from(this.table).select(select);
 
-    for (const [key, value] of Object.entries(options)) {
+    for (const [key, value] of Object.entries(conditions)) {
       query.eq(key, value);
     }
 
