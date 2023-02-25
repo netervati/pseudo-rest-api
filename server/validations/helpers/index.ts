@@ -1,6 +1,7 @@
 import isBlank from './isBlank';
 import isNone from './isNone';
 import isNotArray from './isNotArray';
+import isNotObject from './isNotObject';
 import isNotString from './isNotString';
 import { ValidationValue } from './types';
 
@@ -9,6 +10,7 @@ const VALIDATION_RULES: {
 } = {
   array: isNotArray,
   blank: isBlank,
+  object: isNotObject,
   required: isNone,
   string: isNotString,
 };
