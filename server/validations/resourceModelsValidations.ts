@@ -1,17 +1,24 @@
 import { InvalidParameterError } from '../errors';
 import { validateByRules } from './helpers';
 
-type BodyParams = { [key: string]: string };
+type StructureRules = {
+  [key: string]: {
+    type: string;
+  };
+};
+
+type BodyParams = { [key: string]: StructureRules };
 
 export function postResourceModelValidation({
-  name,
-  description,
+  structure,
 }: BodyParams): Result<never, APIError> {
-  if (validateByRules('required,string,blank', name)) {
-    return new InvalidParameterError('name');
-  }
+  for (const [key, value] of Object.entries(structure)) {
+    if (validateByRules('required,object', value)) {
+      return new InvalidParameterError(key);
+    }
 
-  if (validateByRules('string', description)) {
-    return new InvalidParameterError('description');
+    if (validateByRules('required,string', value.type)) {
+      return new InvalidParameterError(`type of ${key}`);
+    }
   }
 }
