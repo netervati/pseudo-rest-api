@@ -1,26 +1,21 @@
-import isEmpty from 'lodash/isEmpty';
+import isBlank from './isBlank';
+import isNone from './isNone';
+import isNotArray from './isNotArray';
+import isNotObject from './isNotObject';
+import isNotString from './isNotString';
+import { ValidationValue } from './types';
 
-type AnyValue = string | boolean | number;
-
-const VALIDATION_RULES: { [key: string]: (value: AnyValue) => boolean } = {
-  blank: (value) => {
-    if (typeof value !== 'string') {
-      return false;
-    }
-
-    return value.trim() === '';
-  },
-  required: (value) => isEmpty(value),
-  string: (value) => {
-    if (value === null || value === undefined) {
-      return false;
-    }
-
-    return typeof value !== 'string';
-  },
+const VALIDATION_RULES: {
+  [key: string]: (value: ValidationValue) => boolean;
+} = {
+  array: isNotArray,
+  blank: isBlank,
+  object: isNotObject,
+  required: isNone,
+  string: isNotString,
 };
 
-export function validateByRules(validations: string, value: AnyValue) {
+export function validateByRules(validations: string, value: ValidationValue) {
   const validationRules = validations.split(',');
   let withError = false;
 
