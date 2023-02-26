@@ -1,17 +1,8 @@
-import { InvalidParameterError } from '../errors';
-import { validateByRules } from './helpers';
+import { BaseValidation } from './baseValidations';
 
-type BodyParams = { [key: string]: string };
-
-export function postProjectValidation({
-  name,
-  description,
-}: BodyParams): Result<never, APIError> {
-  if (validateByRules('required,string,blank', name)) {
-    return new InvalidParameterError('name');
-  }
-
-  if (validateByRules('string', description)) {
-    return new InvalidParameterError('description');
-  }
+export class PostProjectValidation extends BaseValidation {
+  strategies = {
+    description: 'string',
+    name: 'required,string,blank',
+  };
 }

@@ -9,16 +9,17 @@ type StructureRules = {
 
 type BodyParams = { [key: string]: StructureRules };
 
+// TODO: Revisit and follow new validation format.
 export function postResourceModelValidation({
   structure,
-}: BodyParams): Result<never, APIError> {
+}: BodyParams): undefined | ValidationResult {
   for (const [key, value] of Object.entries(structure)) {
     if (validateByRules('required,object', value)) {
-      return new InvalidParameterError(key);
+      return new InvalidParameterError(key).serialize();
     }
 
     if (validateByRules('required,string', value.type)) {
-      return new InvalidParameterError(`type of ${key}`);
+      return new InvalidParameterError(`type of ${key}`).serialize();
     }
   }
 }

@@ -1,6 +1,6 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
-import { authValidation, postApiValidation } from '../validations';
+import { authValidation, PostApiValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
 import { ApiRepository, ProjectKeyRepository } from '../repositories';
 
@@ -13,19 +13,13 @@ export default defineEventHandler(async (event) => {
   const validateError = await validate(event);
 
   if (validateError) {
-    throw createError({
-      statusCode: validateError.statusCode,
-      statusMessage: validateError.statusMessage,
-    });
+    throw createError(validateError);
   }
 
   const response = await handleRequest(event);
 
   if (response instanceof BaseError) {
-    throw createError({
-      statusCode: response.statusCode,
-      statusMessage: response.statusMessage,
-    });
+    throw createError(response.serialize());
   }
 
   return {
@@ -74,8 +68,8 @@ async function validate(event: H3Event): Promise<ValidationResult> {
     return error;
   }
 
-  const body: ApiBodyParams = await readBody(event);
-  error = postApiValidation(body);
+  const body = await readBody<ApiBodyParams>(event);
+  error = new PostApiValidation(body).validate();
 
   if (error) {
     return error;
