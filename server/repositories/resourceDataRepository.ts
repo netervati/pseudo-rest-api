@@ -3,12 +3,8 @@ import { Database } from '~~/types/supabase';
 
 type ResourceDataTable = Database['public']['Tables']['resource_data'];
 
-export default class ResourceDataRepository extends BaseRepository {
+export default class ResourceDataRepository extends BaseRepository<ResourceDataTable> {
   get table() {
     return 'resource_data';
-  }
-
-  async insert(data: ResourceDataTable['Insert']): RepositoryQueryResponse {
-    return await this.create(data);
   }
 }

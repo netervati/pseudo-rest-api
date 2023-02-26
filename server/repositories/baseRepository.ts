@@ -1,8 +1,8 @@
 import { H3Event } from 'h3';
-import { Database } from '~~/types/supabase';
+import { Database, Json } from '~~/types/supabase';
 import { serverSupabaseClient } from '#supabase/server';
 
-export default class BaseRepository {
+export default class BaseRepository<T extends Record<string, Json>> {
   client;
   userId;
 
@@ -25,7 +25,7 @@ export default class BaseRepository {
     return await query.eq('user_id', this.userId);
   }
 
-  async create(data = {}): RepositoryQueryResponse {
+  async insert(data: T['Insert']): RepositoryQueryResponse {
     return await this.client.from(this.table).insert(data).select();
   }
 }

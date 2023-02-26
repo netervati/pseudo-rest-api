@@ -3,13 +3,9 @@ import { Database } from '~~/types/supabase';
 
 type ProjectKeysTable = Database['public']['Tables']['project_keys'];
 
-export default class ProjectKeyRepository extends BaseRepository {
+export default class ProjectKeyRepository extends BaseRepository<ProjectKeysTable> {
   get table() {
     return 'project_keys';
-  }
-
-  async insert(data: ProjectKeysTable['Insert']): RepositoryQueryResponse {
-    return await this.create(data);
   }
 
   async getWithProject(options = {}): RepositoryQueryResponse {

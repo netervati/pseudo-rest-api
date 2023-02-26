@@ -36,20 +36,14 @@ async function handleRequest(
   const userId = event.context.auth.user.id;
   const { name, description } = await readBody(event);
 
-  const projectObject = {
+  const { data: projects, error: projectError } = await new ProjectRepository(
+    event
+  ).insert({
     id: uuidv4(),
     name,
     description,
     user_id: userId,
-  };
-
-  if (description !== null) {
-    projectObject.description = description;
-  }
-
-  const { data: projects, error: projectError } = await new ProjectRepository(
-    event
-  ).insert(projectObject);
+  });
 
   if (projectError || projects.length === 0) {
     return new FailedDatabaseQueryError('Failed to create project.');
