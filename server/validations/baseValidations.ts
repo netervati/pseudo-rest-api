@@ -19,8 +19,8 @@ export class BaseValidation {
   validate(): ValidationResult {
     const errors = [];
 
-    for (const [key, value] of Object.entries(this.parameters)) {
-      const result = validateByRules(this.strategies[key], value);
+    for (const [key, value] of Object.entries(this.strategies)) {
+      const result = validateByRules(value, this.parameters[key]);
 
       if (typeof result === 'string') {
         errors.push(new ValidationError(result.replace('*', key)).serialize());
