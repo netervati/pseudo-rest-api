@@ -1,17 +1,8 @@
-import { InvalidParameterError } from '../errors';
-import { validateByRules } from './helpers';
+import { BaseValidation } from './baseValidations';
 
-type BodyParams = { [key: string]: string };
-
-export function postApiValidation({
-  description,
-  urlPath,
-}: BodyParams): Result<never, APIError> {
-  if (validateByRules('string', description)) {
-    return new InvalidParameterError('description');
-  }
-
-  if (validateByRules('required,string,blank', urlPath)) {
-    return new InvalidParameterError('urlPath');
-  }
+export class PostApiValidation extends BaseValidation {
+  strategies = {
+    description: 'string',
+    urlPath: 'required,string,blank',
+  };
 }
