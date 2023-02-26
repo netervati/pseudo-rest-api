@@ -6,22 +6,47 @@ import isNotString from './isNotString';
 import { ValidationValue } from './types';
 
 const VALIDATION_RULES: {
-  [key: string]: (value: ValidationValue) => boolean;
+  [key: string]: {
+    message: string;
+    validate: (value: ValidationValue) => boolean;
+  };
 } = {
-  array: isNotArray,
-  blank: isBlank,
-  object: isNotObject,
-  required: isNone,
-  string: isNotString,
+  array: {
+    message: '* is not an array.',
+    validate: isNotArray,
+  },
+  blank: {
+    message: '* is an empty string.',
+    validate: isBlank,
+  },
+  object: {
+    message: '* is not an object.',
+    validate: isNotObject,
+  },
+  required: {
+    message: '* is not passed.',
+    validate: isNone,
+  },
+  string: {
+    message: '* is not a string',
+    validate: isNotString,
+  },
 };
 
-export function validateByRules(validations: string, value: ValidationValue) {
+type ValidationResult = null | string;
+
+export function validateByRules(
+  validations: string,
+  value: ValidationValue
+): ValidationResult {
   const validationRules = validations.split(',');
-  let withError = false;
+  let withError = null;
 
   validationRules.forEach((rule) => {
-    if (VALIDATION_RULES[rule](value)) {
-      withError = true;
+    const validation = VALIDATION_RULES[rule];
+
+    if (validation.validate(value)) {
+      withError = validation.message;
     }
   });
 
