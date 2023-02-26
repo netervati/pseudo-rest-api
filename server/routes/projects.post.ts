@@ -1,7 +1,7 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import shortuuid from 'short-uuid';
-import { authValidation, postProjectValidation } from '../validations';
+import { authValidation, PostProjectValidation } from '../validations';
 import { BaseError, FailedDatabaseQueryError } from '../errors';
 import { ProjectKeyRepository, ProjectRepository } from '../repositories';
 
@@ -14,19 +14,13 @@ export default defineEventHandler(async (event) => {
   const validateError = await validate(event);
 
   if (validateError) {
-    throw createError({
-      statusCode: validateError.statusCode,
-      statusMessage: validateError.statusMessage,
-    });
+    throw createError(validateError);
   }
 
   const response = await handleRequest(event);
 
   if (response instanceof BaseError) {
-    throw createError({
-      statusCode: response.statusCode,
-      statusMessage: response.statusMessage,
-    });
+    throw createError(response.serialize());
   }
 
   return {
@@ -86,8 +80,8 @@ async function validate(event: H3Event): Promise<ValidationResult> {
     return error;
   }
 
-  const body: ProjectBodyParams = await readBody(event);
-  error = postProjectValidation(body);
+  const body = await readBody<ProjectBodyParams>(event);
+  error = new PostProjectValidation(body).validate();
 
   if (error) {
     return error;

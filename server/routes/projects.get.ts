@@ -4,22 +4,16 @@ import { BaseError, FailedDatabaseQueryError } from '../errors';
 import ProjectRepository from '../repositories/projectRepository';
 
 export default defineEventHandler(async (event) => {
-  const validateError = await validate(event);
+  const validateError = validate(event);
 
   if (validateError) {
-    throw createError({
-      statusCode: validateError.statusCode,
-      statusMessage: validateError.statusMessage,
-    });
+    throw createError(validateError);
   }
 
   const response = await handleRequest(event);
 
   if (response instanceof BaseError) {
-    throw createError({
-      statusCode: response.statusCode,
-      statusMessage: response.statusMessage,
-    });
+    throw createError(response.serialize());
   }
 
   return {
