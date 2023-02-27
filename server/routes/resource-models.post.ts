@@ -1,8 +1,8 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
-import { authValidation, postResourceModelValidation } from '../validations';
-import { BaseError, FailedDatabaseQueryError } from '../errors';
+import { postResourceModelValidation } from '../validations';
 import { ProjectKeyRepository, ResourceModelRepository } from '../repositories';
+import { Database } from '~~/types/supabase';
 
 type BodyParams = {
   projectApiKey: string;
@@ -14,16 +14,16 @@ type BodyParams = {
 };
 
 export default defineEventHandler(async (event) => {
-  const validateError = await validate(event);
+  const error = await validate(event);
 
-  if (validateError) {
-    throw createError(validateError);
+  if (error) {
+    throw error;
   }
 
   const response = await handleRequest(event);
 
-  if (response instanceof BaseError) {
-    throw createError(response.serialize());
+  if (isNuxtError(response)) {
+    throw response;
   }
 
   return {
@@ -33,45 +33,42 @@ export default defineEventHandler(async (event) => {
 
 async function handleRequest(
   event: H3Event
-): Promise<Result<string, APIError>> {
+): RequestResponse<Database['public']['Tables']['resource_models']['Row']> {
   const userId = event.context.auth.user.id;
   const { projectApiKey, structure } = await readBody<BodyParams>(event);
 
-  const { data: projectKeys, error: projectKeyError } =
-    await new ProjectKeyRepository(event).getWithProject({
+  const projectKeys = await new ProjectKeyRepository(event).get(
+    {
       api_key: projectApiKey,
-    });
+    },
+    '*, projects(*)'
+  );
 
-  if (projectKeyError || projectKeys.length === 0) {
-    return new FailedDatabaseQueryError(
-      'Failed to retrieve project key with project.'
-    );
+  if (projectKeys.data === null) {
+    return projectKeys.error!;
   }
 
-  const { data: resourceModels, error: resourceModelError } =
-    await new ResourceModelRepository(event).insert({
-      id: uuidv4(),
-      structure,
-      project_id: projectKeys[0].projects.id,
-      user_id: userId,
-    });
+  const resourceModels = await new ResourceModelRepository(event).insert({
+    id: uuidv4(),
+    structure,
+    project_id: projectKeys.data[0].projects.id,
+    user_id: userId,
+  });
 
-  if (resourceModelError || resourceModels.length === 0) {
-    return new FailedDatabaseQueryError('Failed to create resource model.');
+  if (resourceModels.data === null) {
+    return resourceModels.error!;
   }
 
-  return resourceModels[0];
+  return resourceModels.data[0];
 }
 
 async function validate(event: H3Event): Promise<ValidationResult> {
-  let error = authValidation(event);
-
-  if (error) {
-    return error;
+  if (event.context.auth.error) {
+    return event.context.auth.error;
   }
 
   const body: BodyParams = await readBody(event);
-  error = postResourceModelValidation({
+  const error = postResourceModelValidation({
     structure: body.structure,
   });
 
