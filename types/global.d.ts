@@ -1,6 +1,7 @@
 import { Database } from './supabase';
 import { PostgrestSingleResponse } from '@supabase/postgrest-js';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { NuxtError } from 'nuxt/dist/app/composables';
 
 declare global {
   interface SerializedError {
@@ -9,12 +10,7 @@ declare global {
     statusMessage: string;
   };
 
-  interface APIError extends Error, SerializedError {
-    serialize: () => SerializedError;
-  };
-
-  type Result<T, E> = Ok<T, E> | Err<T, E>;
-  type ValidationResult = undefined | SerializedError;
+  type ValidationResult = undefined | NuxtError;
 
   type APIBody<T> = {
     attributes: T;
@@ -22,9 +18,9 @@ declare global {
 
   type APIBodyArray<T> = {
     data: APIBody<T>[];
-  }
+  };
 
-  type RepositoryQueryResponse = Promise<PostgrestSingleResponse<any[]>>
+  type RequestResponse<T> = Promise<T | NuxtError>;
 }
 
 export {};
