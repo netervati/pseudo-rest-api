@@ -8,7 +8,8 @@ import { Database, Json } from '~~/types/supabase';
 import { serverSupabaseClient } from '#supabase/server';
 
 type QueryResponse<T extends Record<string, Json>> = {
-  data: T['Row'][] | null;
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  data: T['Row'][] | any[] | null;
   error: NuxtError | null;
 };
 
