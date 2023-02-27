@@ -3,15 +3,11 @@ import ProjectRepository from '../repositories/projectRepository';
 import { Database } from '~~/types/supabase';
 
 export default defineEventHandler(async (event) => {
-  if (isNuxtError(event.context.auth.error)) {
+  if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
   const response = await handleRequest(event);
-
-  if (isNuxtError(response)) {
-    throw response;
-  }
 
   return {
     data: response,
@@ -33,9 +29,9 @@ async function handleRequest(
     'name, description, project_keys(api_key)'
   );
 
-  if (projects.data === null) {
-    return projects.error!;
+  if (projects.error instanceof Error) {
+    throw projects.error;
   }
 
-  return projects.data.map((project) => ({ attributes: { ...project } }));
+  return projects.data!.map((project) => ({ attributes: { ...project } }));
 }

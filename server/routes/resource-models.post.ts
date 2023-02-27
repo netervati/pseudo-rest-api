@@ -14,17 +14,9 @@ type BodyParams = {
 };
 
 export default defineEventHandler(async (event) => {
-  const error = await validate(event);
-
-  if (error) {
-    throw error;
-  }
+  await validate(event);
 
   const response = await handleRequest(event);
-
-  if (isNuxtError(response)) {
-    throw response;
-  }
 
   return {
     attributes: response,
@@ -44,27 +36,27 @@ async function handleRequest(
     '*, projects(*)'
   );
 
-  if (projectKeys.data === null) {
-    return projectKeys.error!;
+  if (projectKeys.error instanceof Error) {
+    return projectKeys.error;
   }
 
   const resourceModels = await new ResourceModelRepository(event).insert({
     id: uuidv4(),
     structure,
-    project_id: projectKeys.data[0].projects.id,
+    project_id: projectKeys.data![0].projects.id,
     user_id: userId,
   });
 
-  if (resourceModels.data === null) {
-    return resourceModels.error!;
+  if (resourceModels.error instanceof Error) {
+    return resourceModels.error;
   }
 
-  return resourceModels.data[0];
+  return resourceModels.data![0];
 }
 
-async function validate(event: H3Event): Promise<ValidationResult> {
+async function validate(event: H3Event): Promise<void | never> {
   if (event.context.auth.error) {
-    return event.context.auth.error;
+    throw event.context.auth.error;
   }
 
   const body: BodyParams = await readBody(event);
@@ -73,6 +65,6 @@ async function validate(event: H3Event): Promise<ValidationResult> {
   });
 
   if (error) {
-    return error;
+    throw error;
   }
 }

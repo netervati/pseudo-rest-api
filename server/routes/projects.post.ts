@@ -10,17 +10,9 @@ type ProjectBodyParams = {
 };
 
 export default defineEventHandler(async (event) => {
-  const error = await validate(event);
-
-  if (error) {
-    throw error;
-  }
+  await validate(event);
 
   const response = await handleRequest(event);
-
-  if (isNuxtError(response)) {
-    throw response;
-  }
 
   return {
     attributes: {
@@ -40,8 +32,8 @@ async function handleRequest(event: H3Event): RequestResponse<string> {
     user_id: userId,
   });
 
-  if (projects.data === null) {
-    return projects.error!;
+  if (projects.error instanceof Error) {
+    return projects.error;
   }
 
   const secretKey = generateSecretKey();
@@ -50,26 +42,26 @@ async function handleRequest(event: H3Event): RequestResponse<string> {
     id: uuidv4(),
     api_key: shortuuid.generate(),
     secret_key: await hashPassword(secretKey),
-    project_id: projects.data[0].id,
+    project_id: projects.data![0].id,
     user_id: userId,
   });
 
-  if (projectKeys.data === null) {
-    return projectKeys.error!;
+  if (projectKeys.error instanceof Error) {
+    return projectKeys.error;
   }
 
   return secretKey;
 }
 
-async function validate(event: H3Event): Promise<ValidationResult> {
+async function validate(event: H3Event): Promise<void | never> {
   if (event.context.auth.error) {
-    return event.context.auth.error;
+    throw event.context.auth.error;
   }
 
   const body = await readBody<ProjectBodyParams>(event);
   const error = new PostProjectValidation(body).validate();
 
   if (error) {
-    return error;
+    throw error;
   }
 }
