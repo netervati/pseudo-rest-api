@@ -1,13 +1,15 @@
-export default function (errors: SerializedError[]): SerializedError {
-  const data: SerializedError['data'] = [];
+import { NuxtError } from 'nuxt/dist/app/composables';
+
+export default function (errors: SerializedError[]): NuxtError {
+  const data: { statusMessage: string }[] = [];
 
   errors.forEach(({ statusMessage }) => {
     data.push({ statusMessage });
   });
 
-  return {
+  return createError({
     data,
-    statusCode: 400,
+    statusCode: HTTP_STATUS_BAD_REQUEST,
     statusMessage: 'Invalid parameter/s',
-  };
+  });
 }

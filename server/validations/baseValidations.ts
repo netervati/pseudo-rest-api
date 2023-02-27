@@ -1,4 +1,3 @@
-import { ValidationError } from '../errors';
 import { validateByRules } from './helpers';
 import { ValidationValue } from './helpers/types';
 
@@ -23,7 +22,10 @@ export class BaseValidation {
       const result = validateByRules(value, this.parameters[key]);
 
       if (typeof result === 'string') {
-        errors.push(new ValidationError(result.replace('*', key)).serialize());
+        errors.push({
+          statusCode: HTTP_STATUS_BAD_REQUEST,
+          statusMessage: result.replace('*', key),
+        });
       }
     }
 
