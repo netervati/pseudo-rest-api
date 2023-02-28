@@ -2,48 +2,35 @@
   import { ProjectWithProjectKey } from '~~/types/models';
 
   const props = defineProps<{
-    refreshKey: number;
+    secretKey: string;
   }>();
 
-  const { refreshKey } = toRefs(props);
-  const projects = ref<ProjectWithProjectKey[]>([]);
+  const { secretKey } = toRefs(props);
   const toast = useToast();
+
+  const { data, error, refresh } = await useFetch<ProjectWithProjectKey[]>(
+    '/projects',
+    {
+      method: 'get',
+    }
+  );
+
+  watch(error, (fetchError) => {
+    if (fetchError) {
+      toast.show(fetchError.statusMessage ?? 'Failed to retrieve projects', {
+        color: 'error',
+      });
+    }
+  });
+
+  const projects = computed<ProjectWithProjectKey[]>(() => data.value || []);
+
+  onMounted(async () => await nextTick(refresh));
+  watch(secretKey, refresh);
 
   const handleOpen = (urlPath: string) => {
     navigateTo(`/project/${urlPath}/apis`);
   };
-
-  const handleRequest = async () => {
-    const { data, error } = await useFetch<ProjectWithProjectKey[]>(
-      '/projects',
-      {
-        method: 'get',
-      }
-    );
-
-    if (error.value) {
-      const message =
-        error.value.statusMessage ?? 'Failed to retrieve projects';
-
-      toast.show(titleize(message), {
-        color: 'error',
-      });
-    }
-
-    if (data.value) {
-      projects.value = data.value;
-    }
-  };
-
-  onMounted(() => {
-    nextTick(async () => {
-      await handleRequest();
-    });
-  });
-
-  watch(refreshKey, async () => {
-    await handleRequest();
-  });
 </script>
 
 <template>
