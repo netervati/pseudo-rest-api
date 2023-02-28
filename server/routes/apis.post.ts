@@ -4,30 +4,56 @@ import { PostApiValidation } from '../validations';
 import { ApiRepository, ProjectKeyRepository } from '../repositories';
 import { Database } from '~~/types/supabase';
 
-type ApiBodyParams = {
+type BodyParams = {
   description?: string;
+  projectApiKey: string;
   urlPath: string;
 };
 
 export default defineEventHandler(async (event) => {
-  await validate(event);
+  const payload = {
+    body: await readBody<BodyParams>(event),
+    event,
+  };
 
-  const response = await handleRequest(event);
+  validate(payload);
+
+  const projectKey = await getProjectKey(payload);
+  const api = await insertApi(payload, projectKey);
 
   return {
-    attributes: response,
+    attributes: api,
   };
 });
 
-async function handleRequest(
-  event: H3Event
-): RequestResponse<Database['public']['Tables']['apis']['Row']> {
-  const userId = event.context.auth.user.id;
-  const { description, projectApiKey, urlPath } = await readBody(event);
+type Payload = {
+  body: BodyParams;
+  event: H3Event;
+};
 
+function validate({ event, body }: Payload): void | never {
+  if (event.context.auth.error) {
+    throw event.context.auth.error;
+  }
+
+  const error = new PostApiValidation(body).validate();
+
+  if (error) {
+    throw error;
+  }
+}
+
+type ProjectKey = Database['public']['Tables']['project_keys']['Row'] & {
+  projects: Database['public']['Tables']['projects']['Row'];
+};
+
+async function getProjectKey({
+  body,
+  event,
+}: Payload): Promise<ProjectKey | never> {
   const projectKeys = await new ProjectKeyRepository(event).get(
     {
-      api_key: projectApiKey,
+      api_key: body.projectApiKey,
     },
     '*, projects(*)'
   );
@@ -36,12 +62,21 @@ async function handleRequest(
     throw projectKeys.error;
   }
 
+  return projectKeys.data![0];
+}
+
+type Api = Database['public']['Tables']['apis']['Row'];
+
+async function insertApi(
+  { body, event }: Payload,
+  projectKey: ProjectKey
+): Promise<Api | never> {
   const apis = await new ApiRepository(event).insert({
     id: uuidv4(),
-    description,
-    project_id: projectKeys.data![0].projects.id,
-    url_path: urlPath,
-    user_id: userId,
+    description: body.description,
+    project_id: projectKey.projects.id,
+    url_path: body.urlPath,
+    user_id: event.context.auth.user.id,
   });
 
   if (apis.error instanceof Error) {
@@ -49,17 +84,4 @@ async function handleRequest(
   }
 
   return apis.data![0];
-}
-
-async function validate(event: H3Event): Promise<void | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
-  const body = await readBody<ApiBodyParams>(event);
-  const error = new PostApiValidation(body).validate();
-
-  if (error) {
-    throw error;
-  }
 }
