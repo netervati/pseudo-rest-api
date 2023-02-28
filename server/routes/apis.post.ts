@@ -2,7 +2,7 @@ import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PostApiValidation } from '../validations';
 import { ApiRepository, ProjectKeyRepository } from '../repositories';
-import { Database } from '~~/types/supabase';
+import { Api, ProjectKey, Project } from '~~/types/models';
 
 type BodyParams = {
   description?: string;
@@ -10,14 +10,14 @@ type BodyParams = {
   urlPath: string;
 };
 
-type ProjectKey = Database['public']['Tables']['project_keys']['Row'] & {
-  projects: Database['public']['Tables']['projects']['Row'];
+type ProjectKeyWithProject = ProjectKey & {
+  projects: Project;
 };
 
 type Payload = {
   body: BodyParams;
   event: H3Event;
-  projectKey?: ProjectKey;
+  projectKey?: ProjectKeyWithProject;
 };
 
 export default defineEventHandler(async (event) => {
@@ -50,7 +50,7 @@ function validate({ body, event }: Payload): void | never {
 async function getProjectKey({
   body,
   event,
-}: Payload): Promise<ProjectKey | never> {
+}: Payload): Promise<ProjectKeyWithProject | never> {
   const projectKeys = await new ProjectKeyRepository(event).get(
     {
       api_key: body.projectApiKey,
@@ -64,8 +64,6 @@ async function getProjectKey({
 
   return projectKeys.data![0];
 }
-
-type Api = Database['public']['Tables']['apis']['Row'];
 
 async function insertApi({
   body,
