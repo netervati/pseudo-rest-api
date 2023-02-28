@@ -10,28 +10,32 @@ type BodyParams = {
   urlPath: string;
 };
 
+type ProjectKey = Database['public']['Tables']['project_keys']['Row'] & {
+  projects: Database['public']['Tables']['projects']['Row'];
+};
+
+type Payload = {
+  body: BodyParams;
+  event: H3Event;
+  projectKey?: ProjectKey;
+};
+
 export default defineEventHandler(async (event) => {
-  const payload = {
+  const payload: Payload = {
     body: await readBody<BodyParams>(event),
     event,
   };
 
   validate(payload);
 
-  const projectKey = await getProjectKey(payload);
-  const api = await insertApi(payload, projectKey);
+  payload.projectKey = await getProjectKey(payload);
 
   return {
-    attributes: api,
+    attributes: await insertApi(payload),
   };
 });
 
-type Payload = {
-  body: BodyParams;
-  event: H3Event;
-};
-
-function validate({ event, body }: Payload): void | never {
+function validate({ body, event }: Payload): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
@@ -42,10 +46,6 @@ function validate({ event, body }: Payload): void | never {
     throw error;
   }
 }
-
-type ProjectKey = Database['public']['Tables']['project_keys']['Row'] & {
-  projects: Database['public']['Tables']['projects']['Row'];
-};
 
 async function getProjectKey({
   body,
@@ -67,14 +67,15 @@ async function getProjectKey({
 
 type Api = Database['public']['Tables']['apis']['Row'];
 
-async function insertApi(
-  { body, event }: Payload,
-  projectKey: ProjectKey
-): Promise<Api | never> {
+async function insertApi({
+  body,
+  event,
+  projectKey,
+}: Payload): Promise<Api | never> {
   const apis = await new ApiRepository(event).insert({
     id: uuidv4(),
     description: body.description,
-    project_id: projectKey.projects.id,
+    project_id: projectKey!.projects.id,
     url_path: body.urlPath,
     user_id: event.context.auth.user.id,
   });
