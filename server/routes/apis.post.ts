@@ -26,9 +26,7 @@ export default defineEventHandler(async (event) => {
 
   payload.projectKey = await getProjectKey(payload);
 
-  return {
-    attributes: await insertApi(payload),
-  };
+  return await insertApi(payload);
 });
 
 function validate({ body, event }: Payload): void | never {

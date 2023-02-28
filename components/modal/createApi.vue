@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import { Api } from '~~/types/models';
+
   const emit = defineEmits<{
     (e: 'close'): void;
     (e: 'success', key: string): void;
@@ -59,14 +61,10 @@
     form.urlPathError = '';
   };
 
-  type ProjectKey = {
-    secretKey: string;
-  };
-
   const handleProceed = async () => {
     form.loading = true;
 
-    const { data, error } = await useFetch<APIBody<ProjectKey>>('/apis', {
+    const { data, error } = await useFetch<Api>('/apis', {
       method: 'post',
       body: {
         description: form.description.trim(),
@@ -78,9 +76,9 @@
     form.loading = false;
 
     if (error.value) {
-      const message = error.value.statusMessage;
+      const message = error.value.statusMessage ?? 'Failed to create api.';
 
-      toast.show(message ? titleize(message) : 'Failed to create api.', {
+      toast.show(titleize(message), {
         color: 'error',
       });
     } else {
