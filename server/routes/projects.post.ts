@@ -1,83 +1,85 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import shortuuid from 'short-uuid';
-import { authValidation, PostProjectValidation } from '../validations';
-import { BaseError, FailedDatabaseQueryError } from '../errors';
+import { PostProjectValidation } from '../validations';
 import { ProjectKeyRepository, ProjectRepository } from '../repositories';
+import { Project } from '~~/types/models';
 
-type ProjectBodyParams = {
+type BodyParams = {
   name: string;
   description?: string;
 };
 
+type Payload = {
+  body: BodyParams;
+  event: H3Event;
+  project?: Project;
+};
+
 export default defineEventHandler(async (event) => {
-  const validateError = await validate(event);
+  const payload: Payload = {
+    body: await readBody<BodyParams>(event),
+    event,
+  };
 
-  if (validateError) {
-    throw createError(validateError);
-  }
+  validate(payload);
 
-  const response = await handleRequest(event);
-
-  if (response instanceof BaseError) {
-    throw createError(response.serialize());
-  }
+  payload.project = await insertProject(payload);
 
   return {
     attributes: {
-      secretKey: response,
+      secretKey: await insertProjectKey(payload),
     },
   };
 });
 
-async function handleRequest(
-  event: H3Event
-): Promise<Result<string, APIError>> {
-  const userId = event.context.auth.user.id;
-  const { name, description } = await readBody(event);
-
-  const { data: projects, error: projectError } = await new ProjectRepository(
-    event
-  ).insert({
-    id: uuidv4(),
-    name,
-    description,
-    user_id: userId,
-  });
-
-  if (projectError || projects.length === 0) {
-    return new FailedDatabaseQueryError('Failed to create project.');
+function validate({ body, event }: Payload): void | never {
+  if (event.context.auth.error) {
+    throw event.context.auth.error;
   }
 
+  const error = new PostProjectValidation(body).validate();
+
+  if (error) {
+    throw error;
+  }
+}
+
+async function insertProject({
+  body,
+  event,
+}: Payload): Promise<Project | never> {
+  const projects = await new ProjectRepository(event).insert({
+    id: uuidv4(),
+    name: body.name,
+    description: body.description,
+    user_id: event.context.auth.user.id,
+  });
+
+  if (projects.error instanceof Error) {
+    throw projects.error;
+  }
+
+  return projects.data![0];
+}
+
+async function insertProjectKey({
+  event,
+  project,
+}: Payload): Promise<string | never> {
   const secretKey = generateSecretKey();
 
-  const { data: projectKeys, error: projectKeysError } =
-    await new ProjectKeyRepository(event).insert({
-      id: uuidv4(),
-      api_key: shortuuid.generate(),
-      secret_key: await hashPassword(secretKey),
-      project_id: projects[0].id,
-      user_id: userId,
-    });
+  const projectKeys = await new ProjectKeyRepository(event).insert({
+    id: uuidv4(),
+    api_key: shortuuid.generate(),
+    secret_key: await hashPassword(secretKey),
+    project_id: project!.id,
+    user_id: event.context.auth.user.id,
+  });
 
-  if (projectKeysError || projectKeys.length === 0) {
-    return new FailedDatabaseQueryError('Failed to generate project keys.');
+  if (projectKeys.error instanceof Error) {
+    throw projectKeys.error;
   }
 
   return secretKey;
-}
-
-async function validate(event: H3Event): Promise<ValidationResult> {
-  let error = authValidation(event);
-
-  if (error) {
-    return error;
-  }
-
-  const body = await readBody<ProjectBodyParams>(event);
-  error = new PostProjectValidation(body).validate();
-
-  if (error) {
-    return error;
-  }
 }

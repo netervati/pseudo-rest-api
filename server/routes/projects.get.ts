@@ -1,49 +1,31 @@
 import { H3Event } from 'h3';
-import { authValidation } from '../validations';
-import { BaseError, FailedDatabaseQueryError } from '../errors';
 import ProjectRepository from '../repositories/projectRepository';
+import { Project } from '~~/types/models';
 
 export default defineEventHandler(async (event) => {
-  const validateError = validate(event);
-
-  if (validateError) {
-    throw createError(validateError);
+  if (event.context.auth.error) {
+    throw event.context.auth.error;
   }
 
-  const response = await handleRequest(event);
-
-  if (response instanceof BaseError) {
-    throw createError(response.serialize());
-  }
+  const projects = await getProjects(event);
 
   return {
-    data: response,
+    data: projects.map((project) => ({ attributes: { ...project } })),
   };
 });
 
-async function handleRequest(
-  event: H3Event
-): Promise<Result<string, APIError>> {
-  const { data: projects, error: projectError } = await new ProjectRepository(
-    event
-  ).getWithProjectKey(
+async function getProjects(event: H3Event): Promise<Project[] | never> {
+  const projects = await new ProjectRepository(event).get(
     {
+      'project_keys.is_deleted': false,
       is_deleted: false,
     },
-    'name, description'
+    'name, description, project_keys(api_key)'
   );
 
-  if (projectError) {
-    return new FailedDatabaseQueryError('Failed to retrieve projects.');
+  if (projects.error instanceof Error) {
+    throw projects.error;
   }
 
-  return projects.map((project) => ({ attributes: { ...project } }));
-}
-
-function validate(event: H3Event): ValidationResult {
-  const error = authValidation(event);
-
-  if (error) {
-    return error;
-  }
+  return projects.data!;
 }

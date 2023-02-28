@@ -1,4 +1,4 @@
-import { InvalidParameterError } from '../errors';
+import { NuxtError } from 'nuxt/dist/app/composables';
 import { validateByRules } from './helpers';
 
 type StructureRules = {
@@ -9,17 +9,28 @@ type StructureRules = {
 
 type BodyParams = { [key: string]: StructureRules };
 
+function formatError(message: string, key: string): NuxtError {
+  return createError({
+    statusCode: HTTP_STATUS_BAD_REQUEST,
+    statusMessage: message.replace('*', key),
+  });
+}
+
 // TODO: Revisit and follow new validation format.
 export function postResourceModelValidation({
   structure,
 }: BodyParams): undefined | ValidationResult {
   for (const [key, value] of Object.entries(structure)) {
-    if (validateByRules('required,object', value)) {
-      return new InvalidParameterError(key).serialize();
+    let error = validateByRules('required,object', value);
+
+    if (error) {
+      return formatError(error, key);
     }
 
-    if (validateByRules('required,string', value.type)) {
-      return new InvalidParameterError(`type of ${key}`).serialize();
+    error = validateByRules('required,string', value.type);
+
+    if (error) {
+      return formatError(error, `type of ${key}`);
     }
   }
 }

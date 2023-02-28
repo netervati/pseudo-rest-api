@@ -1,77 +1,82 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
-import { authValidation, PostApiValidation } from '../validations';
-import { BaseError, FailedDatabaseQueryError } from '../errors';
+import { PostApiValidation } from '../validations';
 import { ApiRepository, ProjectKeyRepository } from '../repositories';
+import { Api, ProjectKeyWithProject } from '~~/types/models';
 
-type ApiBodyParams = {
+type BodyParams = {
   description?: string;
+  projectApiKey: string;
   urlPath: string;
 };
 
+type Payload = {
+  body: BodyParams;
+  event: H3Event;
+  projectKey?: ProjectKeyWithProject;
+};
+
 export default defineEventHandler(async (event) => {
-  const validateError = await validate(event);
+  const payload: Payload = {
+    body: await readBody<BodyParams>(event),
+    event,
+  };
 
-  if (validateError) {
-    throw createError(validateError);
-  }
+  validate(payload);
 
-  const response = await handleRequest(event);
-
-  if (response instanceof BaseError) {
-    throw createError(response.serialize());
-  }
+  payload.projectKey = await getProjectKey(payload);
 
   return {
-    attributes: response,
+    attributes: await insertApi(payload),
   };
 });
 
-async function handleRequest(
-  event: H3Event
-): Promise<Result<string, APIError>> {
-  const userId = event.context.auth.user.id;
-  const { description, projectApiKey, urlPath } = await readBody(event);
-
-  const { data: projectKeys, error: projectKeyError } =
-    await new ProjectKeyRepository(event).getWithProject({
-      api_key: projectApiKey,
-    });
-
-  if (projectKeyError || projectKeys.length === 0) {
-    return new FailedDatabaseQueryError(
-      'Failed to retrieve project key with project.'
-    );
+function validate({ body, event }: Payload): void | never {
+  if (event.context.auth.error) {
+    throw event.context.auth.error;
   }
 
-  const { data: apis, error: apiError } = await new ApiRepository(event).insert(
-    {
-      id: uuidv4(),
-      description,
-      project_id: projectKeys[0].projects.id,
-      url_path: urlPath,
-      user_id: userId,
-    }
-  );
+  const error = new PostApiValidation(body).validate();
 
-  if (apiError || apis.length === 0) {
-    return new FailedDatabaseQueryError('Failed to create api endpoint.');
+  if (error) {
+    throw error;
   }
-
-  return apis[0];
 }
 
-async function validate(event: H3Event): Promise<ValidationResult> {
-  let error = authValidation(event);
+async function getProjectKey({
+  body,
+  event,
+}: Payload): Promise<ProjectKeyWithProject | never> {
+  const projectKeys = await new ProjectKeyRepository(event).get(
+    {
+      api_key: body.projectApiKey,
+    },
+    '*, projects(*)'
+  );
 
-  if (error) {
-    return error;
+  if (projectKeys.error instanceof Error) {
+    throw projectKeys.error;
   }
 
-  const body = await readBody<ApiBodyParams>(event);
-  error = new PostApiValidation(body).validate();
+  return projectKeys.data![0];
+}
 
-  if (error) {
-    return error;
+async function insertApi({
+  body,
+  event,
+  projectKey,
+}: Payload): Promise<Api | never> {
+  const apis = await new ApiRepository(event).insert({
+    id: uuidv4(),
+    description: body.description,
+    project_id: projectKey!.projects.id,
+    url_path: body.urlPath,
+    user_id: event.context.auth.user.id,
+  });
+
+  if (apis.error instanceof Error) {
+    throw apis.error;
   }
+
+  return apis.data![0];
 }
