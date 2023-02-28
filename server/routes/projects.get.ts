@@ -7,11 +7,7 @@ export default defineEventHandler(async (event) => {
     throw event.context.auth.error;
   }
 
-  const projects = await getProjects(event);
-
-  return {
-    data: projects.map((project) => ({ attributes: { ...project } })),
-  };
+  return await getProjects(event);
 });
 
 async function getProjects(event: H3Event): Promise<Project[] | never> {

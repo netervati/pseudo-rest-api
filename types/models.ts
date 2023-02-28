@@ -9,3 +9,7 @@ export type ResourceModel =
 export type ProjectKeyWithProject = ProjectKey & {
   projects: Project;
 };
+
+export type ProjectWithProjectKey = Project & {
+  project_keys: ProjectKey[];
+};
