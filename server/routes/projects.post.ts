@@ -27,9 +27,7 @@ export default defineEventHandler(async (event) => {
   payload.project = await insertProject(payload);
 
   return {
-    attributes: {
-      secretKey: await insertProjectKey(payload),
-    },
+    secret_key: await insertProjectKey(payload),
   };
 });
 
