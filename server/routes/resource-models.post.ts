@@ -2,7 +2,7 @@ import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { postResourceModelValidation } from '../validations';
 import { ProjectKeyRepository, ResourceModelRepository } from '../repositories';
-import { Database } from '~~/types/supabase';
+import { ProjectKeyWithProject, ResourceModel } from '~~/types/models';
 
 type BodyParams = {
   projectApiKey: string;
@@ -13,53 +13,32 @@ type BodyParams = {
   };
 };
 
-export default defineEventHandler(async (event) => {
-  await validate(event);
+type Payload = {
+  body: BodyParams;
+  event: H3Event;
+  projectKey?: ProjectKeyWithProject;
+};
 
-  const response = await handleRequest(event);
+export default defineEventHandler(async (event) => {
+  const payload: Payload = {
+    body: await readBody<BodyParams>(event),
+    event,
+  };
+
+  validate(payload);
+
+  payload.projectKey = await getProjectKey(payload);
 
   return {
-    attributes: response,
+    attributes: await insertResourceModel(payload),
   };
 });
 
-async function handleRequest(
-  event: H3Event
-): RequestResponse<Database['public']['Tables']['resource_models']['Row']> {
-  const userId = event.context.auth.user.id;
-  const { projectApiKey, structure } = await readBody<BodyParams>(event);
-
-  const projectKeys = await new ProjectKeyRepository(event).get(
-    {
-      api_key: projectApiKey,
-    },
-    '*, projects(*)'
-  );
-
-  if (projectKeys.error instanceof Error) {
-    return projectKeys.error;
-  }
-
-  const resourceModels = await new ResourceModelRepository(event).insert({
-    id: uuidv4(),
-    structure,
-    project_id: projectKeys.data![0].projects.id,
-    user_id: userId,
-  });
-
-  if (resourceModels.error instanceof Error) {
-    return resourceModels.error;
-  }
-
-  return resourceModels.data![0];
-}
-
-async function validate(event: H3Event): Promise<void | never> {
+function validate({ body, event }: Payload): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
-  const body: BodyParams = await readBody(event);
   const error = postResourceModelValidation({
     structure: body.structure,
   });
@@ -67,4 +46,41 @@ async function validate(event: H3Event): Promise<void | never> {
   if (error) {
     throw error;
   }
+}
+
+async function getProjectKey({
+  body,
+  event,
+}: Payload): Promise<ProjectKeyWithProject | never> {
+  const projectKeys = await new ProjectKeyRepository(event).get(
+    {
+      api_key: body.projectApiKey,
+    },
+    '*, projects(*)'
+  );
+
+  if (projectKeys.error instanceof Error) {
+    throw projectKeys.error;
+  }
+
+  return projectKeys.data![0];
+}
+
+async function insertResourceModel({
+  body,
+  event,
+  projectKey,
+}: Payload): Promise<ResourceModel | never> {
+  const resourceModels = await new ResourceModelRepository(event).insert({
+    id: uuidv4(),
+    structure: body.structure,
+    project_id: projectKey!.projects.id,
+    user_id: event.context.auth.user.id,
+  });
+
+  if (resourceModels.error instanceof Error) {
+    throw resourceModels.error;
+  }
+
+  return resourceModels.data![0];
 }

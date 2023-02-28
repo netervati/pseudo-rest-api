@@ -2,16 +2,12 @@ import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PostApiValidation } from '../validations';
 import { ApiRepository, ProjectKeyRepository } from '../repositories';
-import { Api, ProjectKey, Project } from '~~/types/models';
+import { Api, ProjectKeyWithProject } from '~~/types/models';
 
 type BodyParams = {
   description?: string;
   projectApiKey: string;
   urlPath: string;
-};
-
-type ProjectKeyWithProject = ProjectKey & {
-  projects: Project;
 };
 
 type Payload = {

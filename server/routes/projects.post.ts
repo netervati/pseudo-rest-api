@@ -3,65 +3,83 @@ import { v4 as uuidv4 } from 'uuid';
 import shortuuid from 'short-uuid';
 import { PostProjectValidation } from '../validations';
 import { ProjectKeyRepository, ProjectRepository } from '../repositories';
+import { Project } from '~~/types/models';
 
-type ProjectBodyParams = {
+type BodyParams = {
   name: string;
   description?: string;
 };
 
-export default defineEventHandler(async (event) => {
-  await validate(event);
+type Payload = {
+  body: BodyParams;
+  event: H3Event;
+  project?: Project;
+};
 
-  const response = await handleRequest(event);
+export default defineEventHandler(async (event) => {
+  const payload: Payload = {
+    body: await readBody<BodyParams>(event),
+    event,
+  };
+
+  validate(payload);
+
+  payload.project = await insertProject(payload);
 
   return {
     attributes: {
-      secretKey: response,
+      secretKey: await insertProjectKey(payload),
     },
   };
 });
 
-async function handleRequest(event: H3Event): RequestResponse<string> {
-  const userId = event.context.auth.user.id;
-  const { name, description } = await readBody(event);
+function validate({ body, event }: Payload): void | never {
+  if (event.context.auth.error) {
+    throw event.context.auth.error;
+  }
 
+  const error = new PostProjectValidation(body).validate();
+
+  if (error) {
+    throw error;
+  }
+}
+
+async function insertProject({
+  body,
+  event,
+}: Payload): Promise<Project | never> {
   const projects = await new ProjectRepository(event).insert({
     id: uuidv4(),
-    name,
-    description,
-    user_id: userId,
+    name: body.name,
+    description: body.description,
+    user_id: event.context.auth.user.id,
   });
 
   if (projects.error instanceof Error) {
-    return projects.error;
+    throw projects.error;
   }
 
+  return projects.data![0];
+}
+
+async function insertProjectKey({
+  event,
+  project,
+}: Payload): Promise<string | never> {
   const secretKey = generateSecretKey();
 
   const projectKeys = await new ProjectKeyRepository(event).insert({
     id: uuidv4(),
     api_key: shortuuid.generate(),
     secret_key: await hashPassword(secretKey),
-    project_id: projects.data![0].id,
-    user_id: userId,
+    project_id: project!.id,
+    user_id: event.context.auth.user.id,
   });
 
   if (projectKeys.error instanceof Error) {
-    return projectKeys.error;
+    throw projectKeys.error;
   }
 
   return secretKey;
-}
-
-async function validate(event: H3Event): Promise<void | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
-  const body = await readBody<ProjectBodyParams>(event);
-  const error = new PostProjectValidation(body).validate();
-
-  if (error) {
-    throw error;
-  }
 }

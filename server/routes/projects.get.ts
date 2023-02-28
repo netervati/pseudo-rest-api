@@ -1,26 +1,20 @@
 import { H3Event } from 'h3';
 import ProjectRepository from '../repositories/projectRepository';
-import { Database } from '~~/types/supabase';
+import { Project } from '~~/types/models';
 
 export default defineEventHandler(async (event) => {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
-  const response = await handleRequest(event);
+  const projects = await getProjects(event);
 
   return {
-    data: response,
+    data: projects.map((project) => ({ attributes: { ...project } })),
   };
 });
 
-type SuccessfulRequest = {
-  attributes: Database['public']['Tables']['projects']['Row'];
-}[];
-
-async function handleRequest(
-  event: H3Event
-): RequestResponse<SuccessfulRequest> {
+async function getProjects(event: H3Event): Promise<Project[] | never> {
   const projects = await new ProjectRepository(event).get(
     {
       'project_keys.is_deleted': false,
@@ -33,5 +27,5 @@ async function handleRequest(
     throw projects.error;
   }
 
-  return projects.data!.map((project) => ({ attributes: { ...project } }));
+  return projects.data!;
 }
