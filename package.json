@@ -13,6 +13,7 @@
     "@nuxtjs/eslint-config": "^12.0.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/supabase": "^0.3.1",
+    "@pinia/nuxt": "^0.4.7",
     "@types/lodash": "^4.14.191",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
@@ -28,6 +29,7 @@
     "eslint-plugin-vue": "^9.9.0",
     "lodash": "^4.17.21",
     "nuxt": "^3.1.2",
+    "pinia": "^2.0.32",
     "postcss": "^8.4.21",
     "prettier": "^2.8.3",
     "short-uuid": "^4.2.2",
@@ -37,9 +39,7 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.16",
-    "@pinia/nuxt": "^0.4.7",
     "@types/node": "^18.11.18",
-    "pinia": "^2.0.32",
     "supabase": "^1.38.2"
   },
   "overrides": {
