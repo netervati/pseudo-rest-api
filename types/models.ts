@@ -11,5 +11,5 @@ export type ProjectKeyWithProject = ProjectKey & {
 };
 
 export type ProjectWithProjectKey = Project & {
-  project_keys: ProjectKey;
+  project_keys: ProjectKey[];
 };
