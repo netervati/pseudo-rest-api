@@ -54,7 +54,7 @@ export default function (): UseToast {
   });
 
   const show = (content: string, options: ToastProps) => {
-    deps.content = content;
+    deps.content = titleize(content);
     deps.props = options;
     display.value = true;
   };
