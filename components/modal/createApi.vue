@@ -76,9 +76,7 @@
     form.loading = false;
 
     if (error.value) {
-      const message = error.value.statusMessage ?? 'Failed to create api.';
-
-      toast.show(titleize(message), {
+      toast.show(error.value.statusMessage ?? 'Failed to create api.', {
         color: 'error',
       });
     } else {
