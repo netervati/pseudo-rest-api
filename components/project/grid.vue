@@ -1,16 +1,12 @@
 <script lang="ts" setup>
-  import { Database } from '~~/types/supabase';
+  import { ProjectWithProjectKey } from '~~/types/models';
 
   const props = defineProps<{
     refreshKey: number;
   }>();
 
-  type Project = Database['public']['Tables']['projects']['Row'] & {
-    project_keys: Database['public']['Tables']['project_keys']['Row'][];
-  };
-
   const { refreshKey } = toRefs(props);
-  const projects = ref<APIBody<Project>[] | []>([]);
+  const projects = ref<ProjectWithProjectKey[]>([]);
   const toast = useToast();
 
   const handleOpen = (urlPath: string) => {
@@ -18,20 +14,24 @@
   };
 
   const handleRequest = async () => {
-    const { data, error } = await useFetch<APIBodyArray<Project>>('/projects', {
-      method: 'get',
-    });
+    const { data, error } = await useFetch<ProjectWithProjectKey[]>(
+      '/projects',
+      {
+        method: 'get',
+      }
+    );
 
     if (error.value) {
-      const message = error.value.statusMessage;
+      const message =
+        error.value.statusMessage ?? 'Failed to retrieve projects';
 
-      toast.show(message ? titleize(message) : 'Failed to retrieve projects', {
+      toast.show(titleize(message), {
         color: 'error',
       });
     }
 
     if (data.value) {
-      projects.value = data.value.data;
+      projects.value = data.value;
     }
   };
 
@@ -50,12 +50,12 @@
   <section class="gap-4 grid grid-cols-1 md:grid-cols-2 mt-4">
     <article
       v-for="project in projects"
-      :key="project.attributes.id"
+      :key="project.id"
       class="card border border-gray-300 hover:bg-gray-300"
-      @click="handleOpen(project.attributes.project_keys[0].api_key)"
+      @click="handleOpen(project.project_keys[0].api_key)"
     >
       <div class="card-body cursor-pointer">
-        <h3 class="font-bold">{{ project.attributes.name }}</h3>
+        <h3 class="font-bold">{{ project.name }}</h3>
       </div>
     </article>
   </section>
