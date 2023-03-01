@@ -76,11 +76,9 @@
     form.loading = false;
 
     if (error.value) {
-      toast.show(error.value.statusMessage ?? 'Failed to create api.', {
-        color: 'error',
-      });
+      toast.error(error.value.statusMessage ?? 'Failed to create api.');
     } else {
-      toast.show('Created an api endpoint!', { color: 'success' });
+      toast.success('Created an api endpoint!');
     }
 
     if (data.value) {

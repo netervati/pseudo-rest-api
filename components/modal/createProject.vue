@@ -62,11 +62,9 @@
     form.loading = false;
 
     if (error.value) {
-      toast.show(error.value.statusMessage ?? 'Failed to create project.', {
-        color: 'error',
-      });
+      toast.error(error.value.statusMessage ?? 'Failed to create project.');
     } else {
-      toast.show('Created a project!', { color: 'success' });
+      toast.success('Created a project!');
     }
 
     if (data.value) {
