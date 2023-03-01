@@ -11,12 +11,6 @@ export default defineStore('projects', (): ProjectStore => {
   const list = ref<ProjectWithProjectKey[]>([]);
   const toast = useToast();
 
-  const popError = (message: string): void => {
-    toast.show(message, {
-      color: 'error',
-    });
-  };
-
   /**
    * A function for fetching projects from the server.
    */
@@ -27,7 +21,7 @@ export default defineStore('projects', (): ProjectStore => {
         list.value = response._data;
       },
     }).catch((error) => {
-      popError(error.statusMessage);
+      toast.error(error.statusMessage);
     });
   };
 
