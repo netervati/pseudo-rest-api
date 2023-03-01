@@ -2,14 +2,6 @@ import { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { ProjectWithProjectKey } from '~~/types/models';
 
-const toast = useToast();
-
-function popError(message: string): void {
-  toast.show(message, {
-    color: 'error',
-  });
-}
-
 type ProjectStore = {
   list: Ref<ProjectWithProjectKey[]>;
   fetch: () => Promise<void>;
@@ -17,6 +9,13 @@ type ProjectStore = {
 
 export default defineStore('projects', (): ProjectStore => {
   const list = ref<ProjectWithProjectKey[]>([]);
+  const toast = useToast();
+
+  const popError = (message: string): void => {
+    toast.show(message, {
+      color: 'error',
+    });
+  };
 
   /**
    * A function for fetching projects from the server.
