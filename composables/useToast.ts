@@ -16,7 +16,9 @@ type ToastProps = {
 };
 
 type UseToast = {
+  error: (content: string) => void;
   show: (content: string, options: ToastProps) => void;
+  success: (content: string) => void;
 };
 
 /**
@@ -53,11 +55,35 @@ export default function (): UseToast {
     }
   });
 
-  const show = (content: string, options: ToastProps) => {
-    deps.content = content;
+  /**
+   * Displays a configurable toast.
+   *
+   * @param content
+   * @param options
+   */
+  const show = (content: string, options: ToastProps): void => {
+    deps.content = titleize(content);
     deps.props = options;
     display.value = true;
   };
 
-  return { show };
+  /**
+   * A syntactic sugar for displaying toast
+   * with the color `error`.
+   * @param content
+   */
+  const error = (content: string): void => {
+    show(content, { color: 'error' });
+  };
+
+  /**
+   * A syntactic sugar for displaying toast
+   * with the color `success`.
+   * @param content
+   */
+  const success = (content: string): void => {
+    show(content, { color: 'success' });
+  };
+
+  return { error, show, success };
 }

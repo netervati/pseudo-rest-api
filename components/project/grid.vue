@@ -1,55 +1,29 @@
 <script lang="ts" setup>
-  import { ProjectWithProjectKey } from '~~/types/models';
+  import useProjectStore from '~~/stores/useProjectStore';
 
   const props = defineProps<{
-    refreshKey: number;
+    secretKey: string;
   }>();
 
-  const { refreshKey } = toRefs(props);
-  const projects = ref<ProjectWithProjectKey[]>([]);
-  const toast = useToast();
+  const { secretKey } = toRefs(props);
+  const projects = useProjectStore();
+  projects.fetch();
+
+  watchEffect(async () => {
+    if (secretKey.value) {
+      await projects.fetch();
+    }
+  });
 
   const handleOpen = (urlPath: string) => {
     navigateTo(`/project/${urlPath}/apis`);
   };
-
-  const handleRequest = async () => {
-    const { data, error } = await useFetch<ProjectWithProjectKey[]>(
-      '/projects',
-      {
-        method: 'get',
-      }
-    );
-
-    if (error.value) {
-      const message =
-        error.value.statusMessage ?? 'Failed to retrieve projects';
-
-      toast.show(titleize(message), {
-        color: 'error',
-      });
-    }
-
-    if (data.value) {
-      projects.value = data.value;
-    }
-  };
-
-  onMounted(() => {
-    nextTick(async () => {
-      await handleRequest();
-    });
-  });
-
-  watch(refreshKey, async () => {
-    await handleRequest();
-  });
 </script>
 
 <template>
   <section class="gap-4 grid grid-cols-1 md:grid-cols-2 mt-4">
     <article
-      v-for="project in projects"
+      v-for="project in projects.list"
       :key="project.id"
       class="card border border-gray-300 hover:bg-gray-300"
       @click="handleOpen(project.project_keys[0].api_key)"

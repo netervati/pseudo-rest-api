@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/supabase'],
+  modules: ['@nuxtjs/supabase', '@pinia/nuxt'],
   postcss: {
     plugins: {
       tailwindcss: {},

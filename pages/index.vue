@@ -29,7 +29,7 @@
         <input class="bg-emerald-300 input w-full" :value="secretKey" />
       </div>
     </article>
-    <ProjectGrid :refresh-key="refreshKey" />
+    <ProjectGrid :secret-key="secretKey" />
     <ClientOnly>
       <modal.component />
     </ClientOnly>
