@@ -4,6 +4,7 @@
   }>();
 
   type Props = {
+    isActive?: boolean;
     color?: '' | 'error' | 'ghost' | 'info' | 'success' | 'warning';
     disabled?: boolean;
     loading?: boolean;
@@ -12,6 +13,7 @@
   };
 
   const props = withDefaults(defineProps<Props>(), {
+    isActive: false,
     color: '',
     disabled: false,
     loading: false,
@@ -44,6 +46,7 @@
       [btnColor]: btnColor !== '',
       [btnSize]: btnSize !== '',
       loading: props.loading,
+      'btn-active': props.isActive,
     };
   });
 </script>
