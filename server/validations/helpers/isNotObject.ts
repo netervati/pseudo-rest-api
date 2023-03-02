@@ -13,5 +13,5 @@ export default function (value: ValidationValue): boolean {
     return false;
   }
 
-  return value.constructor === Object;
+  return value.constructor !== Object;
 }

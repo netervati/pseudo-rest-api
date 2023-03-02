@@ -2,4 +2,5 @@ export type ValidationValue =
   | string
   | boolean
   | number
-  | { [key: string]: ValidationValue };
+  | { [key: string]: ValidationValue }
+  | ValidationValue[];

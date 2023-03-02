@@ -13,5 +13,5 @@ export default function (value: ValidationValue): boolean {
     return false;
   }
 
-  return Array.isArray(value);
+  return !Array.isArray(value);
 }
