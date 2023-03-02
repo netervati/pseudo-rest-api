@@ -1,16 +1,17 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
-import { postResourceModelValidation } from '../validations';
+import { PostResourceModelValidation } from '../validations';
 import { ProjectKeyRepository, ResourceModelRepository } from '../repositories';
 import { ProjectKeyWithProject, ResourceModel } from '~~/types/models';
 
 type BodyParams = {
+  name: string;
   projectApiKey: string;
   structure: {
-    [key: string]: {
-      type: string;
-    };
-  };
+    default: string;
+    name: string;
+    type: string;
+  }[];
 };
 
 type Payload = {
@@ -37,9 +38,7 @@ function validate({ body, event }: Payload): void | never {
     throw event.context.auth.error;
   }
 
-  const error = postResourceModelValidation({
-    structure: body.structure,
-  });
+  const error = new PostResourceModelValidation(body).validate();
 
   if (error) {
     throw error;
@@ -69,9 +68,15 @@ async function insertResourceModel({
   event,
   projectKey,
 }: Payload): Promise<ResourceModel | never> {
+  const structure = body.structure.map((item) => ({
+    ...item,
+    id: uuidv4(),
+  }));
+
   const resourceModels = await new ResourceModelRepository(event).insert({
     id: uuidv4(),
-    structure: body.structure,
+    name: body.name,
+    structure,
     project_id: projectKey!.projects.id,
     user_id: event.context.auth.user.id,
   });
