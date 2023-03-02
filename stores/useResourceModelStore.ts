@@ -8,6 +8,7 @@ type ResourceDataType = {
 
 type BodyParams = {
   name: string;
+  projectApiKey: string;
   structure: {
     default: string;
     id: number;
