@@ -11,7 +11,7 @@
   const links = computed(() => {
     const base = [{ name: 'Home', icon: HomeIcon, to: '/' }];
 
-    if (route.params.urlpath !== null) {
+    if (route.path.includes('project') && route.params.urlpath !== null) {
       base.push(
         ...[
           {
@@ -22,7 +22,7 @@
           {
             name: 'Resources',
             icon: CircleStackIcon,
-            to: `/projects/${route.params.urlpath}/resources`,
+            to: `/project/${route.params.urlpath}/resources`,
           },
         ]
       );
