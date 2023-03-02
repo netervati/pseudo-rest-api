@@ -10,7 +10,7 @@
   projects.fetch();
 
   watchEffect(async () => {
-    if (secretKey.value) {
+    if (secretKey.value.trim() !== '') {
       await projects.fetch();
     }
   });
