@@ -11,7 +11,7 @@
   const links = computed(() => {
     const base = [{ name: 'Home', icon: HomeIcon, to: '/' }];
 
-    if (route.path.includes('apis') && route.params.urlpath !== null) {
+    if (route.params.urlpath !== null) {
       base.push(
         ...[
           {
