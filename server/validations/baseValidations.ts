@@ -6,9 +6,14 @@ export type ValidationParameters = {
   [key: string]: ValidationValue;
 };
 
-export type ValidationStrategies = { [key: string]: string };
+export type ValidationStrategies = {
+  [key: string]:
+    | string
+    | { rules: string; array?: string | { [key: string]: string } };
+};
 
 export class BaseValidation {
+  errors: SerializedError[] = [];
   parameters;
   strategies: ValidationStrategies = {};
 
@@ -16,10 +21,10 @@ export class BaseValidation {
     this.parameters = parameters;
   }
 
-  #serializeErrors(errors: SerializedError[]): NuxtError {
+  #serializeErrors(): NuxtError {
     const data: { statusMessage: string }[] = [];
 
-    errors.forEach(({ statusMessage }) => {
+    this.errors.forEach(({ statusMessage }) => {
       data.push({ statusMessage });
     });
 
@@ -30,22 +35,48 @@ export class BaseValidation {
     });
   }
 
+  #evaluate(key: string, params: ValidationParameters, rules: string) {
+    const result = validateByRules(rules, params[key]);
+
+    if (typeof result === 'string') {
+      this.errors.push({
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        statusMessage: result.replace('*', key),
+      });
+    }
+  }
+
   validate(): ValidationResult {
-    const errors = [];
-
     for (const [key, value] of Object.entries(this.strategies)) {
-      const result = validateByRules(value, this.parameters[key]);
+      if (typeof value === 'string') {
+        this.#evaluate(key, this.parameters, value);
 
-      if (typeof result === 'string') {
-        errors.push({
-          statusCode: HTTP_STATUS_BAD_REQUEST,
-          statusMessage: result.replace('*', key),
-        });
+        continue;
+      }
+
+      if (value.constructor !== Object) {
+        continue;
+      }
+
+      this.#evaluate(key, this.parameters, value.rules);
+
+      if (
+        value.array?.constructor !== Object ||
+        !Array.isArray(this.parameters[key])
+      ) {
+        continue;
+      }
+
+      // @ts-ignore
+      for (const el of this.parameters[key]) {
+        for (const [keyB, valueB] of Object.entries(value.array)) {
+          this.#evaluate(keyB, el, valueB);
+        }
       }
     }
 
-    if (errors.length > 0) {
-      return this.#serializeErrors(errors);
+    if (this.errors.length > 0) {
+      return this.#serializeErrors();
     }
   }
 }
