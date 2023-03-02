@@ -106,34 +106,11 @@
         placeholder="Enter project description"
       />
     </section>
-    <section class="mt-10">
-      <Button
-        v-if="!form.showConfirm"
-        class="float-right"
-        color="success"
-        size="sm"
-        @click="handleSave"
-      >
-        Save
-      </Button>
-      <Button
-        v-if="form.showConfirm"
-        :disabled="form.loading"
-        size="sm"
-        @click="handleCancel"
-      >
-        Cancel
-      </Button>
-      <Button
-        v-if="form.showConfirm"
-        :loading="form.loading"
-        class="float-right"
-        color="success"
-        size="sm"
-        @click="handleProceed"
-      >
-        Proceed
-      </Button>
-    </section>
+    <ModalFooter
+      :deps="{ showConfirm: form.showConfirm, loading: form.loading }"
+      @cancel="handleCancel"
+      @proceed="handleProceed"
+      @save="handleSave"
+    />
   </ModalBase>
 </template>
