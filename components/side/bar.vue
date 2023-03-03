@@ -1,15 +1,30 @@
 <script lang="ts" setup>
-  import { HomeIcon, ServerStackIcon } from '@heroicons/vue/24/outline';
+  import {
+    CircleStackIcon,
+    HomeIcon,
+    ServerStackIcon,
+  } from '@heroicons/vue/24/outline';
 
   const iconClass = 'h-4 w-4';
   const route = useRoute();
 
   const links = computed(() => {
-    const base = [{ name: 'Home', to: '/' }];
+    const base = [{ name: 'Home', icon: HomeIcon, to: '/' }];
 
-    if (route.path.includes('apis') && route.params.urlpath !== null) {
+    if (route.path.includes('project') && route.params.urlpath !== null) {
       base.push(
-        ...[{ name: 'APIs', to: `/project/${route.params.urlpath}/apis` }]
+        ...[
+          {
+            name: 'APIs',
+            icon: ServerStackIcon,
+            to: `/project/${route.params.urlpath}/apis`,
+          },
+          {
+            name: 'Resources',
+            icon: CircleStackIcon,
+            to: `/project/${route.params.urlpath}/resources`,
+          },
+        ]
       );
     }
 
@@ -27,9 +42,12 @@
       class="mr-auto ml-auto mt-2 tooltip tooltip-right"
       :data-tip="link.name"
     >
-      <Button color="ghost" @click="navigateTo(link.to)">
-        <HomeIcon v-if="link.name === 'Home'" :class="iconClass" />
-        <ServerStackIcon v-if="link.name === 'APIs'" :class="iconClass" />
+      <Button
+        color="ghost"
+        :is-active="route.path === link.to"
+        @click="navigateTo(link.to)"
+      >
+        <component :is="link.icon" :class="iconClass" />
       </Button>
     </div>
   </div>

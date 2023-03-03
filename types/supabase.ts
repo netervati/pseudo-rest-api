@@ -143,6 +143,7 @@ export interface Database {
           deleted_at: string | null
           id: string
           is_deleted: boolean
+          name: string
           project_id: string
           structure: Json
           updated_at: string
@@ -153,6 +154,7 @@ export interface Database {
           deleted_at?: string | null
           id: string
           is_deleted?: boolean
+          name: string
           project_id: string
           structure: Json
           updated_at?: string
@@ -163,6 +165,7 @@ export interface Database {
           deleted_at?: string | null
           id?: string
           is_deleted?: boolean
+          name?: string
           project_id?: string
           structure?: Json
           updated_at?: string

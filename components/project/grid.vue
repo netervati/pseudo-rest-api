@@ -7,10 +7,15 @@
 
   const { secretKey } = toRefs(props);
   const projects = useProjectStore();
-  projects.fetch();
+
+  onMounted(async () => {
+    if (projects.list.length === 0) {
+      await projects.fetch();
+    }
+  });
 
   watchEffect(async () => {
-    if (secretKey.value) {
+    if (secretKey.value.trim() !== '') {
       await projects.fetch();
     }
   });
