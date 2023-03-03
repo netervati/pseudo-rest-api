@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
   const emit = defineEmits<{
@@ -10,11 +11,12 @@
     id: string;
   }>();
 
+  const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 
   onMounted(async () => {
-    if (resourceModel.types.length === 0) {
-      await resourceModel.fetchTypes();
+    if (resourceDataType.list.length === 0) {
+      await resourceDataType.fetch();
     }
   });
 
@@ -30,13 +32,13 @@
 
   const dataTypes = (name: string) => {
     if (name === 'id') {
-      return resourceModel.types.filter(
+      return resourceDataType.list.filter(
         (type) =>
           type.value === 'data_type_number' || type.value === 'data_type_uuid'
       );
     }
 
-    return resourceModel.types;
+    return resourceDataType.list;
   };
 
   const isDefaultAllowed = (structure: { name: string; type: string }) => {
