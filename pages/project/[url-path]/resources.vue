@@ -5,8 +5,13 @@
     middleware: 'auth',
   });
 
+  const refresh = ref(Date.now());
+
   const modal = useModal(ModalCreateResourceModel, {
     id: 'create-resouce-model',
+    onSuccess: () => {
+      refresh.value = Date.now();
+    },
   });
 </script>
 
@@ -15,6 +20,7 @@
     <Button color="success" size="sm" @click="modal.open">
       New Resource Model
     </Button>
+    <ResourceTable :refresh="refresh" />
     <ClientOnly>
       <modal.component />
     </ClientOnly>

@@ -39,7 +39,7 @@
     <div
       v-for="link in links"
       :key="link.to"
-      class="mr-auto ml-auto mt-2 tooltip tooltip-right"
+      class="mr-auto ml-auto mt-2 tooltip tooltip-bottom"
       :data-tip="link.name"
     >
       <Button

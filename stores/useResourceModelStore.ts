@@ -1,10 +1,6 @@
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
-
-type ResourceDataType = {
-  text: string;
-  value: string;
-};
+import { ResourceModel } from '~~/types/models';
 
 type BodyParams = {
   name: string;
@@ -22,14 +18,22 @@ type Options = {
 };
 
 type ResourceModelStore = {
-  types: Ref<ResourceDataType[]>;
+  list: Ref<ResourceModel[]>;
+  clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
-  fetchTypes: () => Promise<void>;
+  fetch: (projectApiKey: string) => Promise<void>;
 };
 
 export default defineStore('resouce-models', (): ResourceModelStore => {
-  const types = ref<ResourceDataType[]>([]);
+  const list = ref<ResourceModel[]>([]);
   const toast = useToast();
+
+  /**
+   * Resets data in state.
+   */
+  const clear = () => {
+    list.value = [];
+  };
 
   /**
    * A function for creating resource model.
@@ -51,22 +55,28 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
   };
 
   /**
-   * A function for fetching projects from the server.
+   * A function for fetching resource models from the server.
    */
-  const fetchTypes = async (): Promise<void> => {
-    await $fetch('/resource-data-types', {
+  const fetch = async (projectApiKey: string): Promise<void> => {
+    await $fetch('/resource-models', {
       method: 'GET',
+      query: { projectApiKey },
       onResponse({ response }) {
-        types.value = response._data;
+        list.value = response._data;
       },
     }).catch((error) => {
       toast.error(error.statusMessage);
     });
   };
 
+  // Added these ignore comments here since TS is unable
+  // to analyze type `Json` in ResourceModel properly.
+  // @ts-ignore
   return {
-    types,
+    // @ts-ignore
+    list,
+    clear,
     create,
-    fetchTypes,
+    fetch,
   };
 });
