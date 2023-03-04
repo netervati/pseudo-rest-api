@@ -13,6 +13,11 @@ type BodyParams = {
   }[];
 };
 
+type DeleteParams = {
+  id: string;
+  projectApiKey: string;
+};
+
 type Options = {
   onSuccess?: () => void;
 };
@@ -21,6 +26,7 @@ type ResourceModelStore = {
   list: Ref<ResourceModel[]>;
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
+  delete: (params: DeleteParams, options?: Options) => Promise<void>;
   fetch: (projectApiKey: string) => Promise<void>;
 };
 
@@ -54,6 +60,25 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     });
   };
 
+  const del = async (
+    params: DeleteParams,
+    options: Options = {}
+  ): Promise<void> => {
+    await $fetch(`/resource-models/${params.id}`, {
+      method: 'DELETE',
+      query: { projectApiKey: params.projectApiKey },
+      onResponse() {
+        toast.success('Deleted the resource model!');
+
+        if (typeof options.onSuccess === 'function') {
+          options.onSuccess();
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   /**
    * A function for fetching resource models from the server.
    */
@@ -77,6 +102,7 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     list,
     clear,
     create,
+    delete: del,
     fetch,
   };
 });
