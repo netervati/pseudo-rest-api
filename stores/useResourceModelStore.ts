@@ -19,14 +19,21 @@ type Options = {
 
 type ResourceModelStore = {
   list: Ref<ResourceModel[]>;
+  clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
-  fetch: () => Promise<void>;
+  fetch: (projectApiKey: string) => Promise<void>;
 };
 
 export default defineStore('resouce-models', (): ResourceModelStore => {
   const list = ref<ResourceModel[]>([]);
   const toast = useToast();
 
+  /**
+   * Resets data in state.
+   */
+  const clear = () => {
+    list.value = [];
+  };
   /**
    * A function for creating resource model.
    */
@@ -49,9 +56,10 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
   /**
    * A function for fetching resource models from the server.
    */
-  const fetch = async (): Promise<void> => {
+  const fetch = async (projectApiKey: string): Promise<void> => {
     await $fetch('/resource-models', {
       method: 'GET',
+      query: { projectApiKey },
       onResponse({ response }) {
         list.value = response._data;
       },
@@ -66,6 +74,7 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
   return {
     // @ts-ignore
     list,
+    clear,
     create,
     fetch,
   };

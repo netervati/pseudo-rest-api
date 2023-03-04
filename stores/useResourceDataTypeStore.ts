@@ -8,12 +8,20 @@ type ResourceDataType = {
 
 type ResourceDataTypeStore = {
   list: Ref<ResourceDataType[]>;
+  clear: () => void;
   fetch: () => Promise<void>;
 };
 
 export default defineStore('resource-data-types', (): ResourceDataTypeStore => {
   const list = ref<ResourceDataType[]>([]);
   const toast = useToast();
+
+  /**
+   * Resets data in state.
+   */
+  const clear = () => {
+    list.value = [];
+  };
 
   /**
    * A function for fetching resource data types from the server.
@@ -31,6 +39,7 @@ export default defineStore('resource-data-types', (): ResourceDataTypeStore => {
 
   return {
     list,
+    clear,
     fetch,
   };
 });
