@@ -1,9 +1,13 @@
 <script lang="ts" setup>
   import ModalCreateProject from '~~/components/modal/createProject.vue';
+  import { useResourceDataTypeStore, useResourceModelStore } from '~~/stores';
 
   definePageMeta({
     middleware: 'auth',
   });
+
+  useResourceDataTypeStore().clear();
+  useResourceModelStore().clear();
 
   const refreshKey = ref(Date.now());
   const secretKey = ref('');
