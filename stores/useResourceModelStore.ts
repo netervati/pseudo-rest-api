@@ -34,6 +34,7 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
   const clear = () => {
     list.value = [];
   };
+
   /**
    * A function for creating resource model.
    */
