@@ -2,8 +2,9 @@ import { Component } from 'vue';
 
 type ModalProps = {
   id: string;
+  onConfirm?: (params?: string) => void | Promise<void>;
   onError?: () => void;
-  onSuccess?: (arg: string) => void;
+  onSuccess?: (params: string) => void;
 };
 
 type UseModal = {

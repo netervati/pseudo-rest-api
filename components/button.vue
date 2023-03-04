@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   const emit = defineEmits<{
-    (e: 'click'): void;
+    (e: 'click', params?: string): void;
   }>();
 
   type Props = {
