@@ -46,7 +46,7 @@ export default class BaseRepository<T extends Record<string, Json>> {
   async delete(conditions = {}): Promise<QueryResponse<T>> {
     const query = this.client.from(this.table).update({
       is_deleted: true,
-      deleted_at: Date.now(),
+      deleted_at: new Date().toISOString().toLocaleString(),
     });
 
     for (const [key, value] of Object.entries(conditions)) {
