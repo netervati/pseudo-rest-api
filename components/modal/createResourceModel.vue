@@ -138,8 +138,31 @@
     );
   };
 
-  const handleChange = () => {
+  const handleNameChange = () => {
     form.fields.nameError = '';
+  };
+
+  type Payload = {
+    action: string;
+    structure: Structure;
+  };
+
+  const handleStructureChange = (payload: Payload) => {
+    switch (payload.action) {
+      case 'default':
+        payload.structure.defaultError = '';
+        break;
+      case 'name':
+        payload.structure.nameError = '';
+        break;
+      case 'type':
+        payload.structure.typeError = '';
+        payload.structure.defaultError = '';
+
+        break;
+      default:
+        break;
+    }
   };
 </script>
 
@@ -151,7 +174,7 @@
         v-model="form.fields.name"
         :error="form.fields.nameError !== ''"
         placeholder="Enter resource model name"
-        @change="handleChange"
+        @change="handleNameChange"
       />
       <p v-if="form.fields.nameError !== ''" class="text-red-600">
         {{ form.fields.nameError }}
@@ -169,13 +192,18 @@
             placeholder="Enter the field name"
             :disabled="structure.name === 'id'"
             :error="structure.nameError !== ''"
+            @change="handleStructureChange({ action: 'name', structure })"
           />
           <p v-if="structure.nameError !== ''" class="text-red-600">
             {{ structure.nameError }}
           </p>
         </section>
         <section class="basis-2/12 form-control ml-2 mr-2">
-          <Select v-model="structure.type" :error="structure.typeError !== ''">
+          <Select
+            v-model="structure.type"
+            :error="structure.typeError !== ''"
+            @change="handleStructureChange({ action: 'type', structure })"
+          >
             <option disabled value="">Select Type</option>
             <option
               v-for="type in dataTypes(structure.name)"
@@ -195,6 +223,7 @@
             v-model="structure.default"
             placeholder="Enter the default value"
             :error="structure.defaultError !== ''"
+            @change="handleStructureChange({ action: 'default', structure })"
           />
           <p v-if="structure.defaultError !== ''" class="text-red-600">
             {{ structure.defaultError }}
