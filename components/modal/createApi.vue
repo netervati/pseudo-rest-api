@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-  import { Api } from '~~/types/models';
+  import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
+  import useApiStore from '~~/stores/useApiStore';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -10,123 +11,77 @@
     id: string;
   }>();
 
-  const projectApiKey = useProjectApiKey();
-  const SPECIAL_CHARACTERS = '`~!@#$%^&*()_+={}[];"\'\\|<,>.?'
-    .split('')
-    .concat(['//', '--', '/-', '-/']);
+  const api = useApiStore();
+  const projectApiKey = useProjectApiKey() || '';
 
-  const form = reactive({
-    description: '',
-    loading: false,
-    urlPathError: '',
-    urlPath: '',
-    showConfirm: false,
-  });
+  type Form = {
+    apiPathError: string;
+    apiPath: string;
+    description: string;
+    validations: {
+      apiPath: string;
+    };
+  };
 
-  const toast = useToast();
-
-  const validateForm = () => {
-    let withError = false;
-
-    if (form.urlPath.trim() === '') {
-      form.urlPathError = 'API path cannot be blank.';
-      withError = true;
+  const form = useModalForm<Form>(
+    {
+      apiPathError: '',
+      apiPath: '',
+      description: '',
+      validations: {
+        apiPath: 'blank,special_characters',
+      },
+    },
+    {
+      onClose: () => emit('close'),
+      onProceed: async (body: UnwrapNestedRefs<Omit<Form, 'validations'>>) => {
+        await api.create(
+          {
+            description: body.description,
+            projectApiKey,
+            urlPath: body.apiPath,
+          },
+          {
+            onSuccess: () => {
+              emit('success', '');
+            },
+          }
+        );
+      },
     }
-
-    SPECIAL_CHARACTERS.forEach((char) => {
-      if (form.urlPath.includes(char)) {
-        form.urlPathError = 'API path is invalid.';
-        withError = true;
-      }
-    });
-
-    return withError;
-  };
-
-  const unsetForm = () => {
-    emit('close');
-
-    form.description = '';
-    form.loading = false;
-    form.urlPathError = '';
-    form.urlPath = '';
-    form.showConfirm = false;
-  };
-
-  const handleCancel = () => {
-    form.showConfirm = false;
-  };
+  );
 
   const handleChange = () => {
-    form.urlPathError = '';
-  };
-
-  const handleProceed = async () => {
-    form.loading = true;
-
-    const { data, error } = await useFetch<Api>('/apis', {
-      method: 'post',
-      body: {
-        description: form.description.trim(),
-        projectApiKey,
-        urlPath: form.urlPath.trim(),
-      },
-    });
-
-    form.loading = false;
-
-    if (error.value) {
-      toast.error(error.value.statusMessage ?? 'Failed to create api.');
-    } else {
-      toast.success('Created an api endpoint!');
-    }
-
-    if (data.value) {
-      emit('success', '');
-    }
-
-    unsetForm();
-  };
-
-  const handleClose = () => {
-    unsetForm();
-  };
-
-  const handleSave = () => {
-    const errors = validateForm();
-
-    if (!errors) {
-      form.showConfirm = true;
-    }
+    form.fields.apiPathError = '';
   };
 </script>
 
 <template>
-  <ModalBase :id="id" @close="handleClose">
+  <ModalBase :id="id" @close="form.close">
     <h3 class="text-lg font-bold">Create a new API</h3>
     <section class="form-control mt-2">
       <Input
-        v-model="form.urlPath"
-        :error="form.urlPathError !== ''"
+        v-model="form.fields.apiPath"
+        :error="form.fields.apiPathError !== ''"
         placeholder="Enter api path"
         @change="handleChange"
       />
-      <p v-if="form.urlPathError !== ''" class="text-red-600">
-        {{ form.urlPathError }}
+      <p v-if="form.fields.apiPathError !== ''" class="text-red-600">
+        {{ form.fields.apiPathError }}
       </p>
     </section>
     <section class="form-control mt-2">
       <Input
-        v-model="form.description"
-        :disabled="form.loading"
+        v-model="form.fields.description"
+        :disabled="form.controls.loading"
         placeholder="Enter api description"
       />
     </section>
     <ModalFooter
-      :deps="{ showConfirm: form.showConfirm, loading: form.loading }"
-      @cancel="handleCancel"
-      @proceed="handleProceed"
-      @save="handleSave"
+      :deps="form.controls"
+      @cancel="form.cancel"
+      @proceed="form.proceed"
+      @save="form.save"
     />
   </ModalBase>
 </template>

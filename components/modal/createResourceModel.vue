@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
@@ -22,13 +23,79 @@
 
   const projectApiKey = useProjectApiKey() || '';
 
-  const form = reactive({
-    loading: false,
-    nameError: false,
-    name: '',
-    showConfirm: false,
-    structure: [{ default: '', id: Date.now(), name: 'id', type: '' }],
-  });
+  type Structure = {
+    id: number;
+    defaultError: string;
+    default: string;
+    nameError: string;
+    name: string;
+    typeError: string;
+    type: string;
+  };
+
+  type Form = {
+    nameError: string;
+    name: string;
+    structure: Structure[];
+    validations: {
+      name: 'blank';
+      structure: {
+        array: {
+          default: string;
+          name: string;
+          type: string;
+        };
+      };
+    };
+  };
+
+  const form = useModalForm<Form>(
+    {
+      nameError: '',
+      name: '',
+      structure: [
+        {
+          id: Date.now(),
+          defaultError: '',
+          default: '',
+          nameError: '',
+          name: 'id',
+          typeError: '',
+          type: '',
+        },
+      ],
+      validations: {
+        name: 'blank',
+        structure: {
+          array: {
+            default: 'data_type_blank',
+            name: 'blank',
+            type: 'dropdown',
+          },
+        },
+      },
+    },
+    {
+      onClose: () => emit('close'),
+      onProceed: async (body: UnwrapNestedRefs<Omit<Form, 'validations'>>) => {
+        const cleanStructure = body.structure.map((structure) => ({
+          default: structure.default,
+          id: structure.id,
+          name: structure.name,
+          type: structure.type,
+        }));
+
+        await resourceModel.create(
+          { name: body.name.trim(), projectApiKey, structure: cleanStructure },
+          {
+            onSuccess: () => {
+              emit('success', '');
+            },
+          }
+        );
+      },
+    }
+  );
 
   const dataTypes = (name: string) => {
     if (name === 'id') {
@@ -54,90 +121,68 @@
   // ------------------------
 
   const addField = () => {
-    form.structure.push({ default: '', id: Date.now(), name: '', type: '' });
+    form.fields.structure.push({
+      defaultError: '',
+      default: '',
+      id: Date.now(),
+      nameError: '',
+      name: '',
+      typeError: '',
+      type: '',
+    });
   };
 
   const removeField = (id: number) => {
-    form.structure = form.structure.filter((structure) => structure.id !== id);
-  };
-
-  // ------------------------
-  // FORM CONTROLS
-  // ------------------------
-
-  const handleCancel = () => {
-    form.showConfirm = false;
-  };
-
-  const handleChange = () => {
-    form.nameError = false;
-  };
-
-  const handleClose = () => {
-    unsetForm();
-  };
-
-  const handleProceed = async () => {
-    form.loading = true;
-
-    await resourceModel.create(
-      { name: form.name.trim(), projectApiKey, structure: form.structure },
-      {
-        onSuccess: () => {
-          emit('success', '');
-        },
-      }
+    form.fields.structure = form.fields.structure.filter(
+      (structure: Structure) => structure.id !== id
     );
-
-    form.loading = false;
-
-    unsetForm();
   };
 
-  const handleSave = () => {
-    const errors = validateForm();
+  const handleNameChange = () => {
+    form.fields.nameError = '';
+  };
 
-    if (!errors) {
-      form.showConfirm = true;
+  type Payload = {
+    action: string;
+    structure: Structure;
+  };
+
+  const handleStructureChange = (payload: Payload) => {
+    switch (payload.action) {
+      case 'default':
+        payload.structure.defaultError = '';
+        break;
+      case 'name':
+        payload.structure.nameError = '';
+        break;
+      case 'type':
+        payload.structure.typeError = '';
+        payload.structure.defaultError = '';
+
+        break;
+      default:
+        break;
     }
-  };
-
-  const validateForm = () => {
-    if (form.name.trim() === '') {
-      form.nameError = true;
-
-      return true;
-    }
-
-    return false;
-  };
-
-  const unsetForm = () => {
-    emit('close');
-
-    form.loading = false;
-    form.nameError = false;
-    form.name = '';
-    form.showConfirm = false;
-    form.structure = [{ default: '', id: Date.now(), name: 'id', type: '' }];
   };
 </script>
 
 <template>
-  <ModalBase :id="id" size="lg" @close="handleClose">
+  <ModalBase :id="id" size="lg" @close="form.close">
     <h3 class="text-lg font-bold">Create a new Resource Model</h3>
     <section class="form-control mt-2">
       <Input
-        v-model="form.name"
-        :error="form.nameError"
+        v-model="form.fields.name"
+        :error="form.fields.nameError !== ''"
         placeholder="Enter resource model name"
-        @change="handleChange"
+        @change="handleNameChange"
       />
-      <p v-if="form.nameError" class="text-red-600">Name cannot be blank.</p>
+      <p v-if="form.fields.nameError !== ''" class="text-red-600">
+        {{ form.fields.nameError }}
+      </p>
     </section>
     <section class="h-60 overflow-y">
       <article
-        v-for="structure in form.structure"
+        v-for="structure in form.fields.structure"
         :key="structure.id"
         class="flex mt-2"
       >
@@ -146,12 +191,18 @@
             v-model="structure.name"
             placeholder="Enter the field name"
             :disabled="structure.name === 'id'"
+            :error="structure.nameError !== ''"
+            @change="handleStructureChange({ action: 'name', structure })"
           />
+          <p v-if="structure.nameError !== ''" class="text-red-600">
+            {{ structure.nameError }}
+          </p>
         </section>
         <section class="basis-2/12 form-control ml-2 mr-2">
-          <select
+          <Select
             v-model="structure.type"
-            class="select select-bordered w-full max-w-xs"
+            :error="structure.typeError !== ''"
+            @change="handleStructureChange({ action: 'type', structure })"
           >
             <option disabled value="">Select Type</option>
             <option
@@ -161,14 +212,22 @@
             >
               {{ type.text }}
             </option>
-          </select>
+          </Select>
+          <p v-if="structure.typeError !== ''" class="text-red-600">
+            {{ structure.typeError }}
+          </p>
         </section>
         <section class="basis-4/12 form-control ml-2 mr-2">
           <Input
             v-if="isDefaultAllowed(structure)"
             v-model="structure.default"
             placeholder="Enter the default value"
+            :error="structure.defaultError !== ''"
+            @change="handleStructureChange({ action: 'default', structure })"
           />
+          <p v-if="structure.defaultError !== ''" class="text-red-600">
+            {{ structure.defaultError }}
+          </p>
         </section>
         <section class="basis-2/12 flex ml-2">
           <Button
@@ -187,10 +246,10 @@
       </article>
     </section>
     <ModalFooter
-      :deps="{ showConfirm: form.showConfirm, loading: form.loading }"
-      @cancel="handleCancel"
-      @proceed="handleProceed"
-      @save="handleSave"
+      :deps="form.controls"
+      @cancel="form.cancel"
+      @proceed="form.proceed"
+      @save="form.save"
     />
   </ModalBase>
 </template>
