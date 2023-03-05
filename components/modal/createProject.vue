@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useProjectStore from '~~/stores/useProjectStore';
 
   const emit = defineEmits<{
@@ -32,7 +33,7 @@
     },
     {
       onClose: () => emit('close'),
-      onProceed: async (body: Omit<Form, 'validations'>) => {
+      onProceed: async (body: UnwrapNestedRefs<Omit<Form, 'validations'>>) => {
         await project.create(
           {
             description: body.description,

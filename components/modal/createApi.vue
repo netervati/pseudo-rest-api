@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useApiStore from '~~/stores/useApiStore';
 
   const emit = defineEmits<{
@@ -33,7 +34,7 @@
     },
     {
       onClose: () => emit('close'),
-      onProceed: async (body: Omit<Form, 'validations'>) => {
+      onProceed: async (body: UnwrapNestedRefs<Omit<Form, 'validations'>>) => {
         await api.create(
           {
             description: body.description,
