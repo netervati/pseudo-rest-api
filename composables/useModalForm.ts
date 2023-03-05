@@ -1,4 +1,5 @@
 import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
+import startCase from 'lodash/startCase';
 
 type ValidationRules = {
   [key: string]: {
@@ -11,6 +12,23 @@ const VALIDATION_RULES: ValidationRules = {
   blank: {
     error: '* cannot be blank.',
     rule: (value: string) => value.trim() === '',
+  },
+  special_characters: {
+    error: '* is invalid.',
+    rule: (value: string) => {
+      let withError = false;
+
+      '`~!@#$%^&*()_+={}[];"\'\\|<,>.?'
+        .split('')
+        .concat(['//', '--', '/-', '-/'])
+        .forEach((char) => {
+          if (value.includes(char)) {
+            withError = true;
+          }
+        });
+
+      return withError;
+    },
   },
 };
 
@@ -35,7 +53,7 @@ type ModalForm<T> = {
 };
 
 type Options<T> = {
-  onClose: () => Promise<void>;
+  onClose: () => void;
   onProceed: (body: Omit<T, 'validations'>) => Promise<void>;
 };
 
@@ -126,13 +144,15 @@ export default function <T extends object & Validations>(
     let withErrors = false;
 
     for (const [key, value] of Object.entries(validations)) {
-      const validate = VALIDATION_RULES[value];
+      for (const rule of value.split(',')) {
+        const validate = VALIDATION_RULES[rule];
 
-      // @ts-ignore
-      if (validate.rule(fields[key])) {
         // @ts-ignore
-        fields[`${key}Error`] = validate.error.replace('*', titleize(key));
-        withErrors = true;
+        if (validate.rule(fields[key])) {
+          // @ts-ignore
+          fields[`${key}Error`] = validate.error.replace('*', startCase(key));
+          withErrors = true;
+        }
       }
     }
 
