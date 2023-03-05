@@ -4,18 +4,33 @@ import startCase from 'lodash/startCase';
 type ValidationRules = {
   [key: string]: {
     error: string;
-    rule: (value: string) => boolean;
+    rule: (value: string, deps?: { [key: string]: string }) => boolean;
   };
 };
 
 const VALIDATION_RULES: ValidationRules = {
+  // COMMON RULES
   blank: {
     error: '* cannot be blank.',
-    rule: (value: string) => value.trim() === '',
+    rule: (value) => value.trim() === '',
+  },
+  dropdown: {
+    error: '* requires a selected option.',
+    rule: (value) => value.trim() === '',
+  },
+
+  // CUSTOM RULES
+  data_type_blank: {
+    error: '* cannot be blank.',
+    rule: (value, deps) =>
+      deps!.name !== 'id' &&
+      !deps!.type.includes('faker') &&
+      !deps!.type.includes('uuid') &&
+      value.trim() === '',
   },
   special_characters: {
     error: '* is invalid.',
-    rule: (value: string) => {
+    rule: (value) => {
       let withError = false;
 
       '`~!@#$%^&*()_+={}[];"\'\\|<,>.?'
@@ -39,7 +54,9 @@ type Controls = {
 
 type Validations = {
   validations: {
-    [key: string]: string;
+    [key: string]:
+      | string
+      | { [key: string]: string | { [key: string]: string } };
   };
 };
 
@@ -101,7 +118,7 @@ export default function <T extends object & Validations>(
   });
 
   const { validations, ...props } = deps;
-  const fields = reactive(props);
+  const fields = reactive(structuredClone(props));
 
   const handleCancel = () => {
     controls.showConfirm = false;
@@ -134,7 +151,7 @@ export default function <T extends object & Validations>(
       options.onClose();
     }
 
-    for (const [key, value] of Object.entries(props)) {
+    for (const [key, value] of Object.entries(structuredClone(props))) {
       // @ts-ignore
       fields[key] = value;
     }
@@ -144,14 +161,41 @@ export default function <T extends object & Validations>(
     let withErrors = false;
 
     for (const [key, value] of Object.entries(validations)) {
-      for (const rule of value.split(',')) {
-        const validate = VALIDATION_RULES[rule];
+      if (typeof value === 'string') {
+        for (const rule of value.split(',')) {
+          const validate = VALIDATION_RULES[rule];
 
-        // @ts-ignore
-        if (validate.rule(fields[key])) {
           // @ts-ignore
-          fields[`${key}Error`] = validate.error.replace('*', startCase(key));
-          withErrors = true;
+          if (validate.rule(fields[key])) {
+            // @ts-ignore
+            fields[`${key}Error`] = validate.error.replace('*', startCase(key));
+            withErrors = true;
+          }
+        }
+
+        continue;
+      }
+
+      if (value.constructor !== Object) {
+        continue;
+      }
+
+      // @ts-ignore
+      if (value.array?.constructor !== Object || !Array.isArray(fields[key])) {
+        continue;
+      }
+
+      // @ts-ignore
+      for (const el of fields[key]) {
+        for (const [keyB, valueB] of Object.entries(value.array)) {
+          const validate = VALIDATION_RULES[valueB];
+
+          // @ts-ignore
+          if (validate.rule(el[keyB], el)) {
+            // @ts-ignore
+            el[`${keyB}Error`] = validate.error.replace('*', startCase(keyB));
+            withErrors = true;
+          }
         }
       }
     }
