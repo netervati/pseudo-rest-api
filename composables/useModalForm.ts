@@ -71,7 +71,7 @@ type ModalForm<T> = {
 
 type Options<T> = {
   onClose: () => void;
-  onProceed: (body: Omit<T, 'validations'>) => Promise<void>;
+  onProceed: (body: UnwrapNestedRefs<Omit<T, 'validations'>>) => Promise<void>;
 };
 
 /**
@@ -132,7 +132,7 @@ export default function <T extends object & Validations>(
     controls.loading = true;
 
     if (typeof options.onProceed === 'function') {
-      await options.onProceed(props);
+      await options.onProceed(fields);
     }
 
     controls.loading = false;
