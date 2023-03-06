@@ -155,6 +155,9 @@ export default function <T extends object & Validations>(
       // @ts-ignore
       fields[key] = value;
     }
+
+    controls.loading = false;
+    controls.showConfirm = false;
   };
 
   const validateForm = () => {
