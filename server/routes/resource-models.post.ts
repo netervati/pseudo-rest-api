@@ -8,7 +8,7 @@ type BodyParams = {
   name: string;
   projectApiKey: string;
   structure: {
-    default: string;
+    default: string | number | boolean;
     name: string;
     type: string;
   }[];
@@ -68,10 +68,18 @@ async function insertResourceModel({
   event,
   projectKey,
 }: Payload): Promise<ResourceModel | never> {
-  const structure = body.structure.map((item) => ({
-    ...item,
-    id: uuidv4(),
-  }));
+  const structure = body.structure.map((item) => {
+    const coercedValue = coerce(item.type, item.default);
+
+    if (coercedValue !== null) {
+      item.default = coercedValue;
+    }
+
+    return {
+      ...item,
+      id: uuidv4(),
+    };
+  });
 
   const resourceModels = await new ResourceModelRepository(event).insert({
     id: uuidv4(),

@@ -9,17 +9,26 @@
   const { refresh } = toRefs(props);
   const projectApiKey = useProjectApiKey() || '';
   const resourceModel = useResourceModelStore();
-  const targetResourceModel = ref('');
+
+  const state = reactive({
+    deleting: false,
+    target: '',
+  });
 
   const modal = useModal(ModalConfirm, {
     id: 'confirm-delete-resource-model',
-    onConfirm: async () => {
+    onConfirm: async (callback) => {
       await resourceModel.delete({
-        id: targetResourceModel.value,
+        id: state.target,
         projectApiKey,
       });
 
+      callback();
+
+      resourceModel.clear();
       await resourceModel.fetch(projectApiKey);
+
+      state.target = '';
     },
   });
 
@@ -34,7 +43,7 @@
   });
 
   const handleDelete = (id: string) => {
-    targetResourceModel.value = id;
+    state.target = id;
     modal.open();
   };
 </script>
