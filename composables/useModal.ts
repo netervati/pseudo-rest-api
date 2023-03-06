@@ -2,7 +2,7 @@ import { Component } from 'vue';
 
 type ModalProps = {
   id: string;
-  onConfirm?: (params?: string) => void | Promise<void>;
+  onConfirm?: (callback: () => void) => void | Promise<void>;
   onError?: () => void;
   onSuccess?: (params: string) => void;
 };

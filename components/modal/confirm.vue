@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   const emit = defineEmits<{
-    (e: 'confirm'): Promise<void>;
+    (e: 'confirm', callback: () => void): Promise<void>;
     (e: 'close'): void;
   }>();
 
@@ -12,10 +12,11 @@
 
   const handleConfirm = async () => {
     loading.value = true;
-    await emit('confirm');
 
-    loading.value = false;
-    emit('close');
+    await emit('confirm', () => {
+      emit('close');
+      loading.value = false;
+    });
   };
 </script>
 
