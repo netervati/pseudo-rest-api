@@ -68,7 +68,7 @@ async function existingApi({
 }: Payload): Promise<void | never> {
   const apis = await new ApiRepository(event).get({
     is_deleted: false,
-    urlPath: body.urlPath,
+    url_path: body.urlPath,
     project_id: projectKey!.projects.id,
   });
 
