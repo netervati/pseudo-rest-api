@@ -27,8 +27,11 @@ export default defineEventHandler(async (event) => {
   };
 
   validate(payload);
+  withDuplicateNames(payload);
 
   payload.projectKey = await getProjectKey(payload);
+
+  await existingResourceModel(payload);
 
   return await insertResourceModel(payload);
 });
@@ -42,6 +45,17 @@ function validate({ body, event }: Payload): void | never {
 
   if (error) {
     throw error;
+  }
+}
+
+function withDuplicateNames({ body }: Payload): void | never {
+  const uniqueValues = new Set(body.structure.map((item) => item.name));
+
+  if (uniqueValues.size < body.structure.length) {
+    throw createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: 'Each model name should be unique.',
+    });
   }
 }
 
@@ -61,6 +75,29 @@ async function getProjectKey({
   }
 
   return projectKeys.data![0];
+}
+
+async function existingResourceModel({
+  body,
+  event,
+  projectKey,
+}: Payload): Promise<void | never> {
+  const resourceModels = await new ResourceModelRepository(event).get({
+    name: body.name,
+    is_deleted: false,
+    project_id: projectKey!.projects.id,
+  });
+
+  if (resourceModels.error instanceof Error) {
+    throw resourceModels.error;
+  }
+
+  if (resourceModels.data!.length > 0) {
+    throw createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: 'Resource model already exists.',
+    });
+  }
 }
 
 async function insertResourceModel({

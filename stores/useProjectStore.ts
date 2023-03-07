@@ -29,10 +29,12 @@ export default defineStore('projects', (): ProjectStore => {
       method: 'POST',
       body,
       onResponse({ response }) {
-        toast.success('Created a project!');
+        if (response.status === 200) {
+          toast.success('Created a project!');
 
-        if (typeof options.onSuccess === 'function') {
-          options.onSuccess(response._data.secret_key);
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess(response._data.secret_key);
+          }
         }
       },
     }).catch((error) => {
@@ -47,7 +49,9 @@ export default defineStore('projects', (): ProjectStore => {
     await $fetch('/projects', {
       method: 'GET',
       onResponse({ response }) {
-        list.value = response._data;
+        if (response.status === 200) {
+          list.value = response._data;
+        }
       },
     }).catch((error) => {
       toast.error(error.statusMessage);

@@ -26,6 +26,8 @@ export default defineEventHandler(async (event) => {
 
   payload.projectKey = await getProjectKey(payload);
 
+  await existingApi(payload);
+
   return await insertApi(payload);
 });
 
@@ -57,6 +59,29 @@ async function getProjectKey({
   }
 
   return projectKeys.data![0];
+}
+
+async function existingApi({
+  body,
+  event,
+  projectKey,
+}: Payload): Promise<void | never> {
+  const apis = await new ApiRepository(event).get({
+    is_deleted: false,
+    url_path: body.urlPath,
+    project_id: projectKey!.projects.id,
+  });
+
+  if (apis.error instanceof Error) {
+    throw apis.error;
+  }
+
+  if (apis.data!.length > 0) {
+    throw createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: 'API Endpoint already exists.',
+    });
+  }
 }
 
 async function insertApi({

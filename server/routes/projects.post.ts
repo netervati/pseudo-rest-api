@@ -24,6 +24,8 @@ export default defineEventHandler(async (event) => {
 
   validate(payload);
 
+  await existingProject(payload);
+
   payload.project = await insertProject(payload);
 
   return {
@@ -40,6 +42,27 @@ function validate({ body, event }: Payload): void | never {
 
   if (error) {
     throw error;
+  }
+}
+
+async function existingProject({
+  body,
+  event,
+}: Payload): Promise<void | never> {
+  const projects = await new ProjectRepository(event).get({
+    name: body.name,
+    is_deleted: false,
+  });
+
+  if (projects.error instanceof Error) {
+    throw projects.error;
+  }
+
+  if (projects.data!.length > 0) {
+    throw createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: 'Project already exists.',
+    });
   }
 }
 

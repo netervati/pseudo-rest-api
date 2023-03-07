@@ -9,13 +9,11 @@
   useResourceDataTypeStore().clear();
   useResourceModelStore().clear();
 
-  const refreshKey = ref(Date.now());
   const secretKey = ref('');
 
   const modal = useModal(ModalCreateProject, {
     id: 'create-project',
     onSuccess: (key: string) => {
-      refreshKey.value = Date.now();
       secretKey.value = key;
     },
   });
