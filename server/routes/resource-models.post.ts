@@ -30,6 +30,8 @@ export default defineEventHandler(async (event) => {
 
   payload.projectKey = await getProjectKey(payload);
 
+  await existingResourceModel(payload);
+
   return await insertResourceModel(payload);
 });
 
@@ -61,6 +63,29 @@ async function getProjectKey({
   }
 
   return projectKeys.data![0];
+}
+
+async function existingResourceModel({
+  body,
+  event,
+  projectKey,
+}: Payload): Promise<void | never> {
+  const resourceModels = await new ResourceModelRepository(event).get({
+    name: body.name,
+    is_deleted: false,
+    project_id: projectKey!.projects.id,
+  });
+
+  if (resourceModels.error instanceof Error) {
+    throw resourceModels.error;
+  }
+
+  if (resourceModels.data!.length > 0) {
+    throw createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: 'Resource model already exists.',
+    });
+  }
 }
 
 async function insertResourceModel({
