@@ -27,6 +27,7 @@ export default defineEventHandler(async (event) => {
   };
 
   validate(payload);
+  withDuplicateNames(payload);
 
   payload.projectKey = await getProjectKey(payload);
 
@@ -44,6 +45,17 @@ function validate({ body, event }: Payload): void | never {
 
   if (error) {
     throw error;
+  }
+}
+
+function withDuplicateNames({ body }: Payload): void | never {
+  const uniqueValues = new Set(body.structure.map((item) => item.name));
+
+  if (uniqueValues.size < body.structure.length) {
+    throw createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: 'Each model name should be unique.',
+    });
   }
 }
 
