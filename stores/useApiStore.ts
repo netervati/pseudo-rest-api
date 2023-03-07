@@ -24,11 +24,13 @@ export default defineStore('apis', (): ApiStore => {
     await $fetch('/apis', {
       method: 'POST',
       body,
-      onResponse() {
-        toast.success('Created an API endpoint!');
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Created an API endpoint!');
 
-        if (typeof options.onSuccess === 'function') {
-          options.onSuccess();
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess();
+          }
         }
       },
     }).catch((error) => {

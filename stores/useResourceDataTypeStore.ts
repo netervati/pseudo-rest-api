@@ -30,7 +30,9 @@ export default defineStore('resource-data-types', (): ResourceDataTypeStore => {
     await $fetch('/resource-data-types', {
       method: 'GET',
       onResponse({ response }) {
-        list.value = response._data;
+        if (response.status === 200) {
+          list.value = response._data;
+        }
       },
     }).catch((error) => {
       toast.error(error.statusMessage);

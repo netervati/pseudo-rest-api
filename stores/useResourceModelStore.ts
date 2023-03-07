@@ -48,11 +48,13 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     await $fetch('/resource-models', {
       method: 'POST',
       body,
-      onResponse() {
-        toast.success('Created a resource model!');
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Created a resource model!');
 
-        if (typeof options.onSuccess === 'function') {
-          options.onSuccess();
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess();
+          }
         }
       },
     }).catch((error) => {
@@ -67,11 +69,13 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     await $fetch(`/resource-models/${params.id}`, {
       method: 'DELETE',
       query: { projectApiKey: params.projectApiKey },
-      onResponse() {
-        toast.success('Deleted the resource model!');
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the resource model!');
 
-        if (typeof options.onSuccess === 'function') {
-          options.onSuccess();
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess();
+          }
         }
       },
     }).catch((error) => {
@@ -87,7 +91,9 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
       method: 'GET',
       query: { projectApiKey },
       onResponse({ response }) {
-        list.value = response._data;
+        if (response.status === 200) {
+          list.value = response._data;
+        }
       },
     }).catch((error) => {
       toast.error(error.statusMessage);
