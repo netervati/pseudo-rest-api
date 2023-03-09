@@ -8,6 +8,12 @@ export default {
       statusMessage: message,
     });
   },
+  notFound(message: string): NuxtError {
+    return createError({
+      statusCode: HTTP_STATUS_NOT_FOUND,
+      statusMessage: message,
+    });
+  },
   supabase(error: PostgrestError): NuxtError {
     return createError({
       statusCode: Number(error.code),
