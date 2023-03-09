@@ -1,0 +1,17 @@
+import { PostgrestError } from '@supabase/postgrest-js';
+import { NuxtError } from 'nuxt/dist/app/composables';
+
+export default {
+  badRequest(message: string): NuxtError {
+    return createError({
+      statusCode: HTTP_STATUS_BAD_REQUEST,
+      statusMessage: message,
+    });
+  },
+  supabase(error: PostgrestError): NuxtError {
+    return createError({
+      statusCode: Number(error.code),
+      statusMessage: error.message,
+    });
+  },
+};

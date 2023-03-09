@@ -1,8 +1,9 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import shortuuid from 'short-uuid';
+import { ProjectKeyServices, ProjectServices } from '../services';
 import { PostProjectValidation } from '../validations';
-import { ProjectKeyRepository, ProjectRepository } from '../repositories';
+import ErrorResponse from '../utils/errorResponse';
 import { Project } from '~~/types/models';
 
 type BodyParams = {
@@ -10,30 +11,37 @@ type BodyParams = {
   description?: string;
 };
 
-type Payload = {
-  body: BodyParams;
-  event: H3Event;
-  project?: Project;
-};
-
 export default defineEventHandler(async (event) => {
-  const payload: Payload = {
-    body: await readBody<BodyParams>(event),
-    event,
-  };
+  const body: BodyParams = await readBody<BodyParams>(event);
 
-  validate(payload);
+  validate({ body, event });
 
-  await existingProject(payload);
+  const existingProjects = await new ProjectServices(event).findByName(body);
 
-  payload.project = await insertProject(payload);
+  if (existingProjects.length > 0) {
+    throw ErrorResponse.badRequest('Project already exists.');
+  }
+
+  const project = await new ProjectServices(event).create({
+    id: uuidv4(),
+    name: body.name,
+    description: body.description,
+  });
 
   return {
-    secret_key: await insertProjectKey(payload),
+    secret_key: await insertProjectKey({
+      event,
+      project,
+    }),
   };
 });
 
-function validate({ body, event }: Payload): void | never {
+type ValidationParams = {
+  body: BodyParams;
+  event: H3Event;
+};
+
+function validate({ body, event }: ValidationParams): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
@@ -45,62 +53,23 @@ function validate({ body, event }: Payload): void | never {
   }
 }
 
-async function existingProject({
-  body,
-  event,
-}: Payload): Promise<void | never> {
-  const projects = await new ProjectRepository(event).get({
-    name: body.name,
-    is_deleted: false,
-  });
-
-  if (projects.error instanceof Error) {
-    throw projects.error;
-  }
-
-  if (projects.data!.length > 0) {
-    throw createError({
-      statusCode: HTTP_STATUS_BAD_REQUEST,
-      statusMessage: 'Project already exists.',
-    });
-  }
-}
-
-async function insertProject({
-  body,
-  event,
-}: Payload): Promise<Project | never> {
-  const projects = await new ProjectRepository(event).insert({
-    id: uuidv4(),
-    name: body.name,
-    description: body.description,
-    user_id: event.context.auth.user.id,
-  });
-
-  if (projects.error instanceof Error) {
-    throw projects.error;
-  }
-
-  return projects.data![0];
-}
+type InsertParams = {
+  event: H3Event;
+  project: Project;
+};
 
 async function insertProjectKey({
   event,
   project,
-}: Payload): Promise<string | never> {
+}: InsertParams): Promise<string | never> {
   const secretKey = generateSecretKey();
 
-  const projectKeys = await new ProjectKeyRepository(event).insert({
+  await new ProjectKeyServices(event).create({
     id: uuidv4(),
     api_key: shortuuid.generate(),
+    project_id: project.id,
     secret_key: await hashPassword(secretKey),
-    project_id: project!.id,
-    user_id: event.context.auth.user.id,
   });
-
-  if (projectKeys.error instanceof Error) {
-    throw projectKeys.error;
-  }
 
   return secretKey;
 }
