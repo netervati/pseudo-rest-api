@@ -23,12 +23,12 @@ export default class ProjectServices extends SupabaseService {
     return projects.data[0];
   }
 
-  async findByName(params: { name: string }) {
+  async findByName(name: string) {
     const project = await this.client
       .from(this.table)
       .select('*')
-      .eq('name', params.name)
       .eq('is_deleted', false)
+      .eq('name', name)
       .eq('user_id', this.user.id);
 
     if (project.error !== null) {

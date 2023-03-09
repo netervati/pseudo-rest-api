@@ -16,7 +16,9 @@ export default defineEventHandler(async (event) => {
 
   validate({ body, event });
 
-  const existingProjects = await new ProjectServices(event).findByName(body);
+  const existingProjects = await new ProjectServices(event).findByName(
+    body.name
+  );
 
   if (existingProjects.length > 0) {
     throw ErrorResponse.badRequest('Project already exists.');
