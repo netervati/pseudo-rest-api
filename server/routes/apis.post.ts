@@ -1,8 +1,9 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PostApiValidation } from '../validations';
-import { ApiRepository, ProjectKeyRepository } from '../repositories';
-import { Api, ProjectKeyWithProject } from '~~/types/models';
+import { ApiServices, ProjectKeyServices } from '../services';
+import ErrorResponse from '../utils/errorResponse';
+import { ProjectKey } from '~~/types/models';
 
 type BodyParams = {
   description?: string;
@@ -13,22 +14,35 @@ type BodyParams = {
 type Payload = {
   body: BodyParams;
   event: H3Event;
-  projectKey?: ProjectKeyWithProject;
 };
 
 export default defineEventHandler(async (event) => {
+  const body: BodyParams = await readBody<BodyParams>(event);
+
   const payload: Payload = {
-    body: await readBody<BodyParams>(event),
+    body,
     event,
   };
 
   validate(payload);
 
-  payload.projectKey = await getProjectKey(payload);
+  const projectKey = await getProjectKey(payload);
 
-  await existingApi(payload);
+  const apis = await new ApiServices(event).findByUrlPath({
+    urlPath: body.urlPath,
+    projectId: projectKey.id,
+  });
 
-  return await insertApi(payload);
+  if (apis.length > 0) {
+    throw ErrorResponse.badRequest('API Endpoint already exists.');
+  }
+
+  return await new ApiServices(event).create({
+    id: uuidv4(),
+    description: body.description,
+    project_id: projectKey.project_id,
+    url_path: body.urlPath,
+  });
 });
 
 function validate({ body, event }: Payload): void | never {
@@ -46,60 +60,14 @@ function validate({ body, event }: Payload): void | never {
 async function getProjectKey({
   body,
   event,
-}: Payload): Promise<ProjectKeyWithProject | never> {
-  const projectKeys = await new ProjectKeyRepository(event).get(
-    {
-      api_key: body.projectApiKey,
-    },
-    '*, projects(*)'
+}: Payload): Promise<ProjectKey | never> {
+  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
+    body.projectApiKey
   );
 
-  if (projectKeys.error instanceof Error) {
-    throw projectKeys.error;
+  if (projectKeys.length === 0) {
+    throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return projectKeys.data![0];
-}
-
-async function existingApi({
-  body,
-  event,
-  projectKey,
-}: Payload): Promise<void | never> {
-  const apis = await new ApiRepository(event).get({
-    is_deleted: false,
-    url_path: body.urlPath,
-    project_id: projectKey!.projects.id,
-  });
-
-  if (apis.error instanceof Error) {
-    throw apis.error;
-  }
-
-  if (apis.data!.length > 0) {
-    throw createError({
-      statusCode: HTTP_STATUS_BAD_REQUEST,
-      statusMessage: 'API Endpoint already exists.',
-    });
-  }
-}
-
-async function insertApi({
-  body,
-  event,
-  projectKey,
-}: Payload): Promise<Api | never> {
-  const apis = await new ApiRepository(event).insert({
-    id: uuidv4(),
-    description: body.description,
-    project_id: projectKey!.projects.id,
-    url_path: body.urlPath,
-    user_id: event.context.auth.user.id,
-  });
-
-  if (apis.error instanceof Error) {
-    throw apis.error;
-  }
-
-  return apis.data![0];
+  return projectKeys[0];
 }

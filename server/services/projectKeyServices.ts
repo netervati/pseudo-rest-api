@@ -23,4 +23,18 @@ export default class ProjectKeyServices extends SupabaseService {
 
     return projectKeys.data[0];
   }
+
+  async findByApiKey(apiKey: string) {
+    const projectKey = await this.client
+      .from(this.table)
+      .select('*')
+      .eq('api_key', apiKey)
+      .eq('is_deleted', false);
+
+    if (projectKey.error !== null) {
+      throw ErrorResponse.supabase(projectKey.error);
+    }
+
+    return projectKey.data;
+  }
 }
