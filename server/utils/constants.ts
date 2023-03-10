@@ -1,6 +1,7 @@
 // HTTP STATUS CODES
 export const HTTP_STATUS_BAD_REQUEST = 400;
 export const HTTP_STATUS_UNAUTHORIZED = 401;
+export const HTTP_STATUS_NOT_FOUND = 404;
 
 // RESOURCE MODEL DATA TYPE
 export const RESOURCE_DATA_TYPES: { [key: string]: string } = {

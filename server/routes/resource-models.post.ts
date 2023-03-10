@@ -1,8 +1,9 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PostResourceModelValidation } from '../validations';
-import { ProjectKeyRepository, ResourceModelRepository } from '../repositories';
-import { ProjectKeyWithProject, ResourceModel } from '~~/types/models';
+import { ProjectKeyServices, ResourceModelServices } from '../services';
+import ErrorResponse from '../utils/errorResponse';
+import { ProjectKey, ResourceModel } from '~~/types/models';
 
 type BodyParams = {
   name: string;
@@ -14,29 +15,32 @@ type BodyParams = {
   }[];
 };
 
-type Payload = {
-  body: BodyParams;
-  event: H3Event;
-  projectKey?: ProjectKeyWithProject;
-};
-
 export default defineEventHandler(async (event) => {
-  const payload: Payload = {
-    body: await readBody<BodyParams>(event),
-    event,
-  };
+  const body = await readBody<BodyParams>(event);
 
-  validate(payload);
-  withDuplicateNames(payload);
+  validate(body, event);
 
-  payload.projectKey = await getProjectKey(payload);
+  const uniqueValues = new Set(body.structure.map((item) => item.name));
 
-  await existingResourceModel(payload);
+  if (uniqueValues.size < body.structure.length) {
+    throw ErrorResponse.badRequest('Each model name should be unique.');
+  }
 
-  return await insertResourceModel(payload);
+  const projectKey = await getProjectKey(body, event);
+
+  const resourceModels = await new ResourceModelServices(event).findByName({
+    name: body.name,
+    projectId: projectKey.project_id,
+  });
+
+  if (resourceModels.length > 0) {
+    throw ErrorResponse.badRequest('Resource model already exists.');
+  }
+
+  return await insertResourceModel({ body, event, projectKey });
 });
 
-function validate({ body, event }: Payload): void | never {
+function validate(body: BodyParams, event: H3Event): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
@@ -48,63 +52,32 @@ function validate({ body, event }: Payload): void | never {
   }
 }
 
-function withDuplicateNames({ body }: Payload): void | never {
-  const uniqueValues = new Set(body.structure.map((item) => item.name));
-
-  if (uniqueValues.size < body.structure.length) {
-    throw createError({
-      statusCode: HTTP_STATUS_BAD_REQUEST,
-      statusMessage: 'Each model name should be unique.',
-    });
-  }
-}
-
-async function getProjectKey({
-  body,
-  event,
-}: Payload): Promise<ProjectKeyWithProject | never> {
-  const projectKeys = await new ProjectKeyRepository(event).get(
-    {
-      api_key: body.projectApiKey,
-    },
-    '*, projects(*)'
+async function getProjectKey(
+  body: BodyParams,
+  event: H3Event
+): Promise<ProjectKey | never> {
+  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
+    body.projectApiKey
   );
 
-  if (projectKeys.error instanceof Error) {
-    throw projectKeys.error;
+  if (projectKeys.length === 0) {
+    throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return projectKeys.data![0];
+  return projectKeys[0];
 }
 
-async function existingResourceModel({
-  body,
-  event,
-  projectKey,
-}: Payload): Promise<void | never> {
-  const resourceModels = await new ResourceModelRepository(event).get({
-    name: body.name,
-    is_deleted: false,
-    project_id: projectKey!.projects.id,
-  });
-
-  if (resourceModels.error instanceof Error) {
-    throw resourceModels.error;
-  }
-
-  if (resourceModels.data!.length > 0) {
-    throw createError({
-      statusCode: HTTP_STATUS_BAD_REQUEST,
-      statusMessage: 'Resource model already exists.',
-    });
-  }
-}
+type InsertPayload = {
+  body: BodyParams;
+  event: H3Event;
+  projectKey: ProjectKey;
+};
 
 async function insertResourceModel({
   body,
   event,
   projectKey,
-}: Payload): Promise<ResourceModel | never> {
+}: InsertPayload): Promise<ResourceModel | never> {
   const structure = body.structure.map((item) => {
     const coercedValue = coerce(item.type, item.default);
 
@@ -118,17 +91,11 @@ async function insertResourceModel({
     };
   });
 
-  const resourceModels = await new ResourceModelRepository(event).insert({
-    id: uuidv4(),
+  const resourceModels = await new ResourceModelServices(event).create({
     name: body.name,
     structure,
-    project_id: projectKey!.projects.id,
-    user_id: event.context.auth.user.id,
+    projectId: projectKey.project_id,
   });
 
-  if (resourceModels.error instanceof Error) {
-    throw resourceModels.error;
-  }
-
-  return resourceModels.data![0];
+  return resourceModels;
 }

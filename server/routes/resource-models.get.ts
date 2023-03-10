@@ -1,65 +1,35 @@
 import { H3Event } from 'h3';
-import {
-  ProjectKeyRepository,
-  ResourceModelRepository,
-} from '../repositories/';
-import { ProjectKeyWithProject, ResourceModel } from '~~/types/models';
+import { ProjectKeyServices, ResourceModelServices } from '../services';
+import ErrorResponse from '../utils/errorResponse';
+import { ProjectKey } from '~~/types/models';
 
 type QueryParams = {
   projectApiKey: string;
 };
 
-type Payload = {
-  event: H3Event;
-  projectKey?: ProjectKeyWithProject;
-  query: QueryParams;
-};
-
 export default defineEventHandler(async (event) => {
-  const payload: Payload = {
-    event,
-    query: getQuery(event) as QueryParams,
-  };
+  const query = getQuery(event) as QueryParams;
 
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
-  payload.projectKey = await getProjectKey(payload);
+  const projectKey = await getProjectKey(event, query);
 
-  return await getResourceModels(payload);
+  return await new ResourceModelServices(event).list(projectKey.project_id);
 });
 
-async function getProjectKey({
-  event,
-  query,
-}: Payload): Promise<ProjectKeyWithProject | never> {
-  const projectKeys = await new ProjectKeyRepository(event).get(
-    {
-      api_key: query.projectApiKey,
-    },
-    '*, projects(*)'
+async function getProjectKey(
+  event: H3Event,
+  query: QueryParams
+): Promise<ProjectKey | never> {
+  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
+    query.projectApiKey
   );
 
-  if (projectKeys.error instanceof Error) {
-    throw projectKeys.error;
+  if (projectKeys.length === 0) {
+    throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return projectKeys.data![0];
-}
-
-async function getResourceModels({
-  event,
-  projectKey,
-}: Payload): Promise<ResourceModel[] | never> {
-  const resourceModels = await new ResourceModelRepository(event).get({
-    is_deleted: false,
-    project_id: projectKey!.projects.id,
-  });
-
-  if (resourceModels.error instanceof Error) {
-    throw resourceModels.error;
-  }
-
-  return resourceModels.data!;
+  return projectKeys[0];
 }

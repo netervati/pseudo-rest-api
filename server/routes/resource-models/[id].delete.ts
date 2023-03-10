@@ -1,66 +1,39 @@
 import { H3Event } from 'h3';
-import {
-  ProjectKeyRepository,
-  ResourceModelRepository,
-} from '../../repositories/';
-import { ProjectKeyWithProject, ResourceModel } from '~~/types/models';
+import ErrorResponse from '../../utils/errorResponse';
+import { ProjectKeyServices, ResourceModelServices } from '~~/server/services';
+import { ProjectKey } from '~~/types/models';
 
 type QueryParams = {
   projectApiKey: string;
 };
 
-type Payload = {
-  event: H3Event;
-  projectKey?: ProjectKeyWithProject;
-  query: QueryParams;
-};
-
 export default defineEventHandler(async (event) => {
-  const payload: Payload = {
-    event,
-    query: getQuery(event) as QueryParams,
-  };
+  const query = getQuery(event) as QueryParams;
 
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
-  payload.projectKey = await getProjectKey(payload);
+  const projectKey = await getProjectKey(event, query);
 
-  return await deleteResourceModel(payload);
+  // TODO: Identify whether to delete resource data in this endpoint.
+  return await new ResourceModelServices(event).delete({
+    id: event.context.params.id,
+    projectId: projectKey.project_id,
+  });
 });
 
-async function getProjectKey({
-  event,
-  query,
-}: Payload): Promise<ProjectKeyWithProject | never> {
-  const projectKeys = await new ProjectKeyRepository(event).get(
-    {
-      api_key: query.projectApiKey,
-    },
-    '*, projects(*)'
+async function getProjectKey(
+  event: H3Event,
+  query: QueryParams
+): Promise<ProjectKey | never> {
+  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
+    query.projectApiKey
   );
 
-  if (projectKeys.error instanceof Error) {
-    throw projectKeys.error;
+  if (projectKeys.length === 0) {
+    throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return projectKeys.data![0];
-}
-
-// TODO: Identify whether to delete resource data in this endpoint.
-async function deleteResourceModel({
-  event,
-  projectKey,
-}: Payload): Promise<ResourceModel | never> {
-  const resourceModel = await new ResourceModelRepository(event).delete({
-    id: event.context.params.id,
-    project_id: projectKey!.projects.id,
-  });
-
-  if (resourceModel.error instanceof Error) {
-    throw resourceModel.error;
-  }
-
-  return resourceModel.data![0];
+  return projectKeys[0];
 }
