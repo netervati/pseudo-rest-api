@@ -17,7 +17,7 @@ export default class ProjectKeyServices extends SupabaseService {
       .insert({
         id: uuidv4(),
         api_key: params.apiKey,
-        project_id: params.apiKey,
+        project_id: params.projectId,
         secret_key: params.secretKey,
         user_id: this.user.id,
       })

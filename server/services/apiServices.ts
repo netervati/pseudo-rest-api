@@ -19,7 +19,7 @@ export default class ApiServices extends SupabaseService {
         description: params.description,
         project_id: params.projectId,
         url_path: params.urlPath,
-        userId: this.user.id,
+        user_id: this.user.id,
       })
       .select('*');
 
