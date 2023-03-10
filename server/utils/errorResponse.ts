@@ -16,7 +16,7 @@ export default {
   },
   supabase(error: PostgrestError): NuxtError {
     return createError({
-      statusCode: Number(error.code),
+      statusCode: HTTP_STATUS_BAD_REQUEST,
       statusMessage: error.message,
     });
   },
