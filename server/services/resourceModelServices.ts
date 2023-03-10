@@ -30,6 +30,25 @@ export default class ResourceModelServices extends SupabaseService {
     return resourceModels.data[0];
   }
 
+  async delete(params: { id: string; projectId: string }) {
+    const resourceModel = await this.client
+      .from(this.table)
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString().toLocaleString(),
+      })
+      .eq('id', params.id)
+      .eq('project_id', params.projectId)
+      .eq('user_id', this.user.id)
+      .select('*');
+
+    if (resourceModel.error !== null) {
+      throw ErrorResponse.supabase(resourceModel.error);
+    }
+
+    return resourceModel.data[0];
+  }
+
   async findByName(params: { name: string; projectId: string }) {
     const resourceModels = await this.client
       .from(this.table)
