@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
@@ -7,14 +8,19 @@ export default class ApiServices extends SupabaseService {
   }
 
   async create(params: {
-    id: string;
     description: string | undefined;
-    project_id: string;
-    url_path: string;
+    projectId: string;
+    urlPath: string;
   }) {
     const apis = await this.client
       .from(this.table)
-      .insert({ ...params, user_id: this.user.id })
+      .insert({
+        id: uuidv4(),
+        description: params.description,
+        project_id: params.projectId,
+        url_path: params.urlPath,
+        userId: this.user.id,
+      })
       .select('*');
 
     if (apis.error !== null) {

@@ -1,5 +1,4 @@
 import { H3Event } from 'h3';
-import { v4 as uuidv4 } from 'uuid';
 import shortuuid from 'short-uuid';
 import { ProjectKeyServices, ProjectServices } from '../services';
 import { PostProjectValidation } from '../validations';
@@ -14,7 +13,7 @@ type BodyParams = {
 export default defineEventHandler(async (event) => {
   const body: BodyParams = await readBody<BodyParams>(event);
 
-  validate({ body, event });
+  validate(body, event);
 
   const existingProjects = await new ProjectServices(event).findByName(
     body.name
@@ -25,25 +24,16 @@ export default defineEventHandler(async (event) => {
   }
 
   const project = await new ProjectServices(event).create({
-    id: uuidv4(),
     name: body.name,
     description: body.description,
   });
 
   return {
-    secret_key: await insertProjectKey({
-      event,
-      project,
-    }),
+    secret_key: await insertProjectKey(event, project),
   };
 });
 
-type ValidationParams = {
-  body: BodyParams;
-  event: H3Event;
-};
-
-function validate({ body, event }: ValidationParams): void | never {
+function validate(body: BodyParams, event: H3Event): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
@@ -55,22 +45,16 @@ function validate({ body, event }: ValidationParams): void | never {
   }
 }
 
-type InsertParams = {
-  event: H3Event;
-  project: Project;
-};
-
-async function insertProjectKey({
-  event,
-  project,
-}: InsertParams): Promise<string | never> {
+async function insertProjectKey(
+  event: H3Event,
+  project: Project
+): Promise<string | never> {
   const secretKey = generateSecretKey();
 
   await new ProjectKeyServices(event).create({
-    id: uuidv4(),
-    api_key: shortuuid.generate(),
-    project_id: project.id,
-    secret_key: await hashPassword(secretKey),
+    apiKey: shortuuid.generate(),
+    projectId: project.id,
+    secretKey: await hashPassword(secretKey),
   });
 
   return secretKey;

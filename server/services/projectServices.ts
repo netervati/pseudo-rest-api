@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
@@ -6,14 +7,14 @@ export default class ProjectServices extends SupabaseService {
     return 'projects';
   }
 
-  async create(params: {
-    id: string;
-    name: string;
-    description: string | undefined;
-  }) {
+  async create(params: { name: string; description: string | undefined }) {
     const projects = await this.client
       .from(this.table)
-      .insert({ ...params, user_id: this.user.id })
+      .insert({
+        ...params,
+        id: uuidv4(),
+        user_id: this.user.id,
+      })
       .select('*');
 
     if (projects.error !== null) {

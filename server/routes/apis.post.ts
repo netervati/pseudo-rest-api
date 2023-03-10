@@ -1,5 +1,4 @@
 import { H3Event } from 'h3';
-import { v4 as uuidv4 } from 'uuid';
 import { PostApiValidation } from '../validations';
 import { ApiServices, ProjectKeyServices } from '../services';
 import ErrorResponse from '../utils/errorResponse';
@@ -11,22 +10,12 @@ type BodyParams = {
   urlPath: string;
 };
 
-type Payload = {
-  body: BodyParams;
-  event: H3Event;
-};
-
 export default defineEventHandler(async (event) => {
   const body: BodyParams = await readBody<BodyParams>(event);
 
-  const payload: Payload = {
-    body,
-    event,
-  };
+  validate(body, event);
 
-  validate(payload);
-
-  const projectKey = await getProjectKey(payload);
+  const projectKey = await getProjectKey(body, event);
 
   const apis = await new ApiServices(event).findByUrlPath({
     urlPath: body.urlPath,
@@ -38,14 +27,13 @@ export default defineEventHandler(async (event) => {
   }
 
   return await new ApiServices(event).create({
-    id: uuidv4(),
     description: body.description,
-    project_id: projectKey.project_id,
-    url_path: body.urlPath,
+    projectId: projectKey.project_id,
+    urlPath: body.urlPath,
   });
 });
 
-function validate({ body, event }: Payload): void | never {
+function validate(body: BodyParams, event: H3Event): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
@@ -57,10 +45,10 @@ function validate({ body, event }: Payload): void | never {
   }
 }
 
-async function getProjectKey({
-  body,
-  event,
-}: Payload): Promise<ProjectKey | never> {
+async function getProjectKey(
+  body: BodyParams,
+  event: H3Event
+): Promise<ProjectKey | never> {
   const projectKeys = await new ProjectKeyServices(event).findByApiKey(
     body.projectApiKey
   );

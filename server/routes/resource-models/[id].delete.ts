@@ -7,23 +7,14 @@ type QueryParams = {
   projectApiKey: string;
 };
 
-type Payload = {
-  event: H3Event;
-  projectKey?: ProjectKey;
-  query: QueryParams;
-};
-
 export default defineEventHandler(async (event) => {
-  const payload: Payload = {
-    event,
-    query: getQuery(event) as QueryParams,
-  };
+  const query = getQuery(event) as QueryParams;
 
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
-  const projectKey = await getProjectKey(payload);
+  const projectKey = await getProjectKey(event, query);
 
   // TODO: Identify whether to delete resource data in this endpoint.
   return await new ResourceModelServices(event).delete({
@@ -32,10 +23,10 @@ export default defineEventHandler(async (event) => {
   });
 });
 
-async function getProjectKey({
-  event,
-  query,
-}: Payload): Promise<ProjectKey | never> {
+async function getProjectKey(
+  event: H3Event,
+  query: QueryParams
+): Promise<ProjectKey | never> {
   const projectKeys = await new ProjectKeyServices(event).findByApiKey(
     query.projectApiKey
   );

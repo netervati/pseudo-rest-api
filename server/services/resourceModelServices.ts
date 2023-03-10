@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
@@ -13,14 +14,19 @@ export default class ResourceModelServices extends SupabaseService {
   }
 
   async create(params: {
-    id: string;
     name: string;
     structure: Structure;
-    project_id: string;
+    projectId: string;
   }) {
     const resourceModels = await this.client
       .from(this.table)
-      .insert({ ...params, user_id: this.user.id })
+      .insert({
+        id: uuidv4(),
+        name: params.name,
+        structure: params.structure,
+        project_id: params.projectId,
+        user_id: this.user.id,
+      })
       .select('*');
 
     if (resourceModels.error !== null) {

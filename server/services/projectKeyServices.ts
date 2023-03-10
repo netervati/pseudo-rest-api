@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
@@ -7,14 +8,19 @@ export default class ProjectKeyServices extends SupabaseService {
   }
 
   async create(params: {
-    id: string;
-    api_key: string;
-    project_id: string;
-    secret_key: string;
+    apiKey: string;
+    projectId: string;
+    secretKey: string;
   }) {
     const projectKeys = await this.client
       .from(this.table)
-      .insert({ ...params, user_id: this.user.id })
+      .insert({
+        id: uuidv4(),
+        api_key: params.apiKey,
+        project_id: params.apiKey,
+        secret_key: params.secretKey,
+        user_id: this.user.id,
+      })
       .select('*');
 
     if (projectKeys.error !== null) {

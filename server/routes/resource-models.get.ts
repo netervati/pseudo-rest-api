@@ -14,17 +14,17 @@ export default defineEventHandler(async (event) => {
     throw event.context.auth.error;
   }
 
-  const projectKey = await getProjectKey({ event, query });
+  const projectKey = await getProjectKey(event, query);
 
   return await new ResourceModelServices(event).list(projectKey.project_id);
 });
 
-async function getProjectKey(params: {
-  event: H3Event;
-  query: QueryParams;
-}): Promise<ProjectKey | never> {
-  const projectKeys = await new ProjectKeyServices(params.event).findByApiKey(
-    params.query.projectApiKey
+async function getProjectKey(
+  event: H3Event,
+  query: QueryParams
+): Promise<ProjectKey | never> {
+  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
+    query.projectApiKey
   );
 
   if (projectKeys.length === 0) {

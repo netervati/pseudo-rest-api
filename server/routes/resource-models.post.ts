@@ -15,20 +15,10 @@ type BodyParams = {
   }[];
 };
 
-type Payload = {
-  body: BodyParams;
-  event: H3Event;
-  projectKey?: ProjectKey;
-};
-
 export default defineEventHandler(async (event) => {
   const body = await readBody<BodyParams>(event);
-  const payload: Payload = {
-    body,
-    event,
-  };
 
-  validate({ body, event });
+  validate(body, event);
 
   const uniqueValues = new Set(body.structure.map((item) => item.name));
 
@@ -36,21 +26,21 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Each model name should be unique.');
   }
 
-  payload.projectKey = await getProjectKey(payload);
+  const projectKey = await getProjectKey(body, event);
 
   const resourceModels = await new ResourceModelServices(event).findByName({
-    name: payload.body.name,
-    projectId: payload.projectKey.project_id,
+    name: body.name,
+    projectId: projectKey.project_id,
   });
 
   if (resourceModels.length > 0) {
     throw ErrorResponse.badRequest('Resource model already exists.');
   }
 
-  return await insertResourceModel(payload);
+  return await insertResourceModel({ body, event, projectKey });
 });
 
-function validate({ body, event }: Payload): void | never {
+function validate(body: BodyParams, event: H3Event): void | never {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
@@ -62,10 +52,10 @@ function validate({ body, event }: Payload): void | never {
   }
 }
 
-async function getProjectKey({
-  body,
-  event,
-}: Payload): Promise<ProjectKey | never> {
+async function getProjectKey(
+  body: BodyParams,
+  event: H3Event
+): Promise<ProjectKey | never> {
   const projectKeys = await new ProjectKeyServices(event).findByApiKey(
     body.projectApiKey
   );
@@ -77,11 +67,17 @@ async function getProjectKey({
   return projectKeys[0];
 }
 
+type InsertPayload = {
+  body: BodyParams;
+  event: H3Event;
+  projectKey: ProjectKey;
+};
+
 async function insertResourceModel({
   body,
   event,
   projectKey,
-}: Payload): Promise<ResourceModel | never> {
+}: InsertPayload): Promise<ResourceModel | never> {
   const structure = body.structure.map((item) => {
     const coercedValue = coerce(item.type, item.default);
 
@@ -96,10 +92,9 @@ async function insertResourceModel({
   });
 
   const resourceModels = await new ResourceModelServices(event).create({
-    id: uuidv4(),
     name: body.name,
     structure,
-    project_id: projectKey!.project_id,
+    projectId: projectKey.project_id,
   });
 
   return resourceModels;
