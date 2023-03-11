@@ -2,36 +2,12 @@ import { H3Event } from 'h3';
 import { PostApiValidation } from '../validations';
 import { ApiServices, ProjectKeyServices } from '../services';
 import ErrorResponse from '../utils/errorResponse';
-import { ProjectKey } from '~~/types/models';
 
 type BodyParams = {
   description?: string;
   projectApiKey: string;
   urlPath: string;
 };
-
-export default defineEventHandler(async (event) => {
-  const body: BodyParams = await readBody<BodyParams>(event);
-
-  validate(body, event);
-
-  const projectKey = await getProjectKey(body, event);
-
-  const apis = await new ApiServices(event).findByUrlPath({
-    urlPath: body.urlPath,
-    projectId: projectKey.id,
-  });
-
-  if (apis.length > 0) {
-    throw ErrorResponse.badRequest('API Endpoint already exists.');
-  }
-
-  return await new ApiServices(event).create({
-    description: body.description,
-    projectId: projectKey.project_id,
-    urlPath: body.urlPath,
-  });
-});
 
 function validate(body: BodyParams, event: H3Event): void | never {
   if (event.context.auth.error) {
@@ -45,10 +21,11 @@ function validate(body: BodyParams, event: H3Event): void | never {
   }
 }
 
-async function getProjectKey(
-  body: BodyParams,
-  event: H3Event
-): Promise<ProjectKey | never> {
+export default defineEventHandler(async (event) => {
+  const body: BodyParams = await readBody<BodyParams>(event);
+
+  validate(body, event);
+
   const projectKeys = await new ProjectKeyServices(event).findByApiKey(
     body.projectApiKey
   );
@@ -57,5 +34,18 @@ async function getProjectKey(
     throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return projectKeys[0];
-}
+  const apis = await new ApiServices(event).findByUrlPath({
+    urlPath: body.urlPath,
+    projectId: projectKeys[0].id,
+  });
+
+  if (apis.length > 0) {
+    throw ErrorResponse.badRequest('API Endpoint already exists.');
+  }
+
+  return await new ApiServices(event).create({
+    description: body.description,
+    projectId: projectKeys[0].project_id,
+    urlPath: body.urlPath,
+  });
+});

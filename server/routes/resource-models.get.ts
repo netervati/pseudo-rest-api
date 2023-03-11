@@ -1,7 +1,5 @@
-import { H3Event } from 'h3';
 import { ProjectKeyServices, ResourceModelServices } from '../services';
 import ErrorResponse from '../utils/errorResponse';
-import { ProjectKey } from '~~/types/models';
 
 type QueryParams = {
   projectApiKey: string;
@@ -14,15 +12,6 @@ export default defineEventHandler(async (event) => {
     throw event.context.auth.error;
   }
 
-  const projectKey = await getProjectKey(event, query);
-
-  return await new ResourceModelServices(event).list(projectKey.project_id);
-});
-
-async function getProjectKey(
-  event: H3Event,
-  query: QueryParams
-): Promise<ProjectKey | never> {
   const projectKeys = await new ProjectKeyServices(event).findByApiKey(
     query.projectApiKey
   );
@@ -31,5 +20,5 @@ async function getProjectKey(
     throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return projectKeys[0];
-}
+  return await new ResourceModelServices(event).list(projectKeys[0].project_id);
+});

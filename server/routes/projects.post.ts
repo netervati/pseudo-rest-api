@@ -3,12 +3,23 @@ import shortuuid from 'short-uuid';
 import { ProjectKeyServices, ProjectServices } from '../services';
 import { PostProjectValidation } from '../validations';
 import ErrorResponse from '../utils/errorResponse';
-import { Project } from '~~/types/models';
 
 type BodyParams = {
   name: string;
   description?: string;
 };
+
+function validate(body: BodyParams, event: H3Event): void | never {
+  if (event.context.auth.error) {
+    throw event.context.auth.error;
+  }
+
+  const error = new PostProjectValidation(body).validate();
+
+  if (error) {
+    throw error;
+  }
+}
 
 export default defineEventHandler(async (event) => {
   const body: BodyParams = await readBody<BodyParams>(event);
@@ -28,27 +39,6 @@ export default defineEventHandler(async (event) => {
     description: body.description,
   });
 
-  return {
-    secret_key: await insertProjectKey(event, project),
-  };
-});
-
-function validate(body: BodyParams, event: H3Event): void | never {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
-  const error = new PostProjectValidation(body).validate();
-
-  if (error) {
-    throw error;
-  }
-}
-
-async function insertProjectKey(
-  event: H3Event,
-  project: Project
-): Promise<string | never> {
   const secretKey = generateSecretKey();
 
   await new ProjectKeyServices(event).create({
@@ -57,5 +47,5 @@ async function insertProjectKey(
     secretKey: await hashPassword(secretKey),
   });
 
-  return secretKey;
-}
+  return { secretKey };
+});
