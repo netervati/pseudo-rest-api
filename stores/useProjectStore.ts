@@ -33,7 +33,7 @@ export default defineStore('projects', (): ProjectStore => {
           toast.success('Created a project!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess(response._data.secret_key);
+            options.onSuccess(response._data.secretKey);
           }
         }
       },
