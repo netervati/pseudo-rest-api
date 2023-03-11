@@ -114,24 +114,30 @@ export interface Database {
       resource_data: {
         Row: {
           created_at: string
-          data: Json
-          id: string
+          data: Json | null
+          deleted_at: string | null
+          id: number
+          is_deleted: boolean
           resource_model_id: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          data: Json
-          id: string
+          data?: Json | null
+          deleted_at?: string | null
+          id?: number
+          is_deleted?: boolean
           resource_model_id: string
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          data?: Json
-          id?: string
+          data?: Json | null
+          deleted_at?: string | null
+          id?: number
+          is_deleted?: boolean
           resource_model_id?: string
           updated_at?: string
           user_id?: string
