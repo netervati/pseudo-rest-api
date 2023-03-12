@@ -1,21 +1,12 @@
 <script lang="ts" setup>
   import ModalCreateResourceData from '../modal/createResourceData.vue';
-  import { useResourceDataStore, useResourceModelStore } from '~~/stores';
+  import { useResourceModelStore } from '~~/stores';
 
-  const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 
   const modal = useModal(ModalCreateResourceData, {
     id: 'create-resource-data',
-    onSuccess: () => {
-      // add refresh
-    },
   });
-
-  const handleClick = () => {
-    console.log('CLICKED');
-    modal.open();
-  };
 </script>
 
 <template>
@@ -28,7 +19,7 @@
               v-if="resourceModel.target !== ''"
               color="success"
               size="xs"
-              @click="handleClick"
+              @click="modal.open"
             >
               New Data
             </Button>
