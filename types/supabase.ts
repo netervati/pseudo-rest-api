@@ -116,7 +116,7 @@ export interface Database {
           created_at: string
           data: Json | null
           deleted_at: string | null
-          id: number
+          id: string
           is_deleted: boolean
           resource_model_id: string
           updated_at: string
@@ -126,7 +126,7 @@ export interface Database {
           created_at?: string
           data?: Json | null
           deleted_at?: string | null
-          id?: number
+          id: string
           is_deleted?: boolean
           resource_model_id: string
           updated_at?: string
@@ -136,7 +136,7 @@ export interface Database {
           created_at?: string
           data?: Json | null
           deleted_at?: string | null
-          id?: number
+          id?: string
           is_deleted?: boolean
           resource_model_id?: string
           updated_at?: string
