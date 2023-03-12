@@ -17,7 +17,7 @@ type ResourceDataStore = {
   create: (body: BodyParams, options: Options) => Promise<void>;
 };
 
-export default defineStore('resouce-models', (): ResourceDataStore => {
+export default defineStore('resource-data', (): ResourceDataStore => {
   const list = ref<ResourceData[]>([]);
   const toast = useToast();
 
