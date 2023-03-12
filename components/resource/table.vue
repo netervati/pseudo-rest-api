@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { ChevronRightIcon } from '@heroicons/vue/24/outline';
   import ModalConfirm from '~~/components/modal/confirm.vue';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
@@ -49,25 +50,44 @@
 </script>
 
 <template>
-  <div class="mt-4 overflow-x-auto">
-    <div class="border card h-96 w-1/4">
+  <div class="flex mt-4">
+    <div class="border card h-96 pr-6 w-1/4">
       <div class="card-body">
         <article
           v-for="model in resourceModel.list"
           :key="model.id"
-          class="w-full"
+          class="grid grid-cols-2 w-full"
         >
-          <div class="dropdown w-full">
-            <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
-              {{ model.name }}
-            </Button>
-            <DropdownMenu tabindex="0">
-              <Option size="xs" @click="handleDelete(model.id)">
-                Delete
-              </Option>
-            </DropdownMenu>
-          </div>
+          <span class="m-2 mb-2">{{ model.name }}</span>
+          <span>
+            <div class="dropdown float-right w-1/2">
+              <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
+                <ChevronRightIcon class="h-4 w-4" />
+              </Button>
+              <DropdownMenu tabindex="0">
+                <Option size="xs" @click="handleDelete(model.id)">
+                  Delete
+                </Option>
+              </DropdownMenu>
+            </div>
+          </span>
         </article>
+      </div>
+    </div>
+    <div class="pl-6 w-3/4">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th><Button color="success" size="xs">New Data</Button></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td />
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <ClientOnly>
