@@ -58,10 +58,10 @@
           class="w-full"
         >
           <div class="dropdown w-full">
-            <Button color="ghost" tabindex="2" class="m-1 w-full" size="sm">
+            <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
               {{ model.name }}
             </Button>
-            <DropdownMenu tabindex="2">
+            <DropdownMenu tabindex="0">
               <Option size="xs" @click="handleDelete(model.id)">
                 Delete
               </Option>
