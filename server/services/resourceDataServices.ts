@@ -24,6 +24,6 @@ export default class ResourceDataServices extends SupabaseService {
       throw ErrorResponse.supabase(resourceData.error);
     }
 
-    return resourceData.data[0];
+    return resourceData.data;
   }
 }
