@@ -49,25 +49,27 @@
 </script>
 
 <template>
-  <div class="mt-2 overflow-x-auto">
-    <table class="table w-full">
-      <thead>
-        <tr>
-          <th>Resource Model</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="model in resourceModel.list" :key="model.id">
-          <td>{{ model.name }}</td>
-          <td>
-            <Button color="error" size="sm" @click="handleDelete(model.id)">
-              Delete
+  <div class="mt-4 overflow-x-auto">
+    <div class="border card h-96 w-1/4">
+      <div class="card-body">
+        <article
+          v-for="model in resourceModel.list"
+          :key="model.id"
+          class="w-full"
+        >
+          <div class="dropdown w-full">
+            <Button color="ghost" tabindex="2" class="m-1 w-full" size="sm">
+              {{ model.name }}
             </Button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <DropdownMenu tabindex="2">
+              <Option size="xs" @click="handleDelete(model.id)">
+                Delete
+              </Option>
+            </DropdownMenu>
+          </div>
+        </article>
+      </div>
+    </div>
     <ClientOnly>
       <modal.component>
         Are you sure you want to delete the resource model?
