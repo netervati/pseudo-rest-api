@@ -2,6 +2,7 @@
   import { ChevronRightIcon } from '@heroicons/vue/24/outline';
   import ModalConfirm from '~~/components/modal/confirm.vue';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import { ResourceModel } from '~~/types/models';
 
   const props = defineProps<{
     refresh: number;
@@ -13,14 +14,15 @@
 
   const state = reactive({
     deleting: false,
-    target: '',
+    deleteId: '',
+    openId: '',
   });
 
   const modal = useModal(ModalConfirm, {
     id: 'confirm-delete-resource-model',
     onConfirm: async (callback) => {
       await resourceModel.delete({
-        id: state.target,
+        id: state.deleteId,
         projectApiKey,
       });
 
@@ -29,7 +31,11 @@
       resourceModel.clear();
       await resourceModel.fetch(projectApiKey);
 
-      state.target = '';
+      if (state.deleteId === state.openId) {
+        state.openId = '';
+      }
+
+      state.deleteId = '';
     },
   });
 
@@ -43,9 +49,20 @@
     await resourceModel.fetch(projectApiKey);
   });
 
-  const handleDelete = (id: string) => {
-    state.target = id;
-    modal.open();
+  const dispatch = (action: string, data: ResourceModel | any) => {
+    switch (action) {
+      case 'delete':
+        state.deleteId = data.id;
+        modal.open();
+
+        break;
+      case 'open':
+        state.openId = data.id;
+
+        break;
+      default:
+        break;
+    }
   };
 </script>
 
@@ -56,21 +73,24 @@
         <article
           v-for="model in resourceModel.list"
           :key="model.id"
-          class="grid grid-cols-2 w-full"
+          class="flex flex-row w-full"
         >
-          <span class="m-2 mb-2">{{ model.name }}</span>
-          <span>
-            <div class="dropdown float-right w-1/2">
-              <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
-                <ChevronRightIcon class="h-4 w-4" />
-              </Button>
-              <DropdownMenu tabindex="0">
-                <Option size="xs" @click="handleDelete(model.id)">
-                  Delete
-                </Option>
-              </DropdownMenu>
-            </div>
-          </span>
+          <ResourceButton
+            :is-active="state.openId === model.id"
+            @click="dispatch('open', model)"
+          >
+            {{ model.name }}
+          </ResourceButton>
+          <div class="dropdown grow-0 w-10">
+            <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
+              <ChevronRightIcon class="h-4 w-4" />
+            </Button>
+            <DropdownMenu tabindex="0">
+              <Option size="xs" @click="dispatch('delete', model)">
+                Delete
+              </Option>
+            </DropdownMenu>
+          </div>
         </article>
       </div>
     </div>
@@ -79,7 +99,11 @@
         <table class="table w-full">
           <thead>
             <tr>
-              <th><Button color="success" size="xs">New Data</Button></th>
+              <th>
+                <Button v-if="state.openId !== ''" color="success" size="xs">
+                  New Data
+                </Button>
+              </th>
             </tr>
           </thead>
           <tbody>
