@@ -15,7 +15,6 @@
   const state = reactive({
     deleting: false,
     deleteId: '',
-    openId: '',
   });
 
   const modal = useModal(ModalConfirm, {
@@ -31,8 +30,8 @@
       resourceModel.clear();
       await resourceModel.fetch(projectApiKey);
 
-      if (state.deleteId === state.openId) {
-        state.openId = '';
+      if (state.deleteId === resourceModel.target) {
+        resourceModel.target = '';
       }
 
       state.deleteId = '';
@@ -57,7 +56,7 @@
 
         break;
       case 'open':
-        state.openId = data.id;
+        resourceModel.target = data.id;
 
         break;
       default:
@@ -76,7 +75,7 @@
           class="flex flex-row w-full"
         >
           <ResourceButton
-            :is-active="state.openId === model.id"
+            :is-active="resourceModel.target === model.id"
             @click="dispatch('open', model)"
           >
             {{ model.name }}
@@ -95,24 +94,7 @@
       </div>
     </div>
     <div class="pl-6 w-3/4">
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>
-                <Button v-if="state.openId !== ''" color="success" size="xs">
-                  New Data
-                </Button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td />
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <ResourceDataTable />
     </div>
     <ClientOnly>
       <modal.component>
