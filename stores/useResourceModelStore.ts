@@ -24,6 +24,7 @@ type Options = {
 
 type ResourceModelStore = {
   list: Ref<ResourceModel[]>;
+  target: Ref<string>;
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
   delete: (params: DeleteParams, options?: Options) => Promise<void>;
@@ -32,6 +33,7 @@ type ResourceModelStore = {
 
 export default defineStore('resouce-models', (): ResourceModelStore => {
   const list = ref<ResourceModel[]>([]);
+  const target = ref<string>('');
   const toast = useToast();
 
   /**
@@ -106,6 +108,7 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
   return {
     // @ts-ignore
     list,
+    target,
     clear,
     create,
     delete: del,
