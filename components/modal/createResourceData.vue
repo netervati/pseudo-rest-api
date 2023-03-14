@@ -11,6 +11,7 @@
     id: string;
   }>();
 
+  const projectApiKey = useProjectApiKey() || '';
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 
@@ -32,6 +33,7 @@
         await resourceData.create(
           {
             count: Number(body.count),
+            projectApiKey,
             resourceModelId: resourceModel.target,
           },
           {
