@@ -1,11 +1,16 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../../../utils/errorResponse';
-import { ResourceDataServices, ResourceModelServices } from '../../../services';
+import {
+  ProjectKeyServices,
+  ResourceDataServices,
+  ResourceModelServices,
+} from '../../../services';
 import { PostResourceDataValidation } from '~~/server/validations';
 
 type BodyParams = {
   count: number;
+  projectApiKey: string;
 };
 
 type Entry = { [key: string]: string | number | boolean };
@@ -59,6 +64,14 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<BodyParams>(event);
 
   validate(body, event);
+
+  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
+    body.projectApiKey
+  );
+
+  if (projectKeys.length === 0) {
+    throw ErrorResponse.notFound('Project key does not exist');
+  }
 
   const resourceModel = await new ResourceModelServices(event).find(
     event.context.params.id

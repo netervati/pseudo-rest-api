@@ -4,6 +4,7 @@ import { ResourceData } from '~~/types/models';
 
 type BodyParams = {
   count: number;
+  projectApiKey: string;
   resourceModelId: string;
 };
 
@@ -15,6 +16,7 @@ type ResourceDataStore = {
   list: Ref<ResourceData[]>;
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
+  fetch: (body: BodyParams) => Promise<void>;
 };
 
 export default defineStore('resource-data', (): ResourceDataStore => {
@@ -34,7 +36,10 @@ export default defineStore('resource-data', (): ResourceDataStore => {
   const create = async (body: BodyParams, options: Options): Promise<void> => {
     await $fetch(`/resource-models/${body.resourceModelId}/resource-data`, {
       method: 'POST',
-      body: { count: body.count },
+      body: {
+        count: body.count,
+        projectApiKey: body.projectApiKey,
+      },
       onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Created resource data!');
@@ -49,11 +54,29 @@ export default defineStore('resource-data', (): ResourceDataStore => {
     });
   };
 
+  /**
+   * A function for fetching resource data from the server.
+   */
+  const fetch = async (body: BodyParams): Promise<void> => {
+    await $fetch(`/resource-models/${body.resourceModelId}/resource-data`, {
+      method: 'GET',
+      query: { projectApiKey: body.projectApiKey },
+      onResponse({ response }) {
+        if (response.status === 200) {
+          list.value = response._data;
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   // @ts-ignore
   return {
     // @ts-ignore
     list,
     clear,
     create,
+    fetch,
   };
 });
