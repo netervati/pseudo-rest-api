@@ -45,20 +45,14 @@ function setValue(field: Structure): string | number | boolean {
   }
 }
 
-function generateData(count: number, structure: Structure[]) {
-  const data: Entry[] = [];
+function generateData(structure: Structure[]) {
+  const entry: Entry = {};
 
-  while (data.length < count) {
-    const entry: Entry = {};
+  structure.forEach((field) => {
+    entry[field.id] = setValue(field);
+  });
 
-    structure.forEach((field) => {
-      entry[field.id] = setValue(field);
-    });
-
-    data.push(entry);
-  }
-
-  return data;
+  return entry;
 }
 
 export default defineEventHandler(async (event) => {
@@ -74,8 +68,16 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Resource model does not exist.');
   }
 
-  return await new ResourceDataServices(event).create({
-    data: generateData(body.count, resourceModel.structure),
-    resourceModelId: resourceModel.id,
-  });
+  const resourceData = [];
+
+  while (resourceData.length < body.count) {
+    resourceData.push(
+      await new ResourceDataServices(event).create({
+        data: generateData(resourceModel.structure),
+        resourceModelId: resourceModel.id,
+      })
+    );
+  }
+
+  return resourceData;
 });
