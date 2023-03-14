@@ -47,7 +47,7 @@
 
 <template>
   <ModalBase :id="id" @close="form.close">
-    <h3 class="text-lg font-bold">Create Resource Data</h3>
+    <h3 class="text-lg font-bold">Generate Resource Data</h3>
     <section class="form-control mt-2">
       <input
         v-model="form.fields.count"
@@ -56,6 +56,10 @@
         max="10"
         class="range range-xs"
       />
+    </section>
+    <section class="grid grid-cols-2">
+      <div>{{ form.fields.count }}</div>
+      <div class="text-end">10</div>
     </section>
     <ModalFooter
       :deps="form.controls"
