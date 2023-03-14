@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
-type Data = { [key: string]: string | number | boolean }[];
+type Data = { [key: string]: string | number | boolean };
 
 export default class ResourceDataServices extends SupabaseService {
   get table() {
