@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+  import { ChevronRightIcon } from '@heroicons/vue/24/outline';
   import ModalConfirm from '~~/components/modal/confirm.vue';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import { ResourceModel } from '~~/types/models';
 
   const props = defineProps<{
     refresh: number;
@@ -12,14 +14,14 @@
 
   const state = reactive({
     deleting: false,
-    target: '',
+    deleteId: '',
   });
 
   const modal = useModal(ModalConfirm, {
     id: 'confirm-delete-resource-model',
     onConfirm: async (callback) => {
       await resourceModel.delete({
-        id: state.target,
+        id: state.deleteId,
         projectApiKey,
       });
 
@@ -28,7 +30,11 @@
       resourceModel.clear();
       await resourceModel.fetch(projectApiKey);
 
-      state.target = '';
+      if (state.deleteId === resourceModel.target) {
+        resourceModel.target = '';
+      }
+
+      state.deleteId = '';
     },
   });
 
@@ -42,32 +48,54 @@
     await resourceModel.fetch(projectApiKey);
   });
 
-  const handleDelete = (id: string) => {
-    state.target = id;
-    modal.open();
+  const dispatch = (action: string, data: ResourceModel | any) => {
+    switch (action) {
+      case 'delete':
+        state.deleteId = data.id;
+        modal.open();
+
+        break;
+      case 'open':
+        resourceModel.target = data.id;
+
+        break;
+      default:
+        break;
+    }
   };
 </script>
 
 <template>
-  <div class="mt-2 overflow-x-auto">
-    <table class="table w-full">
-      <thead>
-        <tr>
-          <th>Resource Model</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="model in resourceModel.list" :key="model.id">
-          <td>{{ model.name }}</td>
-          <td>
-            <Button color="error" size="sm" @click="handleDelete(model.id)">
-              Delete
+  <div class="flex mt-4">
+    <div class="border card h-96 pr-6 w-1/4">
+      <div class="card-body">
+        <article
+          v-for="model in resourceModel.list"
+          :key="model.id"
+          class="flex flex-row w-full"
+        >
+          <ResourceButton
+            :is-active="resourceModel.target === model.id"
+            @click="dispatch('open', model)"
+          >
+            {{ model.name }}
+          </ResourceButton>
+          <div class="dropdown grow-0 w-10">
+            <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
+              <ChevronRightIcon class="h-4 w-4" />
             </Button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <DropdownMenu tabindex="0">
+              <Option size="xs" @click="dispatch('delete', model)">
+                Delete
+              </Option>
+            </DropdownMenu>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="pl-6 w-3/4">
+      <ResourceDataTable />
+    </div>
     <ClientOnly>
       <modal.component>
         Are you sure you want to delete the resource model?

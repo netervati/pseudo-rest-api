@@ -71,6 +71,19 @@ export default class ResourceModelServices extends SupabaseService {
     return resourceModels.data;
   }
 
+  async find(id: string) {
+    const resourceModel = await this.client
+      .from(this.table)
+      .select('*')
+      .eq('id', id);
+
+    if (resourceModel.error !== null) {
+      throw ErrorResponse.supabase(resourceModel.error);
+    }
+
+    return resourceModel.data[0];
+  }
+
   async list(projectId: string) {
     const resourceModels = await this.client
       .from(this.table)
