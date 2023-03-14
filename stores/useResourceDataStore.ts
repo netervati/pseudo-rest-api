@@ -2,11 +2,12 @@ import { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { ResourceData } from '~~/types/models';
 
-type BodyParams = {
-  count: number;
+type FetchParams = {
   projectApiKey: string;
   resourceModelId: string;
 };
+
+type BodyParams = { count: number } & FetchParams;
 
 type Options = {
   onSuccess?: () => void;
@@ -16,7 +17,7 @@ type ResourceDataStore = {
   list: Ref<ResourceData[]>;
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
-  fetch: (body: BodyParams) => Promise<void>;
+  fetch: (body: FetchParams) => Promise<void>;
 };
 
 export default defineStore('resource-data', (): ResourceDataStore => {
@@ -57,7 +58,7 @@ export default defineStore('resource-data', (): ResourceDataStore => {
   /**
    * A function for fetching resource data from the server.
    */
-  const fetch = async (body: BodyParams): Promise<void> => {
+  const fetch = async (body: FetchParams): Promise<void> => {
     await $fetch(`/resource-models/${body.resourceModelId}/resource-data`, {
       method: 'GET',
       query: { projectApiKey: body.projectApiKey },
