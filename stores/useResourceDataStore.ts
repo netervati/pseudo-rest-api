@@ -14,23 +14,25 @@ type Options = {
   onSuccess?: () => void;
 };
 
+type ResourceDataHash = { [key: string]: ResourceData[] };
+
 type ResourceDataStore = {
-  list: Ref<ResourceData[]>;
-  clear: () => void;
+  list: Ref<ResourceDataHash>;
+  clear: (resourceModelId: string) => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
   delete: (params: DeleteParams, options?: Options) => Promise<void>;
   fetch: (body: FetchParams) => Promise<void>;
 };
 
 export default defineStore('resource-data', (): ResourceDataStore => {
-  const list = ref<ResourceData[]>([]);
+  const list = ref<ResourceDataHash>({});
   const toast = useToast();
 
   /**
    * Resets data in state.
    */
-  const clear = () => {
-    list.value = [];
+  const clear = (resourceModelId: string) => {
+    list.value[resourceModelId] = [];
   };
 
   /**
@@ -93,7 +95,11 @@ export default defineStore('resource-data', (): ResourceDataStore => {
       query: { projectApiKey: body.projectApiKey },
       onResponse({ response }) {
         if (response.status === 200) {
-          list.value = response._data;
+          const responseList = response._data;
+
+          if (responseList.length > 0) {
+            list.value[responseList[0].resource_model_id] = response._data;
+          }
         }
       },
     }).catch((error) => {

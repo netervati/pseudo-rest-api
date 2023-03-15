@@ -20,18 +20,19 @@
       });
 
       callback();
+      resourceData.clear(props.modelId);
 
-      resourceData.clear();
       await resourceData.fetch({
         projectApiKey,
         resourceModelId: props.modelId,
       });
+
       resourceDataId.value = '';
     },
   });
 
   onMounted(async () => {
-    if (props.modelId !== '' && resourceData.list.length === 0) {
+    if (props.modelId !== '' && resourceData.list[props.modelId].length === 0) {
       await resourceData.fetch({
         projectApiKey,
         resourceModelId: props.modelId,
@@ -40,7 +41,7 @@
   });
 
   onUnmounted(() => {
-    resourceData.clear();
+    resourceData.clear(props.modelId);
   });
 
   watchEffect(() => {
@@ -60,7 +61,7 @@
 
 <template>
   <tbody>
-    <tr v-for="record in resourceData.list" :key="record.id">
+    <tr v-for="record in resourceData.list[modelId]" :key="record.id">
       <td>
         <Button color="error" size="xs" @click="handleOpen(record.id)">
           Delete
