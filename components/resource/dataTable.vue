@@ -3,6 +3,8 @@
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
   const resourceModel = useResourceModelStore();
+  const refreshKey = ref(Date.now());
+
   const structure = computed(() => {
     const list = resourceModel.list.filter(
       // @ts-ignore
@@ -16,6 +18,9 @@
 
   const modal = useModal(ModalCreateResourceData, {
     id: 'create-resource-data',
+    onSuccess: () => {
+      refreshKey.value = Date.now();
+    },
   });
 </script>
 
@@ -39,7 +44,10 @@
           </th>
         </tr>
       </thead>
-      <ResourceDataTableBody :model-id="resourceModel.target" />
+      <ResourceDataTableBody
+        :key="refreshKey"
+        :model-id="resourceModel.target"
+      />
     </table>
     <ClientOnly>
       <modal.component />
