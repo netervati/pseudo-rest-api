@@ -1,12 +1,11 @@
 <script lang="ts" setup>
   import ModalCreateResourceData from '../modal/createResourceData.vue';
-  import { useResourceDataStore, useResourceModelStore } from '~~/stores';
+  import useResourceModelStore from '~~/stores/useResourceModelStore';
 
-  const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
   const structure = computed(() => {
-    // @ts-ignore
     const list = resourceModel.list.filter(
+      // @ts-ignore
       (target) => target.id === resourceModel.target
     );
 
@@ -15,37 +14,13 @@
     }
   });
 
-  const projectApiKey = useProjectApiKey() || '';
-
   const modal = useModal(ModalCreateResourceData, {
     id: 'create-resource-data',
-  });
-
-  onMounted(async () => {
-    if (resourceModel.target !== '' && resourceData.list.length === 0) {
-      await resourceData.fetch({
-        projectApiKey,
-        resourceModelId: resourceModel.target,
-      });
-    }
-  });
-
-  onUnmounted(() => {
-    resourceData.clear();
-  });
-
-  watchEffect(() => {
-    if (resourceModel.target !== '') {
-      resourceData.fetch({
-        projectApiKey,
-        resourceModelId: resourceModel.target,
-      });
-    }
   });
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-auto h-96">
     <table class="table w-full">
       <thead>
         <tr>
@@ -64,18 +39,7 @@
           </th>
         </tr>
       </thead>
-      <tbody>
-        <tr v-for="record in resourceData.list" :key="record.id">
-          <td />
-          <td
-            v-for="// @ts-ignore
-              [key, value] in Object.entries(record.data)"
-            :key="key"
-          >
-            {{ value }}
-          </td>
-        </tr>
-      </tbody>
+      <ResourceDataTableBody :model-id="resourceModel.target" />
     </table>
     <ClientOnly>
       <modal.component />

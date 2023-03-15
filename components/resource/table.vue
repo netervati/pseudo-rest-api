@@ -101,7 +101,7 @@
         </article>
       </div>
     </div>
-    <div class="pl-6 w-3/4">
+    <div class="pl-6 h-72 w-3/4">
       <ResourceDataTable />
     </div>
     <ClientOnly>
