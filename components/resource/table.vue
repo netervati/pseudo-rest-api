@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { ChevronRightIcon } from '@heroicons/vue/24/outline';
   import ModalConfirm from '~~/components/modal/confirm.vue';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import { useResourceDataStore, useResourceModelStore } from '~~/stores';
   import { ResourceModel } from '~~/types/models';
 
   const props = defineProps<{
@@ -10,6 +10,7 @@
 
   const { refresh } = toRefs(props);
   const projectApiKey = useProjectApiKey() || '';
+  const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 
   const state = reactive({
@@ -44,6 +45,10 @@
     }
   });
 
+  onUnmounted(() => {
+    resourceModel.target = '';
+  });
+
   watch(refresh, async () => {
     await resourceModel.fetch(projectApiKey);
   });
@@ -56,7 +61,10 @@
 
         break;
       case 'open':
-        resourceModel.target = data.id;
+        if (resourceModel.target !== data.id) {
+          resourceModel.target = data.id;
+          resourceData.clear();
+        }
 
         break;
       default:
