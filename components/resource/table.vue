@@ -62,8 +62,11 @@
         break;
       case 'open':
         if (resourceModel.target !== data.id) {
+          if (!(data.id in resourceData.list)) {
+            resourceData.clear(resourceModel.target);
+          }
+
           resourceModel.target = data.id;
-          resourceData.clear();
         }
 
         break;
