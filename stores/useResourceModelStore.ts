@@ -102,11 +102,7 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     });
   };
 
-  // Added these ignore comments here since TS is unable
-  // to analyze type `Json` in ResourceModel properly.
-  // @ts-ignore
   return {
-    // @ts-ignore
     list,
     target,
     clear,

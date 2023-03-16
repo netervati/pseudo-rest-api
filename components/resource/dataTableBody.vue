@@ -67,11 +67,7 @@
           Delete
         </Button>
       </td>
-      <td
-        v-for="// @ts-ignore
-          [key, value] in Object.entries(record.data)"
-        :key="key"
-      >
+      <td v-for="[key, value] in Object.entries(record.data)" :key="key">
         {{ value }}
       </td>
     </tr>
