@@ -32,6 +32,7 @@
       await resourceModel.fetch(projectApiKey);
 
       if (state.deleteId === resourceModel.target) {
+        resourceData.clear(resourceModel.target);
         resourceModel.target = '';
       }
 
