@@ -107,9 +107,7 @@ export default defineStore('resource-data', (): ResourceDataStore => {
     });
   };
 
-  // @ts-ignore
   return {
-    // @ts-ignore
     list,
     clear,
     create,

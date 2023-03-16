@@ -7,7 +7,6 @@
 
   const structure = computed(() => {
     const list = resourceModel.list.filter(
-      // @ts-ignore
       (target) => target.id === resourceModel.target
     );
 

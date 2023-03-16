@@ -53,7 +53,7 @@
     await resourceModel.fetch(projectApiKey);
   });
 
-  const dispatch = (action: string, data: ResourceModel | any) => {
+  const dispatch = (action: string, data: ResourceModel) => {
     switch (action) {
       case 'delete':
         state.deleteId = data.id;
