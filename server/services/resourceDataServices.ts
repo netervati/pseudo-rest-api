@@ -9,6 +9,25 @@ export default class ResourceDataServices extends SupabaseService {
     return 'resource_data';
   }
 
+  async bulkDelete(resourceModelId: string) {
+    const resourceData = await this.client
+      .from(this.table)
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString().toLocaleString(),
+      })
+      .eq('is_deleted', false)
+      .eq('resource_model_id', resourceModelId)
+      .eq('user_id', this.user.id)
+      .select('*');
+
+    if (resourceData.error !== null) {
+      throw ErrorResponse.supabase(resourceData.error);
+    }
+
+    return resourceData.data;
+  }
+
   async create(params: { data: Data; resourceModelId: string }) {
     const resourceData = await this.client
       .from(this.table)

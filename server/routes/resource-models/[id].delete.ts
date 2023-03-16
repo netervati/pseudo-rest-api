@@ -1,5 +1,9 @@
 import ErrorResponse from '../../utils/errorResponse';
-import { ProjectKeyServices, ResourceModelServices } from '~~/server/services';
+import {
+  ProjectKeyServices,
+  ResourceDataServices,
+  ResourceModelServices,
+} from '~~/server/services';
 
 type QueryParams = {
   projectApiKey: string;
@@ -20,9 +24,12 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  // TODO: Identify whether to delete resource data in this endpoint.
-  return await new ResourceModelServices(event).delete({
+  const resourceModel = await new ResourceModelServices(event).delete({
     id: event.context.params.id,
     projectId: projectKeys[0].project_id,
   });
+
+  await new ResourceDataServices(event).bulkDelete(event.context.params.id);
+
+  return resourceModel;
 });

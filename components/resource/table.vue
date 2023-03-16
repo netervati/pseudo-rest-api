@@ -35,6 +35,7 @@
         resourceModel.target = '';
       }
 
+      resourceData.clear(state.deleteId);
       state.deleteId = '';
     },
   });
