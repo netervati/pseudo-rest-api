@@ -15,8 +15,8 @@ export default class ResourceModelServices extends SupabaseService {
 
   async create(params: {
     name: string;
-    structure: Structure;
     projectId: string;
+    structure: Structure;
   }) {
     const resourceModels = await this.client
       .from(this.table)
@@ -97,5 +97,28 @@ export default class ResourceModelServices extends SupabaseService {
     }
 
     return resourceModels.data;
+  }
+
+  async update(params: {
+    id: string;
+    name: string;
+    projectId: string;
+    structure: Structure;
+  }) {
+    const resourceModels = await this.client
+      .from(this.table)
+      .update({
+        name: params.name,
+        structure: params.structure,
+      })
+      .eq('id', params.id)
+      .eq('project_id', params.projectId)
+      .select('*');
+
+    if (resourceModels.error !== null) {
+      throw ErrorResponse.supabase(resourceModels.error);
+    }
+
+    return resourceModels.data[0];
   }
 }
