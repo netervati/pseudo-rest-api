@@ -13,3 +13,17 @@ export class PostResourceModelValidation extends BaseValidation {
     },
   };
 }
+
+export class PutResourceModelValidation extends BaseValidation {
+  strategies = {
+    name: 'string,blank',
+    structure: {
+      rules: 'required,array',
+      array: {
+        default: 'required,string',
+        name: 'required,string,blank',
+        type: 'required,string,blank',
+      },
+    },
+  };
+}
