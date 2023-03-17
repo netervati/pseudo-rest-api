@@ -101,16 +101,21 @@ export default class ResourceModelServices extends SupabaseService {
 
   async update(params: {
     id: string;
-    name: string;
+    name?: string;
     projectId: string;
     structure: Structure;
   }) {
+    const payload: { name?: string; structure: Structure } = {
+      structure: params.structure,
+    };
+
+    if (params.name) {
+      payload.name = params.name;
+    }
+
     const resourceModels = await this.client
       .from(this.table)
-      .update({
-        name: params.name,
-        structure: params.structure,
-      })
+      .update(payload)
       .eq('id', params.id)
       .eq('project_id', params.projectId)
       .select('*');
