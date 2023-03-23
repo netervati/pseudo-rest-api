@@ -95,6 +95,7 @@
         const cleanStructure = body.structure.map((structure) => ({
           default: structure.default,
           id: structure.id,
+          locked: structure.locked,
           name: structure.name,
           type: structure.type,
         }));
