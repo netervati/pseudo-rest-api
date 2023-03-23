@@ -10,7 +10,9 @@
 
   const props = defineProps<{
     id: string;
-    deps: UnwrapNestedRefs<{ [key: string]: string | number | boolean }>;
+    deps: UnwrapNestedRefs<{
+      target: string;
+    }>;
   }>();
 
   type Structure = {
@@ -97,8 +99,13 @@
           type: structure.type,
         }));
 
-        await resourceModel.create(
-          { name: body.name.trim(), projectApiKey, structure: cleanStructure },
+        await resourceModel.update(
+          {
+            id: props.deps.target,
+            name: body.name.trim(),
+            projectApiKey,
+            structure: cleanStructure,
+          },
           {
             onSuccess: () => {
               emit('success', '');
