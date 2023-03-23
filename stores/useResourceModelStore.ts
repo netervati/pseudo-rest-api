@@ -4,7 +4,7 @@ import { ResourceModel } from '~~/types/models';
 
 type Structure = {
   default: string;
-  id: number;
+  id: string;
   name: string;
   type: string;
 }[];

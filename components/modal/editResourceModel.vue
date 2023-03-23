@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
+  import { Ref, UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
@@ -8,20 +8,10 @@
     (e: 'success', key: string): void;
   }>();
 
-  defineProps<{
+  const props = defineProps<{
     id: string;
+    deps: UnwrapNestedRefs<{ [key: string]: string | number | boolean }>;
   }>();
-
-  const resourceDataType = useResourceDataTypeStore();
-  const resourceModel = useResourceModelStore();
-
-  onMounted(async () => {
-    if (resourceDataType.list.length === 0) {
-      await resourceDataType.fetch();
-    }
-  });
-
-  const projectApiKey = useProjectApiKey() || '';
 
   type Structure = {
     id: string;
@@ -31,12 +21,44 @@
     name: string;
     typeError: string;
     type: string;
+    locked?: boolean;
   };
+
+  const defaultStructure = ref<Structure[]>([]);
+  const resourceDataType = useResourceDataTypeStore();
+  const resourceModel = useResourceModelStore();
+
+  watchEffect(() => {
+    if (props.deps.target !== '') {
+      const target = resourceModel.list.filter(
+        (element) => element.id === props.deps.target
+      );
+
+      for (const element of target[0]?.structure) {
+        defaultStructure.value.push({
+          ...element,
+          default: `${element.default}`,
+          defaultError: '',
+          nameError: '',
+          typeError: '',
+          locked: true,
+        });
+      }
+    }
+  });
+
+  onMounted(async () => {
+    if (resourceDataType.list.length === 0) {
+      await resourceDataType.fetch();
+    }
+  });
+
+  const projectApiKey = useProjectApiKey() || '';
 
   type Form = {
     nameError: string;
     name: string;
-    structure: Structure[];
+    structure: Structure[] | Ref<Structure[]>;
     validations: {
       name: 'blank';
       structure: {
@@ -53,17 +75,7 @@
     {
       nameError: '',
       name: '',
-      structure: [
-        {
-          id: `${Date.now()}`,
-          defaultError: '',
-          default: '',
-          nameError: '',
-          name: 'id',
-          typeError: '',
-          type: '',
-        },
-      ],
+      structure: defaultStructure,
       validations: {
         name: 'blank',
         structure: {
@@ -190,7 +202,7 @@
           <Input
             v-model="structure.name"
             placeholder="Enter the field name"
-            :disabled="structure.name === 'id'"
+            :disabled="structure.name === 'id' || structure.locked === true"
             :error="structure.nameError !== ''"
             @change="handleStructureChange({ action: 'name', structure })"
           />
@@ -201,6 +213,7 @@
         <section class="basis-2/12 form-control ml-2 mr-2">
           <Select
             v-model="structure.type"
+            :disabled="structure.locked === true"
             :error="structure.typeError !== ''"
             @change="handleStructureChange({ action: 'type', structure })"
           >
@@ -222,6 +235,7 @@
             v-if="isDefaultAllowed(structure)"
             v-model="structure.default"
             placeholder="Enter the default value"
+            :disabled="structure.locked === true"
             :error="structure.defaultError !== ''"
             @change="handleStructureChange({ action: 'default', structure })"
           />
