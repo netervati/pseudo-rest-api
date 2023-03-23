@@ -2,15 +2,24 @@ import { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { ResourceModel } from '~~/types/models';
 
+type Structure = {
+  default: string;
+  id: string;
+  name: string;
+  type: string;
+}[];
+
 type BodyParams = {
   name: string;
   projectApiKey: string;
-  structure: {
-    default: string;
-    id: number;
-    name: string;
-    type: string;
-  }[];
+  structure: Structure;
+};
+
+type UpdateParams = {
+  id: string;
+  name?: string;
+  projectApiKey: string;
+  structure: Structure;
 };
 
 type DeleteParams = {
@@ -29,6 +38,7 @@ type ResourceModelStore = {
   create: (body: BodyParams, options: Options) => Promise<void>;
   delete: (params: DeleteParams, options?: Options) => Promise<void>;
   fetch: (projectApiKey: string) => Promise<void>;
+  update: (body: UpdateParams, options: Options) => Promise<void>;
 };
 
 export default defineStore('resouce-models', (): ResourceModelStore => {
@@ -102,12 +112,53 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     });
   };
 
+  /**
+   * A function for updating resource model.
+   */
+  const update = async (
+    body: UpdateParams,
+    options: Options
+  ): Promise<void> => {
+    const payload: {
+      name?: string;
+      projectApiKey: string;
+      structure: Structure;
+    } = {
+      projectApiKey: body.projectApiKey,
+      structure: body.structure,
+    };
+
+    if (body.name) {
+      payload.name = body.name;
+    }
+
+    await $fetch(`/resource-models/${body.id}`, {
+      method: 'PUT',
+      body: payload,
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Updated the resource model!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess();
+          }
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   return {
+    // PROPERTIES
     list,
     target,
+
+    // OPERATIONS
     clear,
     create,
     delete: del,
     fetch,
+    update,
   };
 });

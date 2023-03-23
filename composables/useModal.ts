@@ -1,7 +1,11 @@
-import { Component } from 'vue';
+import { Component, UnwrapNestedRefs } from 'vue';
 
 type ModalProps = {
   id: string;
+  deps?:
+    | { [key: string]: string | number | boolean }
+    | UnwrapNestedRefs<{ [key: string]: string | number | boolean }>;
+  onClose?: () => void;
   onConfirm?: (callback: () => void) => void | Promise<void>;
   onError?: () => void;
   onSuccess?: (params: string) => void;
@@ -41,16 +45,15 @@ export default function (
 
   const close = () => {
     display.value = false;
+
+    if (typeof options.onClose === 'function') {
+      options.onClose();
+    }
   };
 
   const open = () => {
     display.value = true;
   };
-
-  const vnode = h(component, {
-    ...options,
-    onClose: close,
-  });
 
   watch(display, () => {
     const checkbox = document.getElementById(options.id) as HTMLInputElement;
@@ -61,7 +64,14 @@ export default function (
   });
 
   return {
-    component: vnode,
+    component: {
+      render() {
+        return h(component, {
+          ...options,
+          onClose: close,
+        });
+      },
+    },
     open,
   };
 }
