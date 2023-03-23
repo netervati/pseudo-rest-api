@@ -26,15 +26,21 @@
     locked?: boolean;
   };
 
+  const defaultName = ref<string>('');
   const defaultStructure = ref<Structure[]>([]);
   const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 
-  watchEffect(() => {
-    if (props.deps.target !== '') {
+  watch(props.deps, (deps) => {
+    if (deps.target !== '') {
+      defaultName.value = '';
+      defaultStructure.value = [];
+
       const target = resourceModel.list.filter(
         (element) => element.id === props.deps.target
       );
+
+      defaultName.value = target[0].name;
 
       for (const element of target[0]?.structure) {
         defaultStructure.value.push({
@@ -59,7 +65,7 @@
 
   type Form = {
     nameError: string;
-    name: string;
+    name: string | Ref<string>;
     structure: Structure[] | Ref<Structure[]>;
     validations: {
       name: 'blank';
@@ -76,7 +82,7 @@
   const form = useModalForm<Form>(
     {
       nameError: '',
-      name: '',
+      name: defaultName,
       structure: defaultStructure,
       validations: {
         name: 'blank',
