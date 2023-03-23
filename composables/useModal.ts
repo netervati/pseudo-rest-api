@@ -1,7 +1,10 @@
-import { Component } from 'vue';
+import { Component, UnwrapNestedRefs } from 'vue';
 
 type ModalProps = {
   id: string;
+  deps?:
+    | { [key: string]: string | number | boolean }
+    | UnwrapNestedRefs<{ [key: string]: string | number | boolean }>;
   onConfirm?: (callback: () => void) => void | Promise<void>;
   onError?: () => void;
   onSuccess?: (params: string) => void;
