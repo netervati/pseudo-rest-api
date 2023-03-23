@@ -37,16 +37,16 @@ function validate(body: BodyParams, event: H3Event): void | never {
 
 function buildStructure(body: BodyParams): Structure[] {
   return body.structure.map((item) => {
-    if (item.locked === true) {
-      delete item.locked;
-
-      return item;
-    }
-
     const coercedValue = coerce(item.type, item.default);
 
     if (coercedValue !== null) {
       item.default = coercedValue;
+    }
+
+    if (item.locked === true) {
+      delete item.locked;
+
+      return item;
     }
 
     return {
