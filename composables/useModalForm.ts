@@ -75,6 +75,30 @@ type Options<T> = {
 };
 
 /**
+ * Supports cloning of reactive data.
+ *
+ * @param props
+ * @returns
+ */
+function safeClone<T extends object & Validations>(
+  props: Omit<T, 'validations'>
+): Omit<T, 'validations'> {
+  try {
+    return structuredClone(props);
+  } catch {
+    // @ts-ignore
+    const fields: Omit<T, 'validations'> = {};
+
+    Object.keys(props).forEach((key) => {
+      // @ts-ignore
+      fields[key] = props[key];
+    });
+
+    return fields;
+  }
+}
+
+/**
  *
  * A composable for managing modal form controls
  * and behaviours.
@@ -118,7 +142,7 @@ export default function <T extends object & Validations>(
   });
 
   const { validations, ...props } = deps;
-  const fields = reactive(structuredClone(props));
+  const fields = reactive<Omit<T, 'validations'>>(safeClone(props));
 
   const handleCancel = () => {
     controls.showConfirm = false;
@@ -151,7 +175,7 @@ export default function <T extends object & Validations>(
       options.onClose();
     }
 
-    for (const [key, value] of Object.entries(structuredClone(props))) {
+    for (const [key, value] of Object.entries(safeClone(props))) {
       // @ts-ignore
       fields[key] = value;
     }
