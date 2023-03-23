@@ -47,11 +47,6 @@ export default function (
     display.value = true;
   };
 
-  const vnode = h(component, {
-    ...options,
-    onClose: close,
-  });
-
   watch(display, () => {
     const checkbox = document.getElementById(options.id) as HTMLInputElement;
 
@@ -61,7 +56,14 @@ export default function (
   });
 
   return {
-    component: vnode,
+    component: {
+      render() {
+        return h(component, {
+          ...options,
+          onClose: close,
+        });
+      },
+    },
     open,
   };
 }
