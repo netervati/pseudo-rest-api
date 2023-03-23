@@ -180,7 +180,7 @@
         {{ form.fields.nameError }}
       </p>
     </section>
-    <section class="h-60 overflow-y">
+    <section class="h-60 overflow-y-auto">
       <article
         v-for="structure in form.fields.structure"
         :key="structure.id"
