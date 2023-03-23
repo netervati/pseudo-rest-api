@@ -48,6 +48,9 @@
   const modaltest = useModal(EditResourceModel, {
     id: 'edit-resource-model',
     deps,
+    onClose: () => {
+      deps.target = '';
+    },
   });
 
   onMounted(async () => {

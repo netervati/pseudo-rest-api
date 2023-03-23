@@ -5,6 +5,7 @@ type ModalProps = {
   deps?:
     | { [key: string]: string | number | boolean }
     | UnwrapNestedRefs<{ [key: string]: string | number | boolean }>;
+  onClose?: () => void;
   onConfirm?: (callback: () => void) => void | Promise<void>;
   onError?: () => void;
   onSuccess?: (params: string) => void;
@@ -44,6 +45,10 @@ export default function (
 
   const close = () => {
     display.value = false;
+
+    if (typeof options.onClose === 'function') {
+      options.onClose();
+    }
   };
 
   const open = () => {
