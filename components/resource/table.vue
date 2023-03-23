@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import { ChevronRightIcon } from '@heroicons/vue/24/outline';
-  import ModalConfirm from '~~/components/modal/confirm.vue';
+  import EditResourceModel from '../modal/editResourceModel.vue';
+  import ModalConfirm from '../modal/confirm.vue';
   import { useResourceDataStore, useResourceModelStore } from '~~/stores';
   import { ResourceModel } from '~~/types/models';
 
@@ -12,6 +13,10 @@
   const projectApiKey = useProjectApiKey() || '';
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
+
+  const deps = reactive({
+    target: '',
+  });
 
   const state = reactive({
     deleting: false,
@@ -40,6 +45,11 @@
     },
   });
 
+  const modaltest = useModal(EditResourceModel, {
+    id: 'edit-resource-model',
+    deps,
+  });
+
   onMounted(async () => {
     if (resourceModel.list.length === 0) {
       await resourceModel.fetch(projectApiKey);
@@ -59,6 +69,11 @@
       case 'delete':
         state.deleteId = data.id;
         modal.open();
+
+        break;
+      case 'edit':
+        deps.target = data.id;
+        modaltest.open();
 
         break;
       case 'open':
@@ -97,6 +112,7 @@
               <ChevronRightIcon class="h-4 w-4" />
             </Button>
             <DropdownMenu tabindex="0">
+              <Option size="xs" @click="dispatch('edit', model)">Edit</Option>
               <Option size="xs" @click="dispatch('delete', model)">
                 Delete
               </Option>
@@ -112,6 +128,7 @@
       <modal.component>
         Are you sure you want to delete the resource model?
       </modal.component>
+      <component :is="modaltest.component" />
     </ClientOnly>
   </div>
 </template>
