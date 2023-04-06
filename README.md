@@ -1,42 +1,17 @@
-# Nuxt 3 Minimal Starter
+# PseudoRESTAPI (⚙ Work in progress ⚙)
+**PseudoRESTAPI** is a no-code tool for setting up mock REST APIs within minutes. 
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## What it's trying to solve
+This project aims to enhance frontend prototyping by offering a mock server that emulates the behavior of a live server, returning data in response to requests. The mock server can also provide a valuable platform for QA engineers to practice their skills by allowing them to create fake endpoints that can be tested either manually or via automation tests.
 
-## Setup
+## How does it differ from existing tools?
+Currently, this project doesn't offer much compared to existing tools except provide a more intuitive experience in creating mock servers. However, the project has a roadmap of planned features that have the potential to add significant value for its users.
 
-Make sure to install the dependencies:
+## Technologies
+- Nuxt3
+- TypeScript
+- Pinia
+- DaisyUI
+- Tailwindcss
+- Supabase
 
-```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install
-```
-
-## Development Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
