@@ -1,8 +1,13 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PutResourceModelValidation } from '../../validations';
-import { ProjectKeyServices, ResourceModelServices } from '../../services';
+import {
+  ProjectKeyServices,
+  ResourceDataServices,
+  ResourceModelServices,
+} from '../../services';
 import ErrorResponse from '../../utils/errorResponse';
+import generateResourceData from '~~/server/utils/generateResourceData';
 
 type Structure = {
   id: string;
@@ -69,10 +74,25 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.notFound('Project key does not exist');
   }
 
-  return await new ResourceModelServices(event).update({
+  const structure = buildStructure(body);
+
+  const resourceModel = await new ResourceModelServices(event).update({
     id: event.context.params.id,
     name: body.name,
-    structure: buildStructure(body),
+    structure,
     projectId: projectKeys[0].project_id,
   });
+
+  const resourceData = await new ResourceDataServices(event).list(
+    resourceModel.id
+  );
+
+  for (let i = 0; i < resourceData.length; i += 1) {
+    await new ResourceDataServices(event).update({
+      data: generateResourceData(structure, resourceData[i].data),
+      id: resourceData[i].id,
+    });
+  }
+
+  return resourceModel;
 });

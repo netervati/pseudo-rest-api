@@ -51,6 +51,15 @@
     onClose: () => {
       deps.target = '';
     },
+    onSuccess: async (id: string) => {
+      resourceModel.clear();
+      await resourceModel.fetch(projectApiKey);
+      resourceData.clear(id);
+      await resourceData.fetch({
+        projectApiKey,
+        resourceModelId: id,
+      });
+    },
   });
 
   onMounted(async () => {

@@ -115,7 +115,7 @@
           },
           {
             onSuccess: () => {
-              emit('success', '');
+              emit('success', props.deps.target);
             },
           }
         );

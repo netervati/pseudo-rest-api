@@ -79,4 +79,18 @@ export default class ResourceDataServices extends SupabaseService {
 
     return resourceData.data;
   }
+
+  async update(params: { data: Data; id: string }) {
+    const resourceData = await this.client
+      .from(this.table)
+      .update({ data: params.data })
+      .eq('id', params.id)
+      .select('*');
+
+    if (resourceData.error !== null) {
+      throw ErrorResponse.supabase(resourceData.error);
+    }
+
+    return resourceData.data;
+  }
 }

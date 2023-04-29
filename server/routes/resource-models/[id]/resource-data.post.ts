@@ -1,5 +1,4 @@
 import { H3Event } from 'h3';
-import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../../../utils/errorResponse';
 import {
   ProjectKeyServices,
@@ -7,13 +6,12 @@ import {
   ResourceModelServices,
 } from '../../../services';
 import { PostResourceDataValidation } from '~~/server/validations';
+import generateResourceData from '~~/server/utils/generateResourceData';
 
 type BodyParams = {
   count: number;
   projectApiKey: string;
 };
-
-type Entry = { [key: string]: string | number | boolean };
 
 function validate(body: BodyParams, event: H3Event): void | never {
   if (event.context.auth.error) {
@@ -25,39 +23,6 @@ function validate(body: BodyParams, event: H3Event): void | never {
   if (error) {
     throw error;
   }
-}
-
-type Structure = {
-  id: string;
-  default: string | number | boolean;
-  name: string;
-  type: string;
-};
-
-function setValue(field: Structure): string | number | boolean {
-  const randNum = () =>
-    new Date().getTime().toString() + Math.floor(Math.random() * 1000000);
-
-  if (field.name === 'id') {
-    return field.type === 'data_type_number' ? randNum() : uuidv4();
-  }
-
-  switch (field.type) {
-    case 'data_type_uuid':
-      return uuidv4();
-    default:
-      return field.default;
-  }
-}
-
-function generateData(structure: Structure[]) {
-  const entry: Entry = {};
-
-  structure.forEach((field) => {
-    entry[field.id] = setValue(field);
-  });
-
-  return entry;
 }
 
 export default defineEventHandler(async (event) => {
@@ -86,7 +51,7 @@ export default defineEventHandler(async (event) => {
   while (resourceData.length < body.count) {
     resourceData.push(
       await new ResourceDataServices(event).create({
-        data: generateData(resourceModel.structure),
+        data: generateResourceData(resourceModel.structure),
         resourceModelId: resourceModel.id,
       })
     );
