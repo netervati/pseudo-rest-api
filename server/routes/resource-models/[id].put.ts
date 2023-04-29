@@ -7,7 +7,7 @@ import {
   ResourceModelServices,
 } from '../../services';
 import ErrorResponse from '../../utils/errorResponse';
-import { generateResourceData } from '~~/server/utils/generateResourceData';
+import generateResourceData from '~~/server/utils/generateResourceData';
 
 type Structure = {
   id: string;

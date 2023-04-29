@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export type Entry = { [key: string]: string | number | boolean };
+type Entry = { [key: string]: string | number | boolean };
 
 type Structure = {
   id: string;
@@ -25,10 +25,7 @@ function setValue(field: Structure): string | number | boolean {
   }
 }
 
-export function generateResourceData(
-  structure: Structure[],
-  existingEntry: Entry = {}
-) {
+export default function (structure: Structure[], existingEntry: Entry = {}) {
   const entry: Entry = {};
 
   structure.forEach((field) => {

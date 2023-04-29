@@ -6,7 +6,7 @@ import {
   ResourceModelServices,
 } from '../../../services';
 import { PostResourceDataValidation } from '~~/server/validations';
-import { generateResourceData } from '~~/server/utils/generateResourceData';
+import generateResourceData from '~~/server/utils/generateResourceData';
 
 type BodyParams = {
   count: number;
