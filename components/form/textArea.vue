@@ -3,16 +3,18 @@
     disabled: boolean;
     name: string;
     placeholder: string;
+    rule?: (value: string) => boolean | string;
   }>();
 
-  const { value } = useField(props.name);
+  const validate = props.rule || (() => true);
+  const { value } = useField(props.name, validate);
 </script>
 
 <template>
-  <textarea
+  <TextArea
     v-model="value"
     :disabled="props.disabled"
     class="textarea textarea-bordered"
-    placeholder="Enter project description"
+    :placeholder="props.placeholder"
   />
 </template>
