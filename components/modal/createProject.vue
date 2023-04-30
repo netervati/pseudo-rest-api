@@ -43,9 +43,9 @@
       <section class="form-control mt-2">
         <FormInput
           :disabled="isDisabled"
+          :rule="isRequired('Name is required.')"
           name="name"
           placeholder="Enter name"
-          :rule="isRequired('Name is required.')"
         />
       </section>
       <section class="form-control mt-2">
