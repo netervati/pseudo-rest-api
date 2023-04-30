@@ -21,12 +21,18 @@
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await project.create(values, {
-      onSuccess: (key: string) => {
-        emit('success', key);
-        handleClose();
+    await project.create(
+      {
+        description: values.description,
+        name: values.name,
       },
-    });
+      {
+        onSuccess: (key: string) => {
+          emit('success', key);
+          handleClose();
+        },
+      }
+    );
   });
 </script>
 
