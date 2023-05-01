@@ -15,26 +15,29 @@
   const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 
-  type CreateResourceModelForm = {
-    name: string;
-    structure: {
-      [key: string]: {
-        name: string;
-        type: string;
-        default?: string;
-      };
+  type Structure = {
+    [key: string]: {
+      name: string;
+      type: string;
+      default?: string;
     };
   };
 
+  type CreateResourceModelForm = {
+    name: string;
+    structure: Structure;
+  };
+
+  const formStructure = ref<Structure>({
+    [String(Date.now())]: {
+      name: 'id',
+      type: '',
+      default: '',
+    },
+  });
   const form = useForm<CreateResourceModelForm>({
     initialValues: {
-      structure: {
-        [String(Date.now())]: {
-          name: 'id',
-          type: '',
-          default: '',
-        },
-      },
+      structure: {},
     },
   });
   const isDisabled = computed(() => form.isSubmitting.value === true);
@@ -42,6 +45,8 @@
   onMounted(async () => {
     if (resourceDataType.list.length === 0) {
       await resourceDataType.fetch();
+
+      form.setFieldValue('structure', formStructure.value);
     }
   });
 
@@ -65,7 +70,20 @@
   };
 
   const handleClose = () => {
-    form.resetForm();
+    formStructure.value = {
+      [String(Date.now())]: {
+        name: 'id',
+        type: '',
+        default: '',
+      },
+    };
+    form.resetForm({
+      values: {
+        name: '',
+        structure: formStructure.value,
+      },
+    });
+
     emit('close');
   };
 
@@ -93,15 +111,24 @@
   // ------------------------
 
   const addField = () => {
-    form.values.structure[String(Date.now())] = {
+    formStructure.value[String(Date.now())] = {
       name: '',
       type: '',
       default: '',
     };
+
+    form.setFieldValue('structure', formStructure.value);
+  };
+
+  const handleChange = (target: string, key: string, value: string) => {
+    // @ts-ignore
+    formStructure.value[target][key] = value;
   };
 
   const removeField = (target: string) => {
-    delete form.values.structure[target];
+    delete formStructure.value[target];
+
+    form.setFieldValue('structure', formStructure.value);
   };
 </script>
 
@@ -129,6 +156,7 @@
               :rules="{ required: isRequired('Field name is required.') }"
               :name="`structure[${key}].name`"
               placeholder="Enter the field name"
+              @change="(value) => handleChange(key, 'name', value)"
             />
           </section>
           <section class="basis-2/12 form-control ml-2 mr-2">
@@ -138,6 +166,7 @@
               :name="`structure[${key}].type`"
               :options="dataTypes(form.values.structure[key].name)"
               placeholder="Select the field type"
+              @change="(value) => handleChange(key, 'type', value)"
             />
           </section>
           <section class="basis-4/12 form-control ml-2 mr-2">
@@ -147,6 +176,7 @@
               :rules="{ required: isRequired('Default value is required.') }"
               :name="`structure[${key}].default`"
               placeholder="Enter the default value"
+              @change="(value) => handleChange(key, 'default', value)"
             />
           </section>
           <section class="basis-2/12 flex ml-2">
