@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-  import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useApiStore from '~~/stores/useApiStore';
+  import { isRequired, isURLPath } from '~~/utils/formValidations';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -12,76 +12,68 @@
   }>();
 
   const api = useApiStore();
+  const form = useForm();
+  const isDisabled = computed(() => form.isSubmitting.value === true);
   const projectApiKey = useProjectApiKey() || '';
 
-  type Form = {
-    apiPathError: string;
-    apiPath: string;
-    description: string;
-    validations: {
-      apiPath: string;
-    };
+  const handleClose = () => {
+    form.resetForm();
+    emit('close');
   };
 
-  const form = useModalForm<Form>(
-    {
-      apiPathError: '',
-      apiPath: '',
-      description: '',
-      validations: {
-        apiPath: 'blank,special_characters',
+  const onSubmit = form.handleSubmit(async (values) => {
+    await api.create(
+      {
+        description: values.description,
+        projectApiKey,
+        urlPath: values.urlPath,
       },
-    },
-    {
-      onClose: () => emit('close'),
-      onProceed: async (body: UnwrapNestedRefs<Omit<Form, 'validations'>>) => {
-        await api.create(
-          {
-            description: body.description,
-            projectApiKey,
-            urlPath: body.apiPath,
-          },
-          {
-            onSuccess: () => {
-              emit('success', '');
-            },
-          }
-        );
-      },
-    }
-  );
-
-  const handleChange = () => {
-    form.fields.apiPathError = '';
-  };
+      {
+        onSuccess: () => {
+          emit('success', '');
+          handleClose();
+        },
+      }
+    );
+  });
 </script>
 
 <template>
-  <ModalBase :id="id" @close="form.close">
-    <h3 class="text-lg font-bold">Create a new API</h3>
-    <section class="form-control mt-2">
-      <Input
-        v-model="form.fields.apiPath"
-        :error="form.fields.apiPathError !== ''"
-        placeholder="Enter api path"
-        @change="handleChange"
-      />
-      <p v-if="form.fields.apiPathError !== ''" class="text-red-600">
-        {{ form.fields.apiPathError }}
-      </p>
-    </section>
-    <section class="form-control mt-2">
-      <Input
-        v-model="form.fields.description"
-        :disabled="form.controls.loading"
-        placeholder="Enter api description"
-      />
-    </section>
-    <ModalFooter
-      :deps="form.controls"
-      @cancel="form.cancel"
-      @proceed="form.proceed"
-      @save="form.save"
-    />
+  <ModalBase :id="id" @close="handleClose">
+    <form @submit="onSubmit">
+      <h3 class="text-lg font-bold">Create a new API</h3>
+      <section class="form-control mt-2">
+        <FormInput
+          :disabled="isDisabled"
+          :rules="{
+            required: isRequired('URL Path is required.'),
+            urlPath: isURLPath('URL Path is not valid'),
+          }"
+          name="urlPath"
+          placeholder="Enter url path"
+        />
+      </section>
+      <section class="form-control mt-2">
+        <FormTextArea
+          :disabled="isDisabled"
+          name="description"
+          placeholder="Enter description"
+        />
+      </section>
+      <section class="mt-10">
+        <Button :disabled="isDisabled" size="sm" @click="handleClose">
+          Cancel
+        </Button>
+        <Button
+          :disabled="isDisabled"
+          class="float-right"
+          color="success"
+          size="sm"
+          type="submit"
+        >
+          Proceed
+        </Button>
+      </section>
+    </form>
   </ModalBase>
 </template>
