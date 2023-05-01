@@ -16,11 +16,12 @@
   }>();
 
   type Structure = {
-    id: string;
-    name: string;
-    type: string;
-    default?: string;
-    locked?: boolean;
+    [key: string]: {
+      name: string;
+      type: string;
+      default?: string;
+      locked?: boolean;
+    };
   };
 
   const resourceDataType = useResourceDataTypeStore();
@@ -28,17 +29,17 @@
 
   type EditResourceModelForm = {
     name: string;
-    structure: Structure[];
+    structure: Structure;
   };
 
   const form = useForm<EditResourceModelForm>({
     initialValues: {
       name: '',
-      structure: [],
+      structure: {},
     },
   });
   const isDisabled = computed(() => form.isSubmitting.value === true);
-  const formStructure = ref<Structure[]>([]);
+  const formStructure = ref<Structure>({});
 
   watch(props.deps, (deps) => {
     if (deps.target !== '') {
@@ -47,13 +48,12 @@
       );
 
       for (const element of target[0]?.structure) {
-        formStructure.value.push({
-          id: element.id,
+        formStructure.value[element.id] = {
           locked: true,
           name: element.name,
           default: `${element.default}`,
           type: element.type,
-        });
+        };
       }
 
       form.setValues({
@@ -91,7 +91,7 @@
   };
 
   const handleClose = () => {
-    formStructure.value = [];
+    formStructure.value = {};
     form.resetForm({
       values: {
         name: '',
@@ -103,12 +103,12 @@
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const cleanStructure = values.structure.map((field) => ({
-      default: field.default || '',
-      id: field.id,
-      name: field.name,
-      type: field.type,
-      locked: field.locked,
+    const cleanStructure = Object.keys(values.structure).map((key) => ({
+      default: values.structure[key].default || '',
+      id: key,
+      name: values.structure[key].name,
+      type: values.structure[key].type,
+      locked: values.structure[key].locked,
     }));
 
     await resourceModel.update(
@@ -132,22 +132,18 @@
   // ------------------------
 
   const addField = () => {
-    formStructure.value.push({
-      id: String(Date.now()),
+    formStructure.value[String(Date.now())] = {
       name: '',
       type: '',
       default: '',
       locked: false,
-    });
+    };
 
     form.setFieldValue('structure', formStructure.value);
   };
 
-  const removeField = (target: number) => {
-    const updatedStructure = formStructure.value.filter(
-      (_, idx) => idx !== target
-    );
-    formStructure.value = updatedStructure;
+  const removeField = (target: string) => {
+    delete formStructure.value[target];
 
     form.setFieldValue('structure', formStructure.value);
   };
@@ -167,8 +163,8 @@
       </section>
       <section class="h-60 overflow-y-auto">
         <article
-          v-for="(field, idx) in formStructure"
-          :key="idx"
+          v-for="key in Object.keys(formStructure)"
+          :key="key"
           class="flex mt-2"
         >
           <section class="basis-4/12 form-control mr-2">
@@ -176,43 +172,43 @@
               :disabled="
                 // prettier-ignore
                 isDisabled ||
-                  field.name === 'id' ||
-                  field.locked === true
+                  formStructure[key].name === 'id' ||
+                  formStructure[key].locked === true
               "
               :rules="{ required: isRequired('Field name is required.') }"
-              :name="`structure[${idx}].name`"
-              :value="field.name"
+              :name="`structure[${key}].name`"
+              :value="formStructure[key].name"
               placeholder="Enter the field name"
             />
           </section>
           <section class="basis-2/12 form-control ml-2 mr-2">
             <FormSelect
-              :disabled="isDisabled || field.locked === true"
+              :disabled="isDisabled || formStructure[key].locked === true"
               :rules="{ required: isRequired('Field type is required.') }"
-              :name="`structure[${idx}].type`"
-              :options="dataTypes(field.name)"
-              :value="field.type"
+              :name="`structure[${key}].type`"
+              :options="dataTypes(formStructure[key].name)"
+              :value="formStructure[key].type"
               placeholder="Select the field type"
             />
           </section>
           <section class="basis-4/12 form-control ml-2 mr-2">
             <FormInput
-              v-if="isDefaultAllowed(field)"
-              :disabled="isDisabled || field.locked === true"
+              v-if="isDefaultAllowed(formStructure[key])"
+              :disabled="isDisabled || formStructure[key].locked === true"
               :rules="{ required: isRequired('Default value is required.') }"
-              :name="`structure[${idx}].default`"
-              :value="field.default"
+              :name="`structure[${key}].default`"
+              :value="formStructure[key].default"
               placeholder="Enter the default value"
             />
           </section>
           <section class="basis-2/12 flex ml-2">
             <Button
-              v-if="field.name !== 'id'"
+              v-if="formStructure[key].name !== 'id'"
               :disabled="isDisabled"
               class="m-auto"
               color="error"
               size="sm"
-              @click="removeField(idx)"
+              @click="removeField(key)"
             >
               Remove
             </Button>
