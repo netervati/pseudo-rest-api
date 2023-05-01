@@ -11,6 +11,7 @@
     id: string;
   }>();
 
+  const projectApiKey = useProjectApiKey() || '';
   const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 
@@ -43,8 +44,6 @@
       await resourceDataType.fetch();
     }
   });
-
-  const projectApiKey = useProjectApiKey() || '';
 
   const dataTypes = (name: string) => {
     if (name === 'id') {
@@ -90,7 +89,7 @@
   });
 
   // ------------------------
-  // MODEL CONTROLS
+  // STRUCTURE FIELDS CONTROLS
   // ------------------------
 
   const addField = () => {
@@ -153,6 +152,7 @@
           <section class="basis-2/12 flex ml-2">
             <Button
               v-if="form.values.structure[key].name !== 'id'"
+              :disabled="isDisabled"
               class="m-auto"
               color="error"
               size="sm"
