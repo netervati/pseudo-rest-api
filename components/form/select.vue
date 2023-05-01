@@ -7,14 +7,25 @@
     placeholder: string;
     options: { text: string; value: string }[];
     rules?: { [key: string]: FormValidator };
+    value?: string;
   }>();
 
   const validate = !props.rules ? () => true : runValidations(props.rules);
   const { value, errorMessage } = useField(props.name, validate);
+
+  watchEffect(() => {
+    if (props.value) {
+      value.value = props.value;
+    }
+  });
 </script>
 
 <template>
-  <Select v-model="value" :error="errorMessage !== undefined">
+  <Select
+    v-model="value"
+    :disabled="disabled"
+    :error="errorMessage !== undefined"
+  >
     <option disabled value="">{{ props.placeholder }}</option>
     <option
       v-for="option in props.options"

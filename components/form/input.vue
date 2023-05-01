@@ -6,10 +6,17 @@
     name: string;
     placeholder: string;
     rules?: { [key: string]: FormValidator };
+    value?: string;
   }>();
 
   const validate = !props.rules ? () => true : runValidations(props.rules);
-  const { value, errorMessage } = useField(props.name, validate);
+  const { value, errorMessage } = useField(() => props.name, validate);
+
+  watchEffect(() => {
+    if (props.value) {
+      value.value = props.value;
+    }
+  });
 </script>
 
 <template>
