@@ -142,6 +142,11 @@
     form.setFieldValue('structure', formStructure.value);
   };
 
+  const handleChange = (target: string, key: string, value: string) => {
+    // @ts-ignore
+    formStructure.value[target][key] = value;
+  };
+
   const removeField = (target: string) => {
     delete formStructure.value[target];
 
@@ -179,6 +184,7 @@
               :name="`structure[${key}].name`"
               :value="formStructure[key].name"
               placeholder="Enter the field name"
+              @change="(value) => handleChange(key, 'name', value)"
             />
           </section>
           <section class="basis-2/12 form-control ml-2 mr-2">
@@ -189,6 +195,7 @@
               :options="dataTypes(formStructure[key].name)"
               :value="formStructure[key].type"
               placeholder="Select the field type"
+              @change="(value) => handleChange(key, 'type', value)"
             />
           </section>
           <section class="basis-4/12 form-control ml-2 mr-2">
@@ -199,6 +206,7 @@
               :name="`structure[${key}].default`"
               :value="formStructure[key].default"
               placeholder="Enter the default value"
+              @change="(value) => handleChange(key, 'default', value)"
             />
           </section>
           <section class="basis-2/12 flex ml-2">

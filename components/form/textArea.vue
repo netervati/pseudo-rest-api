@@ -1,6 +1,10 @@
 <script lang="ts" setup>
   import { FormValidator, runValidations } from '~~/utils/formValidations';
 
+  const emit = defineEmits<{
+    (e: 'change', value: string): void;
+  }>();
+
   const props = defineProps<{
     disabled: boolean;
     name: string;
@@ -23,7 +27,8 @@
   <TextArea
     v-model="value"
     :disabled="props.disabled"
-    class="textarea textarea-bordered"
     :placeholder="props.placeholder"
+    class="textarea textarea-bordered"
+    @change="emit('change', value)"
   />
 </template>

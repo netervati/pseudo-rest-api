@@ -1,6 +1,10 @@
 <script lang="ts" setup>
   import { FormValidator, runValidations } from '~~/utils/formValidations';
 
+  const emit = defineEmits<{
+    (e: 'change', value: string): void;
+  }>();
+
   const props = defineProps<{
     disabled: boolean;
     name: string;
@@ -25,6 +29,7 @@
     v-model="value"
     :disabled="disabled"
     :error="errorMessage !== undefined"
+    @change="(val) => emit('change', val)"
   >
     <option disabled value="">{{ props.placeholder }}</option>
     <option
