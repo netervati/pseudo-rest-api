@@ -1,12 +1,14 @@
 <script lang="ts" setup>
+  import { FormValidator, runValidations } from '~~/utils/formValidations';
+
   const props = defineProps<{
     disabled: boolean;
     name: string;
     placeholder: string;
-    rule?: (value: string) => boolean | string;
+    rules?: { [key: string]: FormValidator };
   }>();
 
-  const validate = props.rule || (() => true);
+  const validate = !props.rules ? () => true : runValidations(props.rules);
   const { value, errorMessage } = useField(props.name, validate);
 </script>
 
