@@ -65,7 +65,7 @@
           Cancel
         </Button>
         <Button
-          :disabled="isDisabled"
+          :loading="isDisabled"
           class="float-right"
           color="success"
           size="sm"
