@@ -7,14 +7,15 @@
 
   const props = defineProps<{
     disabled: boolean;
+    max: number;
+    min: number;
     name: string;
-    placeholder: string;
     rules?: { [key: string]: FormValidator };
     value?: string;
   }>();
 
   const validate = !props.rules ? () => true : runValidations(props.rules);
-  const { value } = useField(props.name, validate);
+  const { value, errorMessage } = useField(() => props.name, validate);
 
   watchEffect(() => {
     if (props.value) {
@@ -24,11 +25,20 @@
 </script>
 
 <template>
-  <TextArea
+  <input
     v-model="value"
     :disabled="props.disabled"
-    :placeholder="props.placeholder"
-    class="textarea textarea-bordered"
+    :max="props.max"
+    :min="props.min"
+    class="range range-xs"
+    type="range"
     @change="emit('change', value)"
   />
+  <p class="text-red-600">
+    {{ errorMessage }}
+  </p>
+  <section class="grid grid-cols-2">
+    <div>{{ value }}</div>
+    <div class="text-end">{{ props.max }}</div>
+  </section>
 </template>

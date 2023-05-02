@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   const emit = defineEmits<{
-    (e: 'change'): void;
+    (e: 'change', value: string): void;
     (e: 'update:modelValue', value: string): void;
   }>();
 
@@ -29,7 +29,7 @@
       return props.modelValue;
     },
     set(value: string) {
-      emit('change');
+      emit('change', value);
       emit('update:modelValue', value);
     },
   });
