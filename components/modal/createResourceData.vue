@@ -57,8 +57,8 @@
           :disabled="isDisabled"
           :rules="{ min: isMinimum('Number should be greater than 0.') }"
           :value="form.values.count || '0'"
-          max="10"
-          min="0"
+          :max="10"
+          :min="0"
           name="count"
         />
       </section>
