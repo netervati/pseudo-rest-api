@@ -18,6 +18,16 @@ export function runValidations(schema: { [key: string]: FormValidator }) {
   };
 }
 
+export function isMinimum(message: string, min = 0) {
+  return function (value: string) {
+    if (value === undefined || Number(value) <= min) {
+      return message;
+    }
+
+    return true;
+  };
+}
+
 export function isRequired(message: string) {
   return function (value: string) {
     if (value === undefined || value.trim() === '') {
