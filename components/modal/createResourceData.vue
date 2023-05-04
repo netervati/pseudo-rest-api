@@ -24,10 +24,7 @@
   const resourceModel = useResourceModelStore();
 
   watch(resourceData.list, () => {
-    const currentCount =
-      resourceModel.target in resourceData.list
-        ? resourceData.list[resourceModel.target].length
-        : 0;
+    const currentCount = resourceData.list[resourceModel.target]?.length || 0;
 
     maxCountAllowed.value = 10 - currentCount;
   });
