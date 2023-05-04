@@ -17,10 +17,20 @@
     },
   });
   const isDisabled = computed(() => form.isSubmitting.value === true);
+  const maxCountAllowed = ref(10);
 
   const projectApiKey = useProjectApiKey() || '';
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
+
+  watch(resourceData.list, () => {
+    const currentCount =
+      resourceModel.target in resourceData.list
+        ? resourceData.list[resourceModel.target].length
+        : 0;
+
+    maxCountAllowed.value = 10 - currentCount;
+  });
 
   const handleClose = () => {
     form.resetForm({
@@ -57,7 +67,7 @@
           :disabled="isDisabled"
           :rules="{ min: isMinimum('Number should be greater than 0.') }"
           :value="form.values.count || '0'"
-          :max="10"
+          :max="maxCountAllowed"
           :min="0"
           name="count"
         />
