@@ -1,4 +1,6 @@
+import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import { Api } from '~~/types/models';
 
 type BodyParams = {
   description: string;
@@ -11,11 +13,22 @@ type Options = {
 };
 
 type ApiStore = {
+  list: Ref<Api[]>;
+  clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
+  fetch: (projectApiKey: string) => Promise<void>;
 };
 
 export default defineStore('apis', (): ApiStore => {
+  const list = ref<Api[]>([]);
   const toast = useToast();
+
+  /**
+   * Resets data in state.
+   */
+  const clear = () => {
+    list.value = [];
+  };
 
   /**
    * A function for creating api.
@@ -38,7 +51,27 @@ export default defineStore('apis', (): ApiStore => {
     });
   };
 
+  /**
+   * A function for fetching apis from the server.
+   */
+  const fetch = async (projectApiKey: string): Promise<void> => {
+    await $fetch('/apis', {
+      method: 'GET',
+      query: { projectApiKey },
+      onResponse({ response }) {
+        if (response.status === 200) {
+          list.value = response._data;
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   return {
+    list,
+    clear,
     create,
+    fetch,
   };
 });

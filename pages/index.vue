@@ -1,11 +1,16 @@
 <script lang="ts" setup>
   import ModalCreateProject from '~~/components/modal/createProject.vue';
-  import { useResourceDataTypeStore, useResourceModelStore } from '~~/stores';
+  import {
+    useApStore,
+    useResourceDataTypeStore,
+    useResourceModelStore,
+  } from '~~/stores';
 
   definePageMeta({
     middleware: 'auth',
   });
 
+  useApStore().clear();
   useResourceDataTypeStore().clear();
   useResourceModelStore().clear();
 
