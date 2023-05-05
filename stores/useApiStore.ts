@@ -42,7 +42,7 @@ export default defineStore('apis', (): ApiStore => {
   };
 
   /**
-   * A function for fetching projects from the server.
+   * A function for fetching apis from the server.
    */
   const fetch = async (): Promise<void> => {
     await $fetch('/apis', {
