@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Api } from '~~/types/models';
 
 type BodyParams = {
   description: string;
@@ -12,9 +13,11 @@ type Options = {
 
 type ApiStore = {
   create: (body: BodyParams, options: Options) => Promise<void>;
+  fetch: () => Promise<void>;
 };
 
 export default defineStore('apis', (): ApiStore => {
+  const list = ref<Api[]>([]);
   const toast = useToast();
 
   /**
@@ -38,7 +41,24 @@ export default defineStore('apis', (): ApiStore => {
     });
   };
 
+  /**
+   * A function for fetching projects from the server.
+   */
+  const fetch = async (): Promise<void> => {
+    await $fetch('/apis', {
+      method: 'GET',
+      onResponse({ response }) {
+        if (response.status === 200) {
+          list.value = response._data;
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   return {
     create,
+    fetch,
   };
 });
