@@ -13,6 +13,7 @@
 <template>
   <div class="p-6">
     <Button color="success" size="sm" @click="modal.open">New API</Button>
+    <ApiTable />
     <ClientOnly>
       <modal.component />
     </ClientOnly>
