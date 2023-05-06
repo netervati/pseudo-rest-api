@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
       projectId: projectKeys[0].project_id,
     });
 
-    if (apis.length > 0) {
+    if (apis.length > 0 && apis[0].id !== event.context.params.id) {
       throw ErrorResponse.badRequest('API Endpoint already exists.');
     }
   }
