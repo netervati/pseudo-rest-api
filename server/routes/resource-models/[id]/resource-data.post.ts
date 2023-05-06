@@ -1,10 +1,9 @@
 import { H3Event } from 'h3';
 import ErrorResponse from '../../../utils/errorResponse';
 import {
-  ProjectKeyServices,
   ResourceDataServices,
   ResourceModelServices,
-} from '../../../services';
+} from '~~/server/services';
 import { PostResourceDataValidation } from '~~/server/validations';
 import generateResourceData from '~~/server/utils/generateResourceData';
 import validateProjectKey from '~~/server/lib/validateProjectKey';
@@ -14,22 +13,24 @@ type BodyParams = {
   projectApiKey: string;
 };
 
-function validate(body: BodyParams, event: H3Event): void | never {
+async function validate(event: H3Event): Promise<BodyParams | never> {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
+  const body = await readBody<BodyParams>(event);
   const error = new PostResourceDataValidation(body).validate();
 
   if (error) {
     throw error;
   }
+
+  return body;
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<BodyParams>(event);
+  const body = await validate(event);
 
-  validate(body, event);
   await validateProjectKey(event, body.projectApiKey);
 
   const resourceModel = await new ResourceModelServices(event).find(

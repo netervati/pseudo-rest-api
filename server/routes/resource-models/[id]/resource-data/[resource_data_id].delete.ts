@@ -6,12 +6,11 @@ type QueryParams = {
 };
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event) as QueryParams;
-
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
+  const query = getQuery(event) as QueryParams;
   await validateProjectKey(event, query.projectApiKey);
 
   const path = event.context.params;

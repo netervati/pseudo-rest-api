@@ -18,11 +18,12 @@ type BodyParams = {
   structure: Structure;
 };
 
-function validate(body: BodyParams, event: H3Event): void | never {
+async function validate(event: H3Event): Promise<BodyParams | never> {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
+  const body = await readBody<BodyParams>(event);
   const error = new PostResourceModelValidation(body).validate();
 
   if (error) {
@@ -34,6 +35,8 @@ function validate(body: BodyParams, event: H3Event): void | never {
   if (uniqueValues.size < body.structure.length) {
     throw ErrorResponse.badRequest('Each model name should be unique.');
   }
+
+  return body;
 }
 
 function buildStructure(body: BodyParams): Structure {
@@ -52,10 +55,7 @@ function buildStructure(body: BodyParams): Structure {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<BodyParams>(event);
-
-  validate(body, event);
-
+  const body = await validate(event);
   const projectKeys = await validateProjectKey(event, body.projectApiKey);
 
   const existingResourceModels = await new ResourceModelServices(
