@@ -59,4 +59,34 @@ export default class ApiServices extends SupabaseService {
 
     return apis.data;
   }
+
+  async update(params: {
+    id: string;
+    description?: string | undefined;
+    projectId: string;
+    urlPath?: string;
+  }) {
+    const payload: { description?: string; urlPath?: string } = {};
+
+    if (params.description) {
+      payload.description = params.description;
+    }
+
+    if (params.urlPath) {
+      payload.urlPath = params.urlPath;
+    }
+
+    const apis = await this.client
+      .from(this.table)
+      .update(payload)
+      .eq('id', params.id)
+      .eq('project_id', params.projectId)
+      .select('*');
+
+    if (apis.error !== null) {
+      throw ErrorResponse.supabase(apis.error);
+    }
+
+    return apis.data[0];
+  }
 }
