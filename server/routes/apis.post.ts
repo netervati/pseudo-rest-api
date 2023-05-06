@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
   const apis = await new ApiServices(event).findByUrlPath({
     urlPath: body.urlPath,
-    projectId: projectKeys[0].id,
+    projectId: projectKeys[0].project_id,
   });
 
   if (apis.length > 0) {
