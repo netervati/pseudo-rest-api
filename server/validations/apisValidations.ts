@@ -6,3 +6,10 @@ export class PostApiValidation extends BaseValidation {
     urlPath: 'required,string,blank',
   };
 }
+
+export class PutApiValidation extends BaseValidation {
+  strategies = {
+    description: 'string',
+    urlPath: 'string,blank',
+  };
+}

@@ -8,6 +8,10 @@ type BodyParams = {
   urlPath: string;
 };
 
+type UpdateParams = BodyParams & {
+  id: string;
+};
+
 type Options = {
   onSuccess?: () => void;
 };
@@ -17,6 +21,7 @@ type ApiStore = {
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
   fetch: (projectApiKey: string) => Promise<void>;
+  update: (body: UpdateParams, options: Options) => Promise<void>;
 };
 
 export default defineStore('apis', (): ApiStore => {
@@ -68,10 +73,35 @@ export default defineStore('apis', (): ApiStore => {
     });
   };
 
+  /**
+   * A function for updating resource model.
+   */
+  const update = async (
+    body: UpdateParams,
+    options: Options
+  ): Promise<void> => {
+    await $fetch(`/apis/${body.id}`, {
+      method: 'PUT',
+      body,
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Updated the api!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess();
+          }
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   return {
     list,
     clear,
     create,
     fetch,
+    update,
   };
 });
