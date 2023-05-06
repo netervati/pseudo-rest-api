@@ -1,5 +1,5 @@
-import { ProjectKeyServices, ResourceModelServices } from '../services';
-import ErrorResponse from '../utils/errorResponse';
+import ResourceModelServices from '../services/resourceModelServices';
+import validateProjectKey from '../lib/validateProjectKey';
 
 type QueryParams = {
   projectApiKey: string;
@@ -12,13 +12,7 @@ export default defineEventHandler(async (event) => {
     throw event.context.auth.error;
   }
 
-  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
-    query.projectApiKey
-  );
-
-  if (projectKeys.length === 0) {
-    throw ErrorResponse.notFound('Project key does not exist');
-  }
+  const projectKeys = await validateProjectKey(event, query.projectApiKey);
 
   return await new ResourceModelServices(event).list(projectKeys[0].project_id);
 });

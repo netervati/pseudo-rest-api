@@ -7,6 +7,7 @@ import {
 } from '../../../services';
 import { PostResourceDataValidation } from '~~/server/validations';
 import generateResourceData from '~~/server/utils/generateResourceData';
+import validateProjectKey from '~~/server/lib/validateProjectKey';
 
 type BodyParams = {
   count: number;
@@ -29,14 +30,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<BodyParams>(event);
 
   validate(body, event);
-
-  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
-    body.projectApiKey
-  );
-
-  if (projectKeys.length === 0) {
-    throw ErrorResponse.notFound('Project key does not exist');
-  }
+  await validateProjectKey(event, body.projectApiKey);
 
   const resourceModel = await new ResourceModelServices(event).find(
     event.context.params.id

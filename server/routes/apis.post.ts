@@ -1,6 +1,7 @@
 import { H3Event } from 'h3';
 import { PostApiValidation } from '../validations';
-import { ApiServices, ProjectKeyServices } from '../services';
+import ApiServices from '../services/apiServices';
+import validateProjectKey from '../lib/validateProjectKey';
 import ErrorResponse from '../utils/errorResponse';
 
 type BodyParams = {
@@ -26,13 +27,7 @@ export default defineEventHandler(async (event) => {
 
   validate(body, event);
 
-  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
-    body.projectApiKey
-  );
-
-  if (projectKeys.length === 0) {
-    throw ErrorResponse.notFound('Project key does not exist');
-  }
+  const projectKeys = await validateProjectKey(event, body.projectApiKey);
 
   const apis = await new ApiServices(event).findByUrlPath({
     urlPath: body.urlPath,
