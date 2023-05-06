@@ -1,6 +1,7 @@
 import { H3Event } from 'h3';
 import { PostApiValidation } from '../validations';
-import { ApiServices, ProjectKeyServices } from '../services';
+import ApiServices from '../services/apiServices';
+import validateProjectKey from '../lib/validateProjectKey';
 import ErrorResponse from '../utils/errorResponse';
 
 type BodyParams = {
@@ -9,34 +10,28 @@ type BodyParams = {
   urlPath: string;
 };
 
-function validate(body: BodyParams, event: H3Event): void | never {
+async function validate(event: H3Event): Promise<BodyParams | never> {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
+  const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PostApiValidation(body).validate();
 
   if (error) {
     throw error;
   }
+
+  return body;
 }
 
 export default defineEventHandler(async (event) => {
-  const body: BodyParams = await readBody<BodyParams>(event);
-
-  validate(body, event);
-
-  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
-    body.projectApiKey
-  );
-
-  if (projectKeys.length === 0) {
-    throw ErrorResponse.notFound('Project key does not exist');
-  }
+  const body = await validate(event);
+  const projectKeys = await validateProjectKey(event, body.projectApiKey);
 
   const apis = await new ApiServices(event).findByUrlPath({
     urlPath: body.urlPath,
-    projectId: projectKeys[0].id,
+    projectId: projectKeys[0].project_id,
   });
 
   if (apis.length > 0) {

@@ -9,22 +9,23 @@ type BodyParams = {
   description?: string;
 };
 
-function validate(body: BodyParams, event: H3Event): void | never {
+async function validate(event: H3Event): Promise<BodyParams | never> {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
+  const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PostProjectValidation(body).validate();
 
   if (error) {
     throw error;
   }
+
+  return body;
 }
 
 export default defineEventHandler(async (event) => {
-  const body: BodyParams = await readBody<BodyParams>(event);
-
-  validate(body, event);
+  const body = await validate(event);
 
   const existingProjects = await new ProjectServices(event).findByName(
     body.name

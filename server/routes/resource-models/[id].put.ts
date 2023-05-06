@@ -1,13 +1,10 @@
 import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PutResourceModelValidation } from '../../validations';
-import {
-  ProjectKeyServices,
-  ResourceDataServices,
-  ResourceModelServices,
-} from '../../services';
+import { ResourceDataServices, ResourceModelServices } from '../../services';
 import ErrorResponse from '../../utils/errorResponse';
 import generateResourceData from '~~/server/utils/generateResourceData';
+import validateProjectKey from '~~/server/lib/validateProjectKey';
 
 type Structure = {
   id: string;
@@ -22,11 +19,12 @@ type BodyParams = {
   structure: (Structure & { locked?: boolean })[];
 };
 
-function validate(body: BodyParams, event: H3Event): void | never {
+async function validate(event: H3Event): Promise<BodyParams | never> {
   if (event.context.auth.error) {
     throw event.context.auth.error;
   }
 
+  const body = await readBody<BodyParams>(event);
   const error = new PutResourceModelValidation(body).validate();
 
   if (error) {
@@ -38,6 +36,8 @@ function validate(body: BodyParams, event: H3Event): void | never {
   if (uniqueValues.size < body.structure.length) {
     throw ErrorResponse.badRequest('Each model name should be unique.');
   }
+
+  return body;
 }
 
 function buildStructure(body: BodyParams): Structure[] {
@@ -62,18 +62,8 @@ function buildStructure(body: BodyParams): Structure[] {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<BodyParams>(event);
-
-  validate(body, event);
-
-  const projectKeys = await new ProjectKeyServices(event).findByApiKey(
-    body.projectApiKey
-  );
-
-  if (projectKeys.length === 0) {
-    throw ErrorResponse.notFound('Project key does not exist');
-  }
-
+  const body = await validate(event);
+  const projectKeys = await validateProjectKey(event, body.projectApiKey);
   const structure = buildStructure(body);
 
   const resourceModel = await new ResourceModelServices(event).update({
