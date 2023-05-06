@@ -19,9 +19,6 @@ export default defineEventHandler(async (event) => {
   if (projectKeys.length === 0) {
     throw ErrorResponse.notFound('Project key does not exist');
   }
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
 
   return await new ApiServices(event).list(projectKeys[0].project_id);
 });
