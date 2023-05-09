@@ -30,6 +30,25 @@ export default class ApiServices extends SupabaseService {
     return apis.data[0];
   }
 
+  async delete(params: { id: string; projectId: string }) {
+    const apis = await this.client
+      .from(this.table)
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString().toLocaleString(),
+      })
+      .eq('id', params.id)
+      .eq('project_id', params.projectId)
+      .eq('user_id', this.user.id)
+      .select('*');
+
+    if (apis.error !== null) {
+      throw ErrorResponse.supabase(apis.error);
+    }
+
+    return apis.data[0];
+  }
+
   async findByUrlPath(params: { urlPath: string; projectId: string }) {
     const apis = await this.client
       .from(this.table)
