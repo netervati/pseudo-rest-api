@@ -1,5 +1,6 @@
 <script lang="ts" setup>
   import EditApi from '../modal/editApi.vue';
+  import ModalConfirm from '../modal/confirm.vue';
   import useApiStore from '~~/stores/useApiStore';
   import { Api } from '~~/types/models';
 
@@ -26,8 +27,30 @@
     },
   });
 
+  const deleteApiModal = useModal(ModalConfirm, {
+    id: 'confirm-delete-api',
+    onConfirm: async (callback: () => void) => {
+      await api.delete({
+        id: deps.target,
+        projectApiKey,
+      });
+
+      callback();
+
+      api.clear();
+      await api.fetch(projectApiKey);
+
+      deps.target = '';
+    },
+  });
+
   const dispatch = (action: string, data: Api) => {
     switch (action) {
+      case 'delete':
+        deps.target = data.id;
+        deleteApiModal.open();
+
+        break;
       case 'edit':
         deps.target = data.id;
         editApiModal.open();
@@ -55,11 +78,20 @@
             <tr v-for="record in api.list" :key="record.id">
               <td>
                 <Button
+                  class="mr-1"
                   color="success"
                   size="xs"
                   @click="dispatch('edit', record)"
                 >
                   Edit
+                </Button>
+                <Button
+                  class="ml-1"
+                  color="error"
+                  size="xs"
+                  @click="dispatch('delete', record)"
+                >
+                  Delete
                 </Button>
               </td>
               <td>{{ record.url_path }}</td>
@@ -70,6 +102,9 @@
       </div>
     </div>
     <ClientOnly>
+      <deleteApiModal.component>
+        Are you sure you want to delete the api?
+      </deleteApiModal.component>
       <component :is="editApiModal.component" />
     </ClientOnly>
   </div>

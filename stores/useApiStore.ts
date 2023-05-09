@@ -12,6 +12,11 @@ type UpdateParams = BodyParams & {
   id: string;
 };
 
+type DeleteParams = {
+  id: string;
+  projectApiKey: string;
+};
+
 type Options = {
   onSuccess?: () => void;
 };
@@ -20,6 +25,7 @@ type ApiStore = {
   list: Ref<Api[]>;
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
+  delete: (params: DeleteParams, options?: Options) => Promise<void>;
   fetch: (projectApiKey: string) => Promise<void>;
   update: (body: UpdateParams, options: Options) => Promise<void>;
 };
@@ -45,6 +51,30 @@ export default defineStore('apis', (): ApiStore => {
       onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Created an API endpoint!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess();
+          }
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
+  /**
+   * A function for deleting api
+   */
+  const del = async (
+    params: DeleteParams,
+    options: Options = {}
+  ): Promise<void> => {
+    await $fetch(`/apis/${params.id}`, {
+      method: 'DELETE',
+      query: { projectApiKey: params.projectApiKey },
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the api!');
 
           if (typeof options.onSuccess === 'function') {
             options.onSuccess();
@@ -101,6 +131,7 @@ export default defineStore('apis', (): ApiStore => {
     list,
     clear,
     create,
+    delete: del,
     fetch,
     update,
   };
