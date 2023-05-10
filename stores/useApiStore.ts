@@ -1,6 +1,6 @@
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
-import { Api } from '~~/types/models';
+import { ApiWithResourceModel } from '~~/types/models';
 
 type BodyParams = {
   description: string;
@@ -23,7 +23,7 @@ type Options = {
 };
 
 type ApiStore = {
-  list: Ref<Api[]>;
+  list: Ref<ApiWithResourceModel[]>;
   clear: () => void;
   create: (body: BodyParams, options: Options) => Promise<void>;
   delete: (params: DeleteParams, options?: Options) => Promise<void>;
@@ -32,7 +32,7 @@ type ApiStore = {
 };
 
 export default defineStore('apis', (): ApiStore => {
-  const list = ref<Api[]>([]);
+  const list = ref<ApiWithResourceModel[]>([]);
   const toast = useToast();
 
   /**
