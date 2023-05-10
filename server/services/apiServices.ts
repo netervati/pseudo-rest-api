@@ -69,7 +69,7 @@ export default class ApiServices extends SupabaseService {
   async list(projectId: string) {
     const apis = await this.client
       .from(this.table)
-      .select('id, description, url_path')
+      .select('id, description, resource_model_id, url_path')
       .eq('is_deleted', false)
       .eq('project_id', projectId)
       .eq('user_id', this.user.id)
