@@ -10,6 +10,7 @@ export default class ApiServices extends SupabaseService {
   async create(params: {
     description: string | undefined;
     projectId: string;
+    resourceModelId: string;
     urlPath: string;
   }) {
     const apis = await this.client
@@ -18,6 +19,7 @@ export default class ApiServices extends SupabaseService {
         id: uuidv4(),
         description: params.description,
         project_id: params.projectId,
+        resource_model_id: params.resourceModelId,
         url_path: params.urlPath,
         user_id: this.user.id,
       })
@@ -84,9 +86,14 @@ export default class ApiServices extends SupabaseService {
     id: string;
     description?: string | undefined;
     projectId: string;
+    resourceModelId?: string;
     urlPath?: string;
   }) {
-    const payload: { description?: string; url_path?: string } = {};
+    const payload: {
+      description?: string;
+      resource_model_id?: string;
+      url_path?: string;
+    } = {};
 
     if (params.description) {
       payload.description = params.description;
@@ -94,6 +101,10 @@ export default class ApiServices extends SupabaseService {
 
     if (params.urlPath) {
       payload.url_path = params.urlPath;
+    }
+
+    if (params.resourceModelId) {
+      payload.resource_model_id = params.resourceModelId;
     }
 
     const apis = await this.client
