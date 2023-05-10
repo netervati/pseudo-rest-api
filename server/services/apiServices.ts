@@ -70,7 +70,8 @@ export default class ApiServices extends SupabaseService {
       .select('id, description, url_path')
       .eq('is_deleted', false)
       .eq('project_id', projectId)
-      .eq('user_id', this.user.id);
+      .eq('user_id', this.user.id)
+      .order('created_at', { ascending: false });
 
     if (apis.error !== null) {
       throw ErrorResponse.supabase(apis.error);
