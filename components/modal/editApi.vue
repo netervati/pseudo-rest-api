@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useApiStore from '~~/stores/useApiStore';
+  import useResourceModelStore from '~~/stores/useResourceModelStore';
   import { isRequired, isURLPath } from '~~/utils/formValidations';
   import { Api } from '~~/types/models';
 
@@ -20,6 +21,13 @@
   const form = useForm();
   const isDisabled = computed(() => form.isSubmitting.value === true);
   const projectApiKey = useProjectApiKey() || '';
+  const resourceModel = useResourceModelStore();
+  const dropdownOptions = computed(() =>
+    resourceModel.list.map((model) => ({
+      text: model.name,
+      value: model.id,
+    }))
+  );
 
   watch(props.deps, (deps) => {
     if (deps.target !== '') {
@@ -29,6 +37,9 @@
 
       form.setValues({
         description: target[0].description,
+        resourceModelId: dropdownOptions.value.filter(
+          (option) => option.value === target[0].resource_model_id
+        )[0].value,
         urlPath: target[0].url_path,
       });
     }
@@ -45,6 +56,7 @@
         id: props.deps.target,
         description: values.description,
         projectApiKey,
+        resourceModelId: values.resourceModelId,
         urlPath: values.urlPath,
       },
       {
@@ -70,6 +82,15 @@
           }"
           name="urlPath"
           placeholder="Enter url path"
+        />
+      </section>
+      <section class="form-control mt-2">
+        <FormSelect
+          :disabled="isDisabled"
+          :rules="{ required: isRequired('Resource model is required.') }"
+          :options="dropdownOptions"
+          name="resourceModelId"
+          placeholder="Select the resource model"
         />
       </section>
       <section class="form-control mt-2">

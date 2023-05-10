@@ -2,10 +2,12 @@
   import EditApi from '../modal/editApi.vue';
   import ModalConfirm from '../modal/confirm.vue';
   import useApiStore from '~~/stores/useApiStore';
+  import useResourceModelStore from '~~/stores/useResourceModelStore';
   import { Api } from '~~/types/models';
 
   const api = useApiStore();
   const projectApiKey = useProjectApiKey() || '';
+  const resourceModel = useResourceModelStore();
 
   const deps = reactive({
     target: '',
@@ -13,6 +15,7 @@
 
   onMounted(async () => {
     await api.fetch(projectApiKey);
+    await resourceModel.fetch(projectApiKey);
   });
 
   const editApiModal = useModal(EditApi, {
