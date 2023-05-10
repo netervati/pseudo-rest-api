@@ -71,7 +71,8 @@ export default class ResourceDataServices extends SupabaseService {
       .select('*')
       .eq('is_deleted', false)
       .eq('resource_model_id', resourceModelId)
-      .eq('user_id', this.user.id);
+      .eq('user_id', this.user.id)
+      .order('created_at', { ascending: false });
 
     if (resourceData.error !== null) {
       throw ErrorResponse.supabase(resourceData.error);
