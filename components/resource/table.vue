@@ -137,9 +137,10 @@
       <ResourceDataTable />
     </div>
     <ClientOnly>
-      <modal.component>
-        Are you sure you want to delete the resource model?
-      </modal.component>
+      <component
+        :is="modal.component"
+        content="Are you sure you want to delete this resource model?"
+      />
       <component :is="modaltest.component" />
     </ClientOnly>
   </div>

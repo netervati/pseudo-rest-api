@@ -6,6 +6,7 @@
 
   defineProps<{
     id: string;
+    content: string;
   }>();
 
   const loading = ref(false);
@@ -23,7 +24,7 @@
 <template>
   <ModalBase :id="id" @close="emit('close')">
     <h3 class="text-lg font-bold">Confirm Action</h3>
-    <slot />
+    <p>{{ content }}</p>
     <section class="mt-10">
       <Button :disabled="loading" size="sm" @click="emit('close')">
         Cancel

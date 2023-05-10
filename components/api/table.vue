@@ -102,9 +102,10 @@
       </div>
     </div>
     <ClientOnly>
-      <deleteApiModal.component>
-        Are you sure you want to delete the api?
-      </deleteApiModal.component>
+      <component
+        :is="deleteApiModal.component"
+        content="Are you sure you want to delete this api?"
+      />
       <component :is="editApiModal.component" />
     </ClientOnly>
   </div>
