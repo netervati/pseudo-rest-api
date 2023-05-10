@@ -17,6 +17,7 @@ export interface Database {
           id: string
           is_deleted: boolean
           project_id: string
+          resource_model_id: string
           updated_at: string
           url_path: string
           user_id: string
@@ -28,6 +29,7 @@ export interface Database {
           id: string
           is_deleted?: boolean
           project_id: string
+          resource_model_id: string
           updated_at?: string
           url_path: string
           user_id: string
@@ -39,6 +41,7 @@ export interface Database {
           id?: string
           is_deleted?: boolean
           project_id?: string
+          resource_model_id?: string
           updated_at?: string
           url_path?: string
           user_id?: string

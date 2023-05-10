@@ -22,6 +22,10 @@ export type ResourceModel = Omit<
   }[];
 };
 
+export type ApiWithResourceModel = Api & {
+  resource_models: ResourceModel;
+};
+
 export type ProjectKeyWithProject = ProjectKey & {
   projects: Project;
 };

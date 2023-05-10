@@ -5,6 +5,7 @@ import { Api } from '~~/types/models';
 type BodyParams = {
   description: string;
   projectApiKey: string;
+  resourceModelId: string;
   urlPath: string;
 };
 

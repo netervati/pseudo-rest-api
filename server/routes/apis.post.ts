@@ -1,12 +1,13 @@
 import { H3Event } from 'h3';
 import { PostApiValidation } from '../validations';
-import ApiServices from '../services/apiServices';
+import { ApiServices, ResourceModelServices } from '../services';
 import validateProjectKey from '../lib/validateProjectKey';
 import ErrorResponse from '../utils/errorResponse';
 
 type BodyParams = {
   description?: string;
   projectApiKey: string;
+  resourceModelId: string;
   urlPath: string;
 };
 
@@ -38,9 +39,12 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('API Endpoint already exists.');
   }
 
+  await new ResourceModelServices(event).find(body.resourceModelId);
+
   return await new ApiServices(event).create({
     description: body.description,
     projectId: projectKeys[0].project_id,
+    resourceModelId: body.resourceModelId,
     urlPath: body.urlPath,
   });
 });

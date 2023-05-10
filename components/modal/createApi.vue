@@ -1,5 +1,6 @@
 <script lang="ts" setup>
   import useApiStore from '~~/stores/useApiStore';
+  import useResourceModelStore from '~~/stores/useResourceModelStore';
   import { isRequired, isURLPath } from '~~/utils/formValidations';
 
   const emit = defineEmits<{
@@ -12,9 +13,22 @@
   }>();
 
   const api = useApiStore();
-  const form = useForm();
+  const form = useForm({
+    initialValues: {
+      description: '',
+      resourceModelId: '',
+      urlPath: '',
+    },
+  });
   const isDisabled = computed(() => form.isSubmitting.value === true);
   const projectApiKey = useProjectApiKey() || '';
+  const resourceModel = useResourceModelStore();
+  const dropdownOptions = computed(() =>
+    resourceModel.list.map((model) => ({
+      text: model.name,
+      value: model.id,
+    }))
+  );
 
   const handleClose = () => {
     form.resetForm();
@@ -26,6 +40,7 @@
       {
         description: values.description,
         projectApiKey,
+        resourceModelId: values.resourceModelId,
         urlPath: values.urlPath,
       },
       {
@@ -51,6 +66,15 @@
           }"
           name="urlPath"
           placeholder="Enter url path"
+        />
+      </section>
+      <section class="form-control mt-2">
+        <FormSelect
+          :disabled="isDisabled"
+          :rules="{ required: isRequired('Resource model is required.') }"
+          :options="dropdownOptions"
+          name="resourceModelId"
+          placeholder="Select the resource model"
         />
       </section>
       <section class="form-control mt-2">

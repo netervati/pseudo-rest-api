@@ -38,7 +38,7 @@
 <template>
   <select
     v-model="selectValue"
-    class="select select-bordered w-full max-w-xs"
+    class="select select-bordered w-full"
     :class="mergedClass"
     :disabled="disabled"
   >
