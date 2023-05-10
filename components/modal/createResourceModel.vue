@@ -193,7 +193,14 @@
           </section>
         </article>
         <article class="mt-2">
-          <Button color="success" size="sm" @click="addField">Add Field</Button>
+          <Button
+            :disabled="isDisabled"
+            color="success"
+            size="sm"
+            @click="addField"
+          >
+            Add Field
+          </Button>
         </article>
       </section>
       <section class="mt-10">
