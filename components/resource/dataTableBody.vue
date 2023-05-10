@@ -72,9 +72,10 @@
       </td>
     </tr>
     <ClientOnly>
-      <modal.component>
-        Are you sure you want to delete the resource data?
-      </modal.component>
+      <component
+        :is="modal.component"
+        content="Are you sure you want to delete this resource data?"
+      />
     </ClientOnly>
   </tbody>
 </template>
