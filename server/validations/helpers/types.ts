@@ -4,3 +4,7 @@ export type ValidationValue =
   | number
   | { [key: string]: ValidationValue }
   | ValidationValue[];
+
+export type ValidationDependencies = {
+  set?: ValidationValue[];
+};
