@@ -1,6 +1,6 @@
 import { NuxtError } from 'nuxt/dist/app/composables';
 import { validateByRules } from './helpers';
-import { ValidationValue } from './helpers/types';
+import { ValidationValue, ValidationDependencies } from './helpers/types';
 
 export type ValidationParameters = {
   [key: string]: ValidationValue;
@@ -9,7 +9,11 @@ export type ValidationParameters = {
 export type ValidationStrategies = {
   [key: string]:
     | string
-    | { rules: string; array?: string | { [key: string]: string } };
+    | {
+        rules: string;
+        array?: string | { [key: string]: string };
+        set?: string[];
+      };
 };
 
 export class BaseValidation {
@@ -35,8 +39,13 @@ export class BaseValidation {
     });
   }
 
-  #evaluate(key: string, params: ValidationParameters, rules: string) {
-    const result = validateByRules(rules, params[key]);
+  #evaluate(
+    key: string,
+    params: ValidationParameters,
+    rules: string,
+    deps: ValidationDependencies = {}
+  ) {
+    const result = validateByRules(rules, params[key], deps);
 
     if (typeof result === 'string') {
       this.errors.push({
@@ -58,7 +67,13 @@ export class BaseValidation {
         continue;
       }
 
-      this.#evaluate(key, this.parameters, value.rules);
+      const deps: ValidationDependencies = {};
+
+      if (value.set) {
+        deps.set = value.set;
+      }
+
+      this.#evaluate(key, this.parameters, value.rules, deps);
 
       if (
         value.array?.constructor !== Object ||
