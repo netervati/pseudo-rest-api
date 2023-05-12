@@ -4,6 +4,7 @@ import { ApiWithResourceModel } from '~~/types/models';
 
 type BodyParams = {
   description: string;
+  method: string;
   projectApiKey: string;
   resourceModelId: string;
   urlPath: string;

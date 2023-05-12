@@ -74,6 +74,7 @@
             <tr>
               <th />
               <th>Path</th>
+              <th>HTTP Method</th>
               <th>Resource</th>
               <th>Description</th>
             </tr>
@@ -99,6 +100,7 @@
                 </Button>
               </td>
               <td>{{ record.url_path }}</td>
+              <td>{{ record.method }}</td>
               <td>{{ record.resource_models.name }}</td>
               <td>{{ record.description }}</td>
             </tr>
