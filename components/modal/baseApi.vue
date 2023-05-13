@@ -28,6 +28,10 @@
       name="urlPath"
       placeholder="Enter url path"
     />
+    <p class="text-sm pl-2">e.g. users (this is analyzed as <i>"/users"</i>)</p>
+  </section>
+  <section class="mt-2 mb-4">
+    <hr />
   </section>
   <section class="form-control mt-2">
     <FormSelect
