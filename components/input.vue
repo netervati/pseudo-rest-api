@@ -31,8 +31,8 @@
       return props.modelValue;
     },
     set(value: string) {
-      emit('change');
       emit('update:modelValue', value);
+      emit('change');
     },
   });
 </script>

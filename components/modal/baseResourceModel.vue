@@ -1,14 +1,18 @@
 <script lang="ts" setup>
-  import { Ref } from 'vue';
   import { isRequired } from '~~/utils/formValidations';
   import { Structure } from '~~/types/forms';
   import useResourceDataType from '~~/stores/useResourceDataTypeStore';
 
-  defineProps<{
+  type Props = {
     disabled: boolean;
     structure: Structure;
     title: string;
-  }>();
+    withDefaults?: boolean;
+  };
+
+  const props = withDefaults(defineProps<Props>(), {
+    withDefaults: false,
+  });
 
   const emit = defineEmits<{
     (e: 'add'): void;
@@ -36,6 +40,12 @@
       !structure.type.includes('uuid')
     );
   };
+
+  const setValue = (value: string | undefined) => {
+    if (props.withDefaults) {
+      return value;
+    }
+  };
 </script>
 
 <template>
@@ -60,7 +70,7 @@
           "
           :name="`structure[${key}].name`"
           :rules="{ required: isRequired('Field name is required.') }"
-          :value="structure[key].name"
+          :value="setValue(structure[key].name)"
           placeholder="Enter the field name"
           @change="(value) => emit('change', key, 'name', value)"
         />
@@ -71,7 +81,7 @@
           :name="`structure[${key}].type`"
           :rules="{ required: isRequired('Field type is required.') }"
           :options="dataTypes(structure[key].name)"
-          :value="structure[key].type"
+          :value="setValue(structure[key].type)"
           placeholder="Select the field type"
           @change="(value) => emit('change', key, 'type', value)"
         />
@@ -82,7 +92,7 @@
           :disabled="disabled || structure[key]?.locked === true"
           :name="`structure[${key}].default`"
           :rules="{ required: isRequired('Default value is required.') }"
-          :value="structure[key].default"
+          :value="setValue(structure[key].default)"
           placeholder="Enter the default value"
           @change="(value) => emit('change', key, 'default', value)"
         />

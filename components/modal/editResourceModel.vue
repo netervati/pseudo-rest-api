@@ -141,6 +141,7 @@
       <ModalBaseResourceModel
         :disabled="isDisabled"
         :structure="formStructure"
+        :with-defaults="true"
         title="Edit Resource Model"
         @add="addField()"
         @change="handleChange"
