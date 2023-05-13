@@ -16,7 +16,6 @@ export interface Database {
           description: string | null
           id: string
           is_deleted: boolean
-          method: string
           project_id: string
           resource_model_id: string
           updated_at: string
@@ -29,7 +28,6 @@ export interface Database {
           description?: string | null
           id: string
           is_deleted?: boolean
-          method: string
           project_id: string
           resource_model_id: string
           updated_at?: string
@@ -42,7 +40,6 @@ export interface Database {
           description?: string | null
           id?: string
           is_deleted?: boolean
-          method?: string
           project_id?: string
           resource_model_id?: string
           updated_at?: string

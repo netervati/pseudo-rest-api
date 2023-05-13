@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import ErrorResponse from '../utils/errorResponse';
-import { HTTP_METHOD } from './types';
 import SupabaseService from './supabaseService';
 
 export default class ApiServices extends SupabaseService {
@@ -10,7 +9,6 @@ export default class ApiServices extends SupabaseService {
 
   async create(params: {
     description: string | undefined;
-    method: HTTP_METHOD;
     projectId: string;
     resourceModelId: string;
     urlPath: string;
@@ -20,7 +18,6 @@ export default class ApiServices extends SupabaseService {
       .insert({
         id: uuidv4(),
         description: params.description,
-        method: params.method,
         project_id: params.projectId,
         resource_model_id: params.resourceModelId,
         url_path: params.urlPath,
@@ -73,7 +70,7 @@ export default class ApiServices extends SupabaseService {
     const apis = await this.client
       .from(this.table)
       .select(
-        'id, description, method, resource_model_id, url_path, resource_models(name)'
+        'id, description, resource_model_id, url_path, resource_models(name)'
       )
       .eq('is_deleted', false)
       .eq('project_id', projectId)
@@ -90,24 +87,18 @@ export default class ApiServices extends SupabaseService {
   async update(params: {
     id: string;
     description?: string | undefined;
-    method?: HTTP_METHOD;
     projectId: string;
     resourceModelId?: string;
     urlPath?: string;
   }) {
     const payload: {
       description?: string;
-      method?: HTTP_METHOD;
       resource_model_id?: string;
       url_path?: string;
     } = {};
 
     if (params.description) {
       payload.description = params.description;
-    }
-
-    if (params.method) {
-      payload.method = params.method;
     }
 
     if (params.urlPath) {
