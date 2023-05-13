@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
 
   if ((await apis.list(projectKeys[0].project_id)).length >= 5) {
     throw ErrorResponse.badRequest(
-      'Exceeded allowed creation of API Endpoints.'
+      'You have exceeded the allowed number of API Endpoints.'
     );
   }
 
