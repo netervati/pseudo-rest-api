@@ -50,25 +50,6 @@
     }
   });
 
-  const dataTypes = (name: string) => {
-    if (name === 'id') {
-      return resourceDataType.list.filter(
-        (type) =>
-          type.value === 'data_type_number' || type.value === 'data_type_uuid'
-      );
-    }
-
-    return resourceDataType.list;
-  };
-
-  const isDefaultAllowed = (structure: { name: string; type: string }) => {
-    return (
-      structure.name !== 'id' &&
-      !structure.type.includes('faker') &&
-      !structure.type.includes('uuid')
-    );
-  };
-
   const handleClose = () => {
     formStructure.value = {
       [String(Date.now())]: {
@@ -135,88 +116,15 @@
 <template>
   <ModalBase :id="id" size="lg" @close="handleClose">
     <form @submit="onSubmit">
-      <h3 class="text-lg font-bold">Create a new Resource Model</h3>
-      <section class="form-control mt-2">
-        <FormInput
-          :disabled="isDisabled"
-          :rules="{ required: isRequired('Name is required.') }"
-          name="name"
-          placeholder="Enter name"
-        />
-      </section>
-      <section class="h-60 overflow-y-auto">
-        <article
-          v-for="key in Object.keys(form.values.structure)"
-          :key="key"
-          class="flex mt-2"
-        >
-          <section class="basis-4/12 form-control mr-2">
-            <FormInput
-              :disabled="isDisabled || form.values.structure[key].name === 'id'"
-              :rules="{ required: isRequired('Field name is required.') }"
-              :name="`structure[${key}].name`"
-              placeholder="Enter the field name"
-              @change="(value) => handleChange(key, 'name', value)"
-            />
-          </section>
-          <section class="basis-2/12 form-control ml-2 mr-2">
-            <FormSelect
-              :disabled="isDisabled"
-              :rules="{ required: isRequired('Field type is required.') }"
-              :name="`structure[${key}].type`"
-              :options="dataTypes(form.values.structure[key].name)"
-              placeholder="Select the field type"
-              @change="(value) => handleChange(key, 'type', value)"
-            />
-          </section>
-          <section class="basis-4/12 form-control ml-2 mr-2">
-            <FormInput
-              v-if="isDefaultAllowed(form.values.structure[key])"
-              :disabled="isDisabled"
-              :rules="{ required: isRequired('Default value is required.') }"
-              :name="`structure[${key}].default`"
-              placeholder="Enter the default value"
-              @change="(value) => handleChange(key, 'default', value)"
-            />
-          </section>
-          <section class="basis-2/12 flex ml-2">
-            <Button
-              v-if="form.values.structure[key].name !== 'id'"
-              :disabled="isDisabled"
-              class="m-auto"
-              color="error"
-              size="sm"
-              @click="removeField(key)"
-            >
-              Remove
-            </Button>
-          </section>
-        </article>
-        <article class="mt-2">
-          <Button
-            :disabled="isDisabled"
-            color="success"
-            size="sm"
-            @click="addField"
-          >
-            Add Field
-          </Button>
-        </article>
-      </section>
-      <section class="mt-10">
-        <Button :disabled="isDisabled" size="sm" @click="handleClose">
-          Cancel
-        </Button>
-        <Button
-          :loading="isDisabled"
-          class="float-right"
-          color="success"
-          size="sm"
-          type="submit"
-        >
-          Proceed
-        </Button>
-      </section>
+      <ModalBaseResourceModel
+        :disabled="isDisabled"
+        :structure="form.values.structure"
+        title="Create a new Resource Model"
+        @add="addField()"
+        @change="handleChange"
+        @remove="removeField"
+      />
+      <ModalFooter :disabled="isDisabled" @close="handleClose()" />
     </form>
   </ModalBase>
 </template>

@@ -57,19 +57,26 @@ function buildStructure(body: BodyParams): Structure {
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
   const projectKeys = await validateProjectKey(event, body.projectApiKey);
+  const resourceModels = new ResourceModelServices(event);
 
-  const existingResourceModels = await new ResourceModelServices(
-    event
-  ).findByName({
-    name: body.name,
-    projectId: projectKeys[0].project_id,
-  });
-
-  if (existingResourceModels.length > 0) {
+  if (
+    (
+      await resourceModels.findByName({
+        name: body.name,
+        projectId: projectKeys[0].project_id,
+      })
+    ).length > 0
+  ) {
     throw ErrorResponse.badRequest('Resource model already exists.');
   }
 
-  return await new ResourceModelServices(event).create({
+  if ((await resourceModels.list(projectKeys[0].project_id)).length >= 5) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of Resource Models.'
+    );
+  }
+
+  return await resourceModels.create({
     name: body.name,
     structure: buildStructure(body),
     projectId: projectKeys[0].project_id,
