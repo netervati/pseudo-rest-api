@@ -5,8 +5,3 @@ export type Structure = {
     default?: string;
   };
 };
-
-export type CreateResourceModelForm = {
-  name: string;
-  structure: Structure;
-};

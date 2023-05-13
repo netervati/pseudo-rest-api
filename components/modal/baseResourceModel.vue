@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { Ref } from 'vue';
   import { isRequired } from '~~/utils/formValidations';
-  import { Structure } from '~~types/forms.ts';
+  import { Structure } from '~~types/forms';
   import useResourceDataType from '~~/stores/useResourceDataTypeStore';
 
   defineProps<{
