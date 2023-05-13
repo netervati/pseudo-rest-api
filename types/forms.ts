@@ -3,5 +3,6 @@ export type Structure = {
     name: string;
     type: string;
     default?: string;
+    locked?: boolean;
   };
 };

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
   import { Ref } from 'vue';
   import { isRequired } from '~~/utils/formValidations';
-  import { Structure } from '~~types/forms';
+  import { Structure } from '~~/types/forms';
   import useResourceDataType from '~~/stores/useResourceDataTypeStore';
 
   defineProps<{
     disabled: boolean;
-    structure: Structure | Ref<Structure>;
+    structure: Structure;
     title: string;
   }>();
 
