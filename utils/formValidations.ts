@@ -43,14 +43,11 @@ export function isURLPath(message: string) {
     let noError = true;
 
     // TODO: Let's clean this up :)
-    '`~!@#$%^&*()_+={}[];"\'\\|<,>.?'
-      .split('')
-      .concat(['//', '--', '/-', '-/'])
-      .forEach((char) => {
-        if (value.includes(char)) {
-          noError = false;
-        }
-      });
+    '`~!@#$%^&*()_+={}[];"\'\\|<,>.?/'.split('').forEach((char) => {
+      if (value.includes(char)) {
+        noError = false;
+      }
+    });
 
     return noError || message;
   };
