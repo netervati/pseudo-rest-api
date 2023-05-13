@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 
 type Entry = { [key: string]: string | number | boolean };
@@ -20,6 +21,18 @@ function setValue(field: Structure): string | number | boolean {
   switch (field.type) {
     case 'data_type_uuid':
       return uuidv4();
+    case 'faker_date':
+      return faker.date.anytime().toISOString().substring(0, 10);
+    case 'faker_email_address':
+      return faker.internet.email();
+    case 'faker_full_name':
+      return faker.person.fullName();
+    case 'faker_price':
+      return Number(faker.commerce.price());
+    case 'faker_product_name':
+      return faker.commerce.productName();
+    case 'faker_product':
+      return faker.commerce.product();
     default:
       return field.default;
   }
