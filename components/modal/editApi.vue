@@ -72,48 +72,8 @@
 <template>
   <ModalBase :id="id" @close="handleClose">
     <form @submit="onSubmit">
-      <h3 class="text-lg font-bold">Edit API</h3>
-      <section class="form-control mt-2">
-        <FormInput
-          :disabled="isDisabled"
-          :rules="{
-            required: isRequired('URL Path is required.'),
-            urlPath: isURLPath('URL Path is not valid'),
-          }"
-          name="urlPath"
-          placeholder="Enter url path"
-        />
-      </section>
-      <section class="form-control mt-2">
-        <FormSelect
-          :disabled="isDisabled"
-          :rules="{ required: isRequired('Resource model is required.') }"
-          :options="dropdownOptions"
-          name="resourceModelId"
-          placeholder="Select the resource model"
-        />
-      </section>
-      <section class="form-control mt-2">
-        <FormTextArea
-          :disabled="isDisabled"
-          name="description"
-          placeholder="Enter description"
-        />
-      </section>
-      <section class="mt-10">
-        <Button :disabled="isDisabled" size="sm" @click="handleClose">
-          Cancel
-        </Button>
-        <Button
-          :loading="isDisabled"
-          class="float-right"
-          color="success"
-          size="sm"
-          type="submit"
-        >
-          Proceed
-        </Button>
-      </section>
+      <ModalBaseApi :disabled="isDisabled" title="Edit API" />
+      <ModalFooter :disabled="isDisabled" @close="handleClose()" />
     </form>
   </ModalBase>
 </template>

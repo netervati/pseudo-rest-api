@@ -29,19 +29,28 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
   const projectKeys = await validateProjectKey(event, body.projectApiKey);
+  const apis = new ApiServices(event);
 
-  const apis = await new ApiServices(event).findByUrlPath({
-    urlPath: body.urlPath,
-    projectId: projectKeys[0].project_id,
-  });
-
-  if (apis.length > 0) {
+  if (
+    (
+      await apis.findByUrlPath({
+        urlPath: body.urlPath,
+        projectId: projectKeys[0].project_id,
+      })
+    ).length > 0
+  ) {
     throw ErrorResponse.badRequest('API Endpoint already exists.');
+  }
+
+  if ((await apis.list(projectKeys[0].project_id)).length >= 5) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of API Endpoints.'
+    );
   }
 
   await new ResourceModelServices(event).find(body.resourceModelId);
 
-  return await new ApiServices(event).create({
+  return await apis.create({
     description: body.description,
     projectId: projectKeys[0].project_id,
     resourceModelId: body.resourceModelId,
