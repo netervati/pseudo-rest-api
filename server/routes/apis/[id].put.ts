@@ -1,13 +1,11 @@
 import { H3Event } from 'h3';
 import { PutApiValidation } from '~~/server/validations';
 import { ApiServices, ResourceModelServices } from '~~/server/services';
-import { HTTP_METHOD } from '~~/server/services/types';
 import validateProjectKey from '~~/server/lib/validateProjectKey';
 import ErrorResponse from '~~/server/utils/errorResponse';
 
 type BodyParams = {
   description?: string;
-  method?: HTTP_METHOD;
   projectApiKey: string;
   resourceModelId?: string;
   urlPath?: string;
@@ -50,7 +48,6 @@ export default defineEventHandler(async (event) => {
   return await new ApiServices(event).update({
     id: event.context.params.id,
     description: body.description,
-    method: body.method,
     projectId: projectKeys[0].project_id,
     resourceModelId: body.resourceModelId,
     urlPath: body.urlPath,

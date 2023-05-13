@@ -16,7 +16,6 @@
   const form = useForm({
     initialValues: {
       description: '',
-      method: '',
       resourceModelId: '',
       urlPath: '',
     },
@@ -40,7 +39,6 @@
     await api.create(
       {
         description: values.description,
-        method: values.method,
         projectApiKey,
         resourceModelId: values.resourceModelId,
         urlPath: values.urlPath,
@@ -70,43 +68,15 @@
           placeholder="Enter url path"
         />
       </section>
-      <article class="flex mt-2">
-        <section class="basis-1/2 form-control mr-2">
-          <FormSelect
-            :disabled="isDisabled"
-            :rules="{ required: isRequired('HTTP Method is required.') }"
-            :options="[
-              {
-                text: 'GET',
-                value: 'GET',
-              },
-              {
-                text: 'POST',
-                value: 'POST',
-              },
-              {
-                text: 'PUT',
-                value: 'PUT',
-              },
-              {
-                text: 'DELETE',
-                value: 'DELETE',
-              },
-            ]"
-            name="method"
-            placeholder="Select the HTTP Method"
-          />
-        </section>
-        <section class="basis-1/2 form-control ml-2">
-          <FormSelect
-            :disabled="isDisabled"
-            :rules="{ required: isRequired('Resource model is required.') }"
-            :options="dropdownOptions"
-            name="resourceModelId"
-            placeholder="Select the resource model"
-          />
-        </section>
-      </article>
+      <section class="form-control mt-2">
+        <FormSelect
+          :disabled="isDisabled"
+          :rules="{ required: isRequired('Resource model is required.') }"
+          :options="dropdownOptions"
+          name="resourceModelId"
+          placeholder="Select the resource model"
+        />
+      </section>
       <section class="form-control mt-2">
         <FormTextArea
           :disabled="isDisabled"
