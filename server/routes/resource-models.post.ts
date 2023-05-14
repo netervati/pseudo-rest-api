@@ -36,21 +36,28 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
     throw ErrorResponse.badRequest('Each model name should be unique.');
   }
 
+  if (body.structure.length > 20) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of fields for your Resource Model.'
+    );
+  }
+
   return body;
 }
 
 function buildStructure(body: BodyParams): Structure {
+  let coercedValue = null;
+
   return body.structure.map((item) => {
-    const coercedValue = coerce(item.type, item.default);
+    coercedValue = coerce(item.type, item.default);
 
     if (coercedValue !== null) {
       item.default = coercedValue;
     }
 
-    return {
-      ...item,
-      id: uuidv4(),
-    };
+    item.id = uuidv4();
+
+    return item;
   });
 }
 
@@ -59,14 +66,12 @@ export default defineEventHandler(async (event) => {
   const projectKeys = await validateProjectKey(event, body.projectApiKey);
   const resourceModels = new ResourceModelServices(event);
 
-  if (
-    (
-      await resourceModels.findByName({
-        name: body.name,
-        projectId: projectKeys[0].project_id,
-      })
-    ).length > 0
-  ) {
+  const similarResourceModels = await resourceModels.findByName({
+    name: body.name,
+    projectId: projectKeys[0].project_id,
+  });
+
+  if (similarResourceModels.length > 0) {
     throw ErrorResponse.badRequest('Resource model already exists.');
   }
 
