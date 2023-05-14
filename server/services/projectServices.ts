@@ -53,4 +53,19 @@ export default class ProjectServices extends SupabaseService {
 
     return projects.data;
   }
+
+  async update(params: { id: string; name: string }) {
+    const projects = await this.client
+      .from(this.table)
+      .update({ name: params.name })
+      .eq('id', params.id)
+      .eq('user_id', this.user.id)
+      .select('*');
+
+    if (projects.error !== null) {
+      throw ErrorResponse.supabase(projects.error);
+    }
+
+    return projects.data[0];
+  }
 }

@@ -3,9 +3,9 @@
     CircleStackIcon,
     HomeIcon,
     ServerStackIcon,
+    WrenchScrewdriverIcon,
   } from '@heroicons/vue/24/outline';
 
-  const iconClass = 'h-4 w-4';
   const route = useRoute();
 
   const links = computed(() => {
@@ -24,6 +24,11 @@
             icon: CircleStackIcon,
             to: `/project/${route.params.urlpath}/resources`,
           },
+          {
+            name: 'Settings',
+            icon: WrenchScrewdriverIcon,
+            to: `/project/${route.params.urlpath}/settings`,
+          },
         ]
       );
     }
@@ -39,15 +44,15 @@
     <div
       v-for="link in links"
       :key="link.to"
-      class="mr-auto ml-auto mt-2 tooltip tooltip-bottom"
       :data-tip="link.name"
+      class="mr-auto ml-auto mt-2 tooltip tooltip-bottom"
     >
       <Button
         color="ghost"
         :is-active="route.path === link.to"
         @click="navigateTo(link.to)"
       >
-        <component :is="link.icon" :class="iconClass" />
+        <component :is="link.icon" class="h-4 w-4" />
       </Button>
     </div>
   </div>

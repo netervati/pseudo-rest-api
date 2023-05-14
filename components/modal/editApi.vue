@@ -2,7 +2,6 @@
   import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useApiStore from '~~/stores/useApiStore';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
-  import { isRequired, isURLPath } from '~~/utils/formValidations';
   import { Api } from '~~/types/models';
 
   const emit = defineEmits<{

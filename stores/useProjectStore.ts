@@ -7,6 +7,11 @@ type BodyParams = {
   name: string;
 };
 
+type UpdateParams = {
+  name: string;
+  projectApiKey: string;
+};
+
 type Options = {
   onSuccess?: (key: string) => void;
 };
@@ -15,6 +20,7 @@ type ProjectStore = {
   list: Ref<ProjectWithProjectKey[]>;
   create: (body: BodyParams, options: Options) => Promise<void>;
   fetch: () => Promise<void>;
+  update: (body: UpdateParams, options: Options) => Promise<void>;
 };
 
 export default defineStore('projects', (): ProjectStore => {
@@ -58,9 +64,34 @@ export default defineStore('projects', (): ProjectStore => {
     });
   };
 
+  /**
+   * A function for updating project.
+   */
+  const update = async (
+    body: UpdateParams,
+    options: Options
+  ): Promise<void> => {
+    await $fetch(`/projects/${body.projectApiKey}`, {
+      method: 'PUT',
+      body: { name: body.name },
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Updated project!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess(response._data.secretKey);
+          }
+        }
+      },
+    }).catch((error) => {
+      toast.error(error.statusMessage);
+    });
+  };
+
   return {
     list,
     create,
     fetch,
+    update,
   };
 });
