@@ -43,10 +43,10 @@
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
   onMounted(async () => {
+    form.setFieldValue('structure', formStructure.value);
+
     if (resourceDataType.list.length === 0) {
       await resourceDataType.fetch();
-
-      form.setFieldValue('structure', formStructure.value);
     }
   });
 
