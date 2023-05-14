@@ -6,3 +6,9 @@ export class PostProjectValidation extends BaseValidation {
     name: 'required,string,blank',
   };
 }
+
+export class PutProjectValidation extends BaseValidation {
+  strategies = {
+    name: 'required,string,blank',
+  };
+}
