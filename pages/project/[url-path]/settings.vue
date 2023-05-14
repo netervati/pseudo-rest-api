@@ -3,7 +3,7 @@
   import { isRequired } from '~~/utils/formValidations';
   import { ProjectWithProjectKey } from '~~/types/models';
 
-  const projectApiKey = useProjectApiKey();
+  const projectApiKey = useProjectApiKey() || '';
   const project = useProjectStore();
   const currentProject = ref<ProjectWithProjectKey>();
 
