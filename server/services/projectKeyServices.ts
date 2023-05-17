@@ -30,6 +30,24 @@ export default class ProjectKeyServices extends SupabaseService {
     return projectKeys.data[0];
   }
 
+  async delete(id: string) {
+    const projects = await this.client
+      .from(this.table)
+      .update({
+        deleted_at: Date.now(),
+        is_deleted: true,
+      })
+      .eq('id', id)
+      .eq('user_id', this.user.id)
+      .select('*');
+
+    if (projects.error !== null) {
+      throw ErrorResponse.supabase(projects.error);
+    }
+
+    return projects.data[0];
+  }
+
   async findByApiKey(apiKey: string) {
     const projectKey = await this.client
       .from(this.table)
