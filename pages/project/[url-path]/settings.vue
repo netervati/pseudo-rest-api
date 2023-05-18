@@ -32,6 +32,7 @@
   const onSubmit = form.handleSubmit(async (values) => {
     await project.update(
       {
+        id: currentProject.value?.id,
         name: values.name,
         projectApiKey,
       },

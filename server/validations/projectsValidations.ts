@@ -10,5 +10,6 @@ export class PostProjectValidation extends BaseValidation {
 export class PutProjectValidation extends BaseValidation {
   strategies = {
     name: 'required,string,blank',
+    projectApiKey: 'required,string,blank',
   };
 }
