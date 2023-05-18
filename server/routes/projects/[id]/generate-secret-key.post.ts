@@ -34,14 +34,19 @@ export default defineEventHandler(async (event) => {
   );
   const projectKeys = new ProjectKeyServices(event);
 
-  const secretKey = generateSecretKey();
   await projectKeys.delete(existingProjectKey[0].id);
 
+  const secretKey = generateSecretKey();
+  const projectApiKey = shortuuid.generate();
+
   await projectKeys.create({
-    apiKey: shortuuid.generate(),
+    apiKey: projectApiKey,
     projectId: event.context.params.id,
     secretKey: await hashPassword(secretKey),
   });
 
-  return { secretKey };
+  return {
+    projectApiKey,
+    secretKey,
+  };
 });

@@ -6,7 +6,7 @@ type GenerateSKParams = {
 };
 
 type Options = {
-  onSuccess?: (key: string) => void;
+  onSuccess?: (data: { projectApiKey: string; secretKey: string }) => void;
 };
 
 type ProjectKeyStore = {
@@ -33,7 +33,8 @@ export default defineStore('projectKeys', (): ProjectKeyStore => {
           toast.success('Created a project!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess(response._data.secretKey);
+            const data = response._data;
+            options.onSuccess(data);
           }
         }
       },
