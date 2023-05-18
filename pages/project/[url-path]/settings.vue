@@ -10,7 +10,10 @@
   const currentProject = ref<ProjectWithProjectKey>();
 
   const form = useForm();
+  const router = useRouter();
   const isDisabled = computed(() => form.isSubmitting.value === true);
+
+  const secretKey = ref('');
 
   onMounted(async () => {
     await project.fetch();
@@ -23,6 +26,12 @@
       name: currentProject.value!.name,
       apiKey: projectApiKey,
     });
+
+    const newSecretKey = useRoute().query?.secret_key;
+
+    if (typeof newSecretKey === 'string') {
+      secretKey.value = newSecretKey;
+    }
   });
 
   onUnmounted(() => {
@@ -44,8 +53,6 @@
     );
   });
 
-  const secretKey = ref('');
-
   const generateSecretKeyModal = useModal(ModalConfirm, {
     id: 'confirm-generate-secret-key',
     onConfirm: async (callback: () => void) => {
@@ -55,8 +62,10 @@
           projectApiKey,
         },
         {
-          onSuccess: (key: string) => {
-            secretKey.value = key;
+          onSuccess: (result: { projectApiKey: string; secretKey: string }) => {
+            router.push(
+              `/project/${result.projectApiKey}/settings?secret_key=${result.secretKey}`
+            );
           },
         }
       );
@@ -107,14 +116,14 @@
           color="error"
           @click="generateSecretKeyModal.open()"
         >
-          Generate new Secret Key
+          Generate new Api Key and Secret Key
         </Button>
       </div>
     </div>
     <ClientOnly>
       <component
         :is="generateSecretKeyModal.component"
-        content="Are you sure you want to generate a new secret key?"
+        content="Are you sure you want to generate a new api key and secret key?"
       />
     </ClientOnly>
   </div>
