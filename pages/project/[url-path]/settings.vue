@@ -32,7 +32,7 @@
   const onSubmit = form.handleSubmit(async (values) => {
     await project.update(
       {
-        id: currentProject.value?.id,
+        id: currentProject.value!.id,
         name: values.name,
         projectApiKey,
       },
@@ -51,7 +51,7 @@
     onConfirm: async (callback: () => void) => {
       await projectKey.regenerate(
         {
-          id: currentProject.value?.id,
+          id: currentProject.value!.id,
           projectApiKey,
         },
         {
