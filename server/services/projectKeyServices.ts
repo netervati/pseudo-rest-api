@@ -34,7 +34,7 @@ export default class ProjectKeyServices extends SupabaseService {
     const projects = await this.client
       .from(this.table)
       .update({
-        deleted_at: Date.now(),
+        deleted_at: (new Date()).toISOString(),
         is_deleted: true,
       })
       .eq('id', id)
