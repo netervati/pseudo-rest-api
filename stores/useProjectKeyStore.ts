@@ -6,7 +6,7 @@ type GenerateSKParams = {
 };
 
 type Options = {
-  onSuccess?: (data: { projectApiKey: string; secretKey: string; }) => void;
+  onSuccess?: (data: { projectApiKey: string; secretKey: string }) => void;
 };
 
 type ProjectKeyStore = {
