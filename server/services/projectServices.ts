@@ -24,6 +24,25 @@ export default class ProjectServices extends SupabaseService {
     return projects.data[0];
   }
 
+  async find(id: string) {
+    const project = await this.client
+      .from(this.table)
+      .select('*')
+      .eq('is_deleted', false)
+      .eq('id', id)
+      .eq('user_id', this.user.id);
+
+    if (project.error !== null) {
+      throw ErrorResponse.supabase(project.error);
+    }
+
+    if (project.data.length === 0) {
+      throw ErrorResponse.notFound('Project does not exist.');
+    }
+
+    return project.data[0];
+  }
+
   async findByName(name: string) {
     const project = await this.client
       .from(this.table)
@@ -42,7 +61,7 @@ export default class ProjectServices extends SupabaseService {
   async list() {
     const projects = await this.client
       .from(this.table)
-      .select('name, description, project_keys(api_key)')
+      .select('id, name, description, project_keys(api_key)')
       .eq('is_deleted', false)
       .eq('project_keys.is_deleted', false)
       .eq('user_id', this.user.id);

@@ -8,6 +8,7 @@ type BodyParams = {
 };
 
 type UpdateParams = {
+  id: string;
   name: string;
   projectApiKey: string;
 };
@@ -71,9 +72,12 @@ export default defineStore('projects', (): ProjectStore => {
     body: UpdateParams,
     options: Options
   ): Promise<void> => {
-    await $fetch(`/projects/${body.projectApiKey}`, {
+    await $fetch(`/projects/${body.id}`, {
       method: 'PUT',
-      body: { name: body.name },
+      body: {
+        name: body.name,
+        projectApiKey: body.projectApiKey,
+      },
       onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Updated project!');

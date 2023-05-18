@@ -1,4 +1,5 @@
 export { PostApiValidation, PutApiValidation } from './apisValidations';
+export { PostProjectKeyValidation } from './projectKeysValidations';
 export {
   PostProjectValidation,
   PutProjectValidation,
