@@ -61,7 +61,7 @@ export default class ProjectServices extends SupabaseService {
   async list() {
     const projects = await this.client
       .from(this.table)
-      .select('name, description, project_keys(api_key)')
+      .select('id, name, description, project_keys(api_key)')
       .eq('is_deleted', false)
       .eq('project_keys.is_deleted', false)
       .eq('user_id', this.user.id);
