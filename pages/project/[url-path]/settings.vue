@@ -1,36 +1,31 @@
 <script lang="ts" setup>
   import { useProjectStore, useProjectKeyStore } from '~~/stores';
   import { isRequired } from '~~/utils/formValidations';
-  import { ProjectWithProjectKey } from '~~/types/models';
   import ModalConfirm from '~~/components/modal/confirm.vue';
 
+  definePageMeta({
+    middleware: 'validate-project',
+  });
+
   const projectApiKey = useProjectApiKey() || '';
-  const project = useProjectStore();
   const projectKey = useProjectKeyStore();
-  const currentProject = ref<ProjectWithProjectKey>();
+  const project = useProjectStore();
 
   const form = useForm();
-  const router = useRouter();
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
   const secretKey = ref('');
 
-  onMounted(async () => {
-    await project.fetch();
-
-    currentProject.value = project.list.filter(
-      (element) => element.project_keys[0].api_key === projectApiKey
-    )[0];
-
+  onMounted(() => {
     form.setValues({
-      name: currentProject.value!.name,
+      name: project.target?.name,
       apiKey: projectApiKey,
     });
 
-    const newSecretKey = useRoute().query?.secret_key;
+    const querySecretKey = useRoute().query?.secret_key;
 
-    if (typeof newSecretKey === 'string') {
-      secretKey.value = newSecretKey;
+    if (typeof querySecretKey === 'string') {
+      secretKey.value = querySecretKey;
     }
   });
 
@@ -41,7 +36,7 @@
   const onSubmit = form.handleSubmit(async (values) => {
     await project.update(
       {
-        id: currentProject.value!.id,
+        id: project.target!.id,
         name: values.name,
         projectApiKey,
       },
@@ -55,22 +50,25 @@
 
   const generateSecretKeyModal = useModal(ModalConfirm, {
     id: 'confirm-generate-secret-key',
-    onConfirm: async (callback: () => void) => {
+    onConfirm: async (closeModal: () => void) => {
       await projectKey.regenerate(
         {
-          id: currentProject.value!.id,
+          id: project.target!.id,
           projectApiKey,
         },
         {
           onSuccess: (result: { projectApiKey: string; secretKey: string }) => {
-            router.push(
-              `/project/${result.projectApiKey}/settings?secret_key=${result.secretKey}`
-            );
+            navigateTo({
+              path: `/project/${result.projectApiKey}/settings`,
+              query: {
+                secret_key: result.secretKey,
+              },
+            });
           },
         }
       );
 
-      callback();
+      closeModal();
     },
   });
 </script>
