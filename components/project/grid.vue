@@ -1,24 +1,7 @@
 <script lang="ts" setup>
   import useProjectStore from '~~/stores/useProjectStore';
 
-  const props = defineProps<{
-    secretKey: string;
-  }>();
-
-  const { secretKey } = toRefs(props);
   const projects = useProjectStore();
-
-  onMounted(async () => {
-    if (projects.list.length === 0) {
-      await projects.fetch();
-    }
-  });
-
-  watchEffect(async () => {
-    if (secretKey.value.trim() !== '') {
-      await projects.fetch();
-    }
-  });
 
   const handleOpen = (urlPath: string) => {
     navigateTo(`/project/${urlPath}/apis`);
