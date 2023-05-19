@@ -32,13 +32,13 @@
 
   const deleteApiModal = useModal(ModalConfirm, {
     id: 'confirm-delete-api',
-    onConfirm: async (callback: () => void) => {
+    onConfirm: async (closeModal: () => void) => {
       await api.delete({
         id: deps.target,
         projectApiKey,
       });
 
-      callback();
+      closeModal();
 
       api.clear();
       await api.fetch(projectApiKey);
