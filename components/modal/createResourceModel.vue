@@ -11,7 +11,7 @@
     id: string;
   }>();
 
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 

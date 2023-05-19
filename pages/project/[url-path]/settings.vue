@@ -7,7 +7,7 @@
     middleware: 'validate-project',
   });
 
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const projectKey = useProjectKeyStore();
   const project = useProjectStore();
 

@@ -6,7 +6,7 @@
   import { Api } from '~~/types/models';
 
   const api = useApiStore();
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const resourceModel = useResourceModelStore();
 
   const deps = reactive({

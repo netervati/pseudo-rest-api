@@ -6,7 +6,7 @@
     modelId: string;
   }>();
 
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceDataId = ref<string>('');
 

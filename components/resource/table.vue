@@ -10,7 +10,7 @@
   }>();
 
   const { refresh } = toRefs(props);
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 
