@@ -19,6 +19,7 @@ type Options = {
 
 type ProjectStore = {
   list: Ref<ProjectWithProjectKey[]>;
+  target: Ref<ProjectWithProjectKey | undefined>;
   create: (body: BodyParams, options: Options) => Promise<void>;
   fetch: () => Promise<void>;
   update: (body: UpdateParams, options: Options) => Promise<void>;
@@ -26,6 +27,7 @@ type ProjectStore = {
 
 export default defineStore('projects', (): ProjectStore => {
   const list = ref<ProjectWithProjectKey[]>([]);
+  const target = ref<ProjectWithProjectKey | undefined>();
   const toast = useToast();
 
   /**
@@ -94,6 +96,7 @@ export default defineStore('projects', (): ProjectStore => {
 
   return {
     list,
+    target,
     create,
     fetch,
     update,
