@@ -25,13 +25,13 @@
 
   const modal = useModal(ModalConfirm, {
     id: 'confirm-delete-resource-model',
-    onConfirm: async (callback) => {
+    onConfirm: async (closeModal) => {
       await resourceModel.delete({
         id: state.deleteId,
         projectApiKey,
       });
 
-      callback();
+      closeModal();
 
       resourceModel.clear();
       await resourceModel.fetch(projectApiKey);
