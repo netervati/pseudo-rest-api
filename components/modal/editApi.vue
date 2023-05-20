@@ -19,7 +19,7 @@
   const api = useApiStore();
   const form = useForm();
   const isDisabled = computed(() => form.isSubmitting.value === true);
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const resourceModel = useResourceModelStore();
   const dropdownOptions = computed(() =>
     resourceModel.list.map((model) => ({

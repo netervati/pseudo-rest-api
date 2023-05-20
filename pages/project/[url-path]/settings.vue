@@ -1,36 +1,34 @@
 <script lang="ts" setup>
   import { useProjectStore, useProjectKeyStore } from '~~/stores';
   import { isRequired } from '~~/utils/formValidations';
-  import { ProjectWithProjectKey } from '~~/types/models';
   import ModalConfirm from '~~/components/modal/confirm.vue';
+  import validateProject from '~~/middleware/validateProject';
 
-  const projectApiKey = useProjectApiKey() || '';
-  const project = useProjectStore();
+  definePageMeta({
+    middleware: ['auth'],
+  });
+
+  const projectApiKey = useProjectApiKey();
   const projectKey = useProjectKeyStore();
-  const currentProject = ref<ProjectWithProjectKey>();
+  const project = useProjectStore();
 
   const form = useForm();
-  const router = useRouter();
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
   const secretKey = ref('');
 
   onMounted(async () => {
-    await project.fetch();
-
-    currentProject.value = project.list.filter(
-      (element) => element.project_keys[0].api_key === projectApiKey
-    )[0];
+    await validateProject();
 
     form.setValues({
-      name: currentProject.value!.name,
+      name: project.target?.name,
       apiKey: projectApiKey,
     });
 
-    const newSecretKey = useRoute().query?.secret_key;
+    const querySecretKey = useRoute().query?.secret_key;
 
-    if (typeof newSecretKey === 'string') {
-      secretKey.value = newSecretKey;
+    if (typeof querySecretKey === 'string') {
+      secretKey.value = querySecretKey;
     }
   });
 
@@ -41,13 +39,13 @@
   const onSubmit = form.handleSubmit(async (values) => {
     await project.update(
       {
-        id: currentProject.value!.id,
+        id: project.target!.id,
         name: values.name,
         projectApiKey,
       },
       {
-        onSuccess: async () => {
-          await project.fetch();
+        onSuccess: () => {
+          navigateTo(`/project/${projectApiKey}/settings`);
         },
       }
     );
@@ -55,22 +53,25 @@
 
   const generateSecretKeyModal = useModal(ModalConfirm, {
     id: 'confirm-generate-secret-key',
-    onConfirm: async (callback: () => void) => {
+    onConfirm: async (closeModal: () => void) => {
       await projectKey.regenerate(
         {
-          id: currentProject.value!.id,
+          id: project.target!.id,
           projectApiKey,
         },
         {
           onSuccess: (result: { projectApiKey: string; secretKey: string }) => {
-            router.push(
-              `/project/${result.projectApiKey}/settings?secret_key=${result.secretKey}`
-            );
+            navigateTo({
+              path: `/project/${result.projectApiKey}/settings`,
+              query: {
+                secret_key: result.secretKey,
+              },
+            });
           },
         }
       );
 
-      callback();
+      closeModal();
     },
   });
 </script>
@@ -112,6 +113,7 @@
     <div class="card border border-gray-300 mt-6">
       <div class="card-body">
         <Button
+          :disabled="isDisabled"
           class="w-100"
           color="error"
           @click="generateSecretKeyModal.open()"

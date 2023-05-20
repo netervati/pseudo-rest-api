@@ -69,7 +69,7 @@
     }
   });
 
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
 
   const handleClose = () => {
     formStructure.value = {};

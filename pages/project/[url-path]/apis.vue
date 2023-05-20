@@ -1,8 +1,9 @@
 <script lang="ts" setup>
   import ModalCreateApi from '~~/components/modal/createApi.vue';
+  import validateProject from '~~/middleware/validateProject';
 
   definePageMeta({
-    middleware: 'auth',
+    middleware: ['auth'],
   });
 
   const refresh = ref(Date.now());
@@ -13,6 +14,8 @@
       refresh.value = Date.now();
     },
   });
+
+  onMounted(async () => await validateProject());
 </script>
 
 <template>

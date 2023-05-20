@@ -1,27 +1,17 @@
 <script lang="ts" setup>
   import useProjectStore from '~~/stores/useProjectStore';
+  import { ProjectWithProjectKey } from '~~/types/models';
 
-  const props = defineProps<{
-    secretKey: string;
-  }>();
-
-  const { secretKey } = toRefs(props);
   const projects = useProjectStore();
 
-  onMounted(async () => {
-    if (projects.list.length === 0) {
-      await projects.fetch();
-    }
-  });
+  const handleOpen = (project: ProjectWithProjectKey) => {
+    /**
+      We can directly assign the project to the target here
+      to reduce backend requests.
+    */
+    projects.target = project;
 
-  watchEffect(async () => {
-    if (secretKey.value.trim() !== '') {
-      await projects.fetch();
-    }
-  });
-
-  const handleOpen = (urlPath: string) => {
-    navigateTo(`/project/${urlPath}/apis`);
+    navigateTo(`/project/${project.project_keys[0].api_key}/apis`);
   };
 </script>
 
@@ -31,7 +21,7 @@
       v-for="project in projects.list"
       :key="project.id"
       class="card border border-gray-300 hover:bg-gray-300"
-      @click="handleOpen(project.project_keys[0].api_key)"
+      @click="handleOpen(project)"
     >
       <div class="card-body cursor-pointer">
         <h3 class="font-bold">{{ project.name }}</h3>

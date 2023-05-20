@@ -19,7 +19,7 @@
   const isDisabled = computed(() => form.isSubmitting.value === true);
   const maxCountAllowed = ref(10);
 
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 

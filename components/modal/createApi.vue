@@ -19,7 +19,7 @@
     },
   });
   const isDisabled = computed(() => form.isSubmitting.value === true);
-  const projectApiKey = useProjectApiKey() || '';
+  const projectApiKey = useProjectApiKey();
 
   const handleClose = () => {
     form.resetForm();
