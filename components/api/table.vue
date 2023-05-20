@@ -14,8 +14,10 @@
   });
 
   onMounted(async () => {
-    await api.fetch(projectApiKey);
-    await resourceModel.fetch(projectApiKey);
+    if (api.list.length === 0) {
+      await api.fetch(projectApiKey);
+      await resourceModel.fetch(projectApiKey);
+    }
   });
 
   const editApiModal = useModal(EditApi, {
@@ -25,7 +27,6 @@
       deps.target = '';
     },
     onSuccess: async () => {
-      api.clear();
       await api.fetch(projectApiKey);
     },
   });
@@ -33,14 +34,10 @@
   const deleteApiModal = useModal(ModalConfirm, {
     id: 'confirm-delete-api',
     onConfirm: async (closeModal: () => void) => {
-      await api.delete({
-        id: deps.target,
-        projectApiKey,
-      });
+      await api.delete(deps.target, projectApiKey);
 
       closeModal();
 
-      api.clear();
       await api.fetch(projectApiKey);
 
       deps.target = '';
@@ -79,7 +76,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="record in api.list" :key="record.id">
+            <tr v-if="api.isLoading">
+              <td colspan="4">
+                <div class="flex h-full w-full">
+                  <LoaderSpinner />
+                </div>
+              </td>
+            </tr>
+            <tr v-for="record in api.list" v-else :key="record.id">
               <td>
                 <Button
                   class="mr-1"
