@@ -45,7 +45,7 @@
     },
   });
 
-  const modaltest = useModal(EditResourceModel, {
+  const editResourceModelModal = useModal(EditResourceModel, {
     id: 'edit-resource-model',
     deps,
     onClose: () => {
@@ -85,7 +85,7 @@
         break;
       case 'edit':
         deps.target = data.id;
-        modaltest.open();
+        editResourceModelModal.open();
 
         break;
       case 'open':
@@ -141,7 +141,7 @@
         :is="modal.component"
         content="Are you sure you want to delete this resource model?"
       />
-      <component :is="modaltest.component" />
+      <component :is="editResourceModelModal.component" />
     </ClientOnly>
   </div>
 </template>
