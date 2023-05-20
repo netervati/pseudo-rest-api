@@ -2,9 +2,10 @@
   import { useProjectStore, useProjectKeyStore } from '~~/stores';
   import { isRequired } from '~~/utils/formValidations';
   import ModalConfirm from '~~/components/modal/confirm.vue';
+  import validateProject from '~~/middleware/validateProject';
 
   definePageMeta({
-    middleware: 'validate-project',
+    middleware: ['auth'],
   });
 
   const projectApiKey = useProjectApiKey();
@@ -16,7 +17,9 @@
 
   const secretKey = ref('');
 
-  onMounted(() => {
+  onMounted(async () => {
+    await validateProject();
+
     form.setValues({
       name: project.target?.name,
       apiKey: projectApiKey,
@@ -41,8 +44,8 @@
         projectApiKey,
       },
       {
-        onSuccess: async () => {
-          await project.fetch();
+        onSuccess: () => {
+          navigateTo(`/project/${projectApiKey}/settings`);
         },
       }
     );
@@ -110,6 +113,7 @@
     <div class="card border border-gray-300 mt-6">
       <div class="card-body">
         <Button
+          :disabled="isDisabled"
           class="w-100"
           color="error"
           @click="generateSecretKeyModal.open()"

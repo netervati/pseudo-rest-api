@@ -1,6 +1,10 @@
 import useProjectStore from '~~/stores/useProjectStore';
 
-export default defineNuxtRouteMiddleware(async () => {
+/**
+ * Custom client-side middleware. This should
+ * be used in `onMounted`.
+ */
+export default async function () {
   const project = useProjectStore();
   const projectApikey = useProjectApiKey();
 
@@ -20,5 +24,5 @@ export default defineNuxtRouteMiddleware(async () => {
     return;
   }
 
-  return navigateTo('/');
-});
+  navigateTo('/');
+}
