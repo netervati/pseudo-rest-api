@@ -55,10 +55,7 @@
       resourceModel.clear();
       await resourceModel.fetch(projectApiKey);
       resourceData.clear(id);
-      await resourceData.fetch({
-        projectApiKey,
-        resourceModelId: id,
-      });
+      await resourceData.fetch(projectApiKey, id);
     },
   });
 
