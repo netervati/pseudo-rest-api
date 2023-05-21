@@ -21,11 +21,7 @@
 
       closeModal();
       resourceData.clear(props.modelId);
-
-      await resourceData.fetch({
-        projectApiKey,
-        resourceModelId: props.modelId,
-      });
+      await resourceData.fetch(projectApiKey, props.modelId);
 
       resourceDataId.value = '';
     },
@@ -33,10 +29,7 @@
 
   onMounted(async () => {
     if (props.modelId !== '' && resourceData.list[props.modelId].length === 0) {
-      await resourceData.fetch({
-        projectApiKey,
-        resourceModelId: props.modelId,
-      });
+      await resourceData.fetch(projectApiKey, props.modelId);
     }
   });
 
@@ -46,10 +39,7 @@
 
   watchEffect(() => {
     if (props.modelId !== '') {
-      resourceData.fetch({
-        projectApiKey,
-        resourceModelId: props.modelId,
-      });
+      resourceData.fetch(projectApiKey, props.modelId);
     }
   });
 
