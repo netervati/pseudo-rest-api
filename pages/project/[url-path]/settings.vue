@@ -13,11 +13,13 @@
   const project = useProjectStore();
 
   const form = useForm();
+  const isMounted = ref(false);
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
   const secretKey = ref('');
 
   onMounted(async () => {
+    isMounted.value = true;
     await validateProject();
 
     form.setValues({
@@ -30,10 +32,6 @@
     if (typeof querySecretKey === 'string') {
       secretKey.value = querySecretKey;
     }
-  });
-
-  onUnmounted(() => {
-    form.resetForm();
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -81,7 +79,13 @@
     <ProjectSecretKeyBox :secret-key="secretKey" />
     <div class="card border border-gray-300 mt-6">
       <div class="card-body">
-        <form @submit="onSubmit">
+        <section v-if="project.isLoading && isMounted" class="animate-pulse">
+          <h3 class="font-bold">Edit Project</h3>
+          <div class="rounded-lg bg-slate-200 h-12 mt-2 w-full" />
+          <div class="rounded-lg bg-slate-200 h-12 mt-2 w-full" />
+          <div class="rounded-lg bg-slate-200 float-right h-8 mt-2 w-16" />
+        </section>
+        <form v-else @submit="onSubmit">
           <h3 class="font-bold">Edit Project</h3>
           <section class="form-control mt-2">
             <FormInput
@@ -98,7 +102,7 @@
           </section>
           <section class="mt-2">
             <Button
-              :loading="isDisabled"
+              :loading="isDisabled || isMounted !== true"
               class="float-right"
               color="success"
               size="sm"
@@ -113,7 +117,7 @@
     <div class="card border border-gray-300 mt-6">
       <div class="card-body">
         <Button
-          :disabled="isDisabled"
+          :disabled="isDisabled || isMounted !== true"
           class="w-100"
           color="error"
           @click="generateSecretKeyModal.open()"
