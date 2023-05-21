@@ -1,13 +1,14 @@
+import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { ProjectWithProjectKey } from '~~/types/models';
 
-type BodyParams = {
+type CreateProps = {
   description: string;
   name: string;
 };
 
-type UpdateParams = {
+type UpdateProps = {
   id: string;
   name: string;
   projectApiKey: string;
@@ -18,23 +19,43 @@ type Options = {
 };
 
 type ProjectStore = {
+  isLoading: Ref<boolean>;
   list: Ref<ProjectWithProjectKey[]>;
   target: Ref<ProjectWithProjectKey | undefined>;
-  create: (body: BodyParams, options: Options) => Promise<void>;
+  create: (body: CreateProps, options: Options) => Promise<void>;
   fetch: () => Promise<void>;
-  update: (body: UpdateParams, options: Options) => Promise<void>;
+  update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
+const SERVER_PATH = '/projects';
+
 export default defineStore('projects', (): ProjectStore => {
+  const isLoading = ref(false);
   const list = ref<ProjectWithProjectKey[]>([]);
   const target = ref<ProjectWithProjectKey | undefined>();
   const toast = useToast();
 
+  const request = async <T extends string = `/_${string}`>(
+    path: string,
+    config: NitroFetchOptions<T>
+  ) => {
+    isLoading.value = true;
+
+    await $fetch(path, config).catch((error) =>
+      toast.error(error.statusMessage)
+    );
+
+    isLoading.value = false;
+  };
+
   /**
-   * A function for creating project.
+   * A function that creates the Project.
+   *
+   * @param body{CreateProps}
+   * @param options{Options}
    */
-  const create = async (body: BodyParams, options: Options): Promise<void> => {
-    await $fetch('/projects', {
+  const create = async (body: CreateProps, options: Options): Promise<void> => {
+    await request(SERVER_PATH, {
       method: 'POST',
       body,
       onResponse({ response }) {
@@ -46,35 +67,31 @@ export default defineStore('projects', (): ProjectStore => {
           }
         }
       },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
     });
   };
 
   /**
-   * A function for fetching projects from the server.
+   * A function for fetching the Projects from the server.
    */
   const fetch = async (): Promise<void> => {
-    await $fetch('/projects', {
+    await request(SERVER_PATH, {
       method: 'GET',
       onResponse({ response }) {
         if (response.status === 200) {
           list.value = response._data;
         }
       },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
     });
   };
 
   /**
-   * A function for updating project.
+   * A function for updating an Project.
+   *
+   * @param body{UpdateProps}
+   * @param options{Options}
    */
-  const update = async (
-    body: UpdateParams,
-    options: Options
-  ): Promise<void> => {
-    await $fetch(`/projects/${body.id}`, {
+  const update = async (body: UpdateProps, options: Options): Promise<void> => {
+    await request(`/projects/${body.id}`, {
       method: 'PUT',
       body: {
         name: body.name,
@@ -89,14 +106,16 @@ export default defineStore('projects', (): ProjectStore => {
           }
         }
       },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
     });
   };
 
   return {
+    /** PROPERTIES */
+    isLoading,
     list,
     target,
+
+    /** METHODS */
     create,
     fetch,
     update,

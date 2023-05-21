@@ -26,10 +26,7 @@
   const modal = useModal(ModalConfirm, {
     id: 'confirm-delete-resource-model',
     onConfirm: async (closeModal) => {
-      await resourceModel.delete({
-        id: state.deleteId,
-        projectApiKey,
-      });
+      await resourceModel.delete(state.deleteId, projectApiKey);
 
       closeModal();
 
@@ -106,7 +103,15 @@
     <div class="border card h-96 pr-6 w-1/4">
       <div class="card-body">
         <article
+          v-if="resourceModel.isLoading"
+          class="animate-pulse flex flex-row space-x-2 w-full"
+        >
+          <div class="rounded-lg bg-slate-200 h-8 w-full" />
+          <div class="rounded-lg bg-slate-200 h-8 w-10" />
+        </article>
+        <article
           v-for="model in resourceModel.list"
+          v-else
           :key="model.id"
           class="flex flex-row w-full"
         >
