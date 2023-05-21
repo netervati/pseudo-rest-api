@@ -1,3 +1,4 @@
+import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { ResourceModel } from '~~/types/models';
@@ -9,22 +10,17 @@ type Structure = {
   type: string;
 }[];
 
-type BodyParams = {
+type CreateProps = {
   name: string;
   projectApiKey: string;
   structure: Structure;
 };
 
-type UpdateParams = {
+type UpdateProps = {
   id: string;
   name?: string;
   projectApiKey: string;
   structure: Structure;
-};
-
-type DeleteParams = {
-  id: string;
-  projectApiKey: string;
 };
 
 type Options = {
@@ -32,16 +28,20 @@ type Options = {
 };
 
 type ResourceModelStore = {
+  isLoading: Ref<boolean>;
   list: Ref<ResourceModel[]>;
   target: Ref<string>;
   clear: () => void;
-  create: (body: BodyParams, options: Options) => Promise<void>;
-  delete: (params: DeleteParams, options?: Options) => Promise<void>;
+  create: (body: CreateProps, options: Options) => Promise<void>;
+  delete: (id: string, projectApiKey: string) => Promise<void>;
   fetch: (projectApiKey: string) => Promise<void>;
-  update: (body: UpdateParams, options: Options) => Promise<void>;
+  update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
-export default defineStore('resouce-models', (): ResourceModelStore => {
+const SERVER_PATH = '/resource-models';
+
+export default defineStore('resource-models', (): ResourceModelStore => {
+  const isLoading = ref(false);
   const list = ref<ResourceModel[]>([]);
   const target = ref<string>('');
   const toast = useToast();
@@ -53,11 +53,27 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
     list.value = [];
   };
 
+  const request = async <T extends string = `/_${string}`>(
+    path: string,
+    config: NitroFetchOptions<T>
+  ) => {
+    isLoading.value = true;
+
+    await $fetch(path, config).catch((error) =>
+      toast.error(error.statusMessage)
+    );
+
+    isLoading.value = false;
+  };
+
   /**
-   * A function for creating resource model.
+   * A function that creates the Resource Model.
+   *
+   * @param body{CreateProps}
+   * @param options{Options}
    */
-  const create = async (body: BodyParams, options: Options): Promise<void> => {
-    await $fetch('/resource-models', {
+  const create = async (body: CreateProps, options: Options): Promise<void> => {
+    await request(SERVER_PATH, {
       method: 'POST',
       body,
       onResponse({ response }) {
@@ -69,37 +85,34 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
           }
         }
       },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
-    });
-  };
-
-  const del = async (
-    params: DeleteParams,
-    options: Options = {}
-  ): Promise<void> => {
-    await $fetch(`/resource-models/${params.id}`, {
-      method: 'DELETE',
-      query: { projectApiKey: params.projectApiKey },
-      onResponse({ response }) {
-        if (response.status === 200) {
-          toast.success('Deleted the resource model!');
-
-          if (typeof options.onSuccess === 'function') {
-            options.onSuccess();
-          }
-        }
-      },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
     });
   };
 
   /**
-   * A function for fetching resource models from the server.
+   * A function that deletes a Resource Model.
+   *
+   * @param id{string}
+   * @param projectApiKey{string}
+   */
+  const del = async (id: string, projectApiKey: string): Promise<void> => {
+    await request(`/resource-models/${id}`, {
+      method: 'DELETE',
+      query: { projectApiKey },
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the resource model!');
+        }
+      },
+    });
+  };
+
+  /**
+   * A function for fetching the APIs from the server.
+   *
+   * @param projectApiKey{string}
    */
   const fetch = async (projectApiKey: string): Promise<void> => {
-    await $fetch('/resource-models', {
+    await request(SERVER_PATH, {
       method: 'GET',
       query: { projectApiKey },
       onResponse({ response }) {
@@ -107,18 +120,16 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
           list.value = response._data;
         }
       },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
     });
   };
 
   /**
-   * A function for updating resource model.
+   * A function for updating a Resource Model.
+   *
+   * @param body{UpdateProps}
+   * @param options{Options}
    */
-  const update = async (
-    body: UpdateParams,
-    options: Options
-  ): Promise<void> => {
+  const update = async (body: UpdateProps, options: Options): Promise<void> => {
     const payload: {
       name?: string;
       projectApiKey: string;
@@ -132,7 +143,7 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
       payload.name = body.name;
     }
 
-    await $fetch(`/resource-models/${body.id}`, {
+    await request(`/resource-models/${body.id}`, {
       method: 'PUT',
       body: payload,
       onResponse({ response }) {
@@ -144,13 +155,12 @@ export default defineStore('resouce-models', (): ResourceModelStore => {
           }
         }
       },
-    }).catch((error) => {
-      toast.error(error.statusMessage);
     });
   };
 
   return {
     // PROPERTIES
+    isLoading,
     list,
     target,
 
