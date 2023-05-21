@@ -106,8 +106,8 @@
           v-if="resourceModel.isLoading"
           class="animate-pulse flex flex-row space-x-2 w-full"
         >
-          <div class="rounded-lg bg-slate-200 h-8 w-full"></div>
-          <div class="rounded-lg bg-slate-200 h-8 w-10"></div>
+          <div class="rounded-lg bg-slate-200 h-8 w-full" />
+          <div class="rounded-lg bg-slate-200 h-8 w-10" />
         </article>
         <article
           v-for="model in resourceModel.list"
