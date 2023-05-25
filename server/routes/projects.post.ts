@@ -26,16 +26,20 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
+  const project = new ProjectServices(event);
+  const existingProjects = await project.list();
 
-  const existingProjects = await new ProjectServices(event).findByName(
-    body.name
-  );
+  if (existingProjects.length === 2) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of Projects.'
+    );
+  }
 
-  if (existingProjects.length > 0) {
+  if (existingProjects.filter((proj) => proj.name === body.name).length) {
     throw ErrorResponse.badRequest('Project already exists.');
   }
 
-  const project = await new ProjectServices(event).create({
+  const newProject = await project.create({
     name: body.name,
     description: body.description,
   });
@@ -44,7 +48,7 @@ export default defineEventHandler(async (event) => {
 
   await new ProjectKeyServices(event).create({
     apiKey: shortuuid.generate(),
-    projectId: project.id,
+    projectId: newProject.id,
     secretKey: await hashPassword(secretKey),
   });
 
