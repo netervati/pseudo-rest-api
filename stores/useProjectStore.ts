@@ -23,6 +23,7 @@ type ProjectStore = {
   list: Ref<ProjectWithProjectKey[]>;
   target: Ref<ProjectWithProjectKey | undefined>;
   create: (body: CreateProps, options: Options) => Promise<void>;
+  delete: (id: string, options: Options) => Promise<void>;
   fetch: () => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
@@ -64,6 +65,26 @@ export default defineStore('projects', (): ProjectStore => {
 
           if (typeof options.onSuccess === 'function') {
             options.onSuccess(response._data.secretKey);
+          }
+        }
+      },
+    });
+  };
+
+  /**
+   * A function that deletes a Project.
+   *
+   * @param id{string}
+   */
+  const del = async (id: string, options: Options): Promise<void> => {
+    await request(`/projects/${id}`, {
+      method: 'DELETE',
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the project!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess(response._data);
           }
         }
       },
@@ -117,6 +138,7 @@ export default defineStore('projects', (): ProjectStore => {
 
     /** METHODS */
     create,
+    delete: del,
     fetch,
     update,
   };
