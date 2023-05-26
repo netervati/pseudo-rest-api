@@ -24,6 +24,23 @@ export default class ProjectServices extends SupabaseService {
     return projects.data[0];
   }
 
+  async delete(id: string) {
+    const projects = await this.client
+      .from(this.table)
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString().toLocaleString(),
+      })
+      .eq('id', id)
+      .select('*');
+
+    if (projects.error !== null) {
+      throw ErrorResponse.supabase(projects.error);
+    }
+
+    return projects.data[0];
+  }
+
   async find(id: string) {
     const project = await this.client
       .from(this.table)
