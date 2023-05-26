@@ -20,6 +20,7 @@
 
   onMounted(async () => {
     isMounted.value = true;
+
     await validateProject();
 
     form.setValues({
@@ -70,6 +71,21 @@
       );
 
       closeModal();
+    },
+  });
+
+  const deleteModal = useModal(ModalConfirm, {
+    id: 'confirm-delete-project',
+    onConfirm: async (closeModal: () => void) => {
+      await project.delete(project.target!.id, {
+        onSuccess: async () => {
+          await project.fetch();
+
+          closeModal();
+
+          navigateTo('/');
+        },
+      });
     },
   });
 </script>
@@ -124,12 +140,24 @@
         >
           Generate new Api Key and Secret Key
         </Button>
+        <Button
+          :disabled="isDisabled || isMounted !== true"
+          class="mt-2 w-100"
+          color="error"
+          @click="deleteModal.open()"
+        >
+          Delete this Project
+        </Button>
       </div>
     </div>
     <ClientOnly>
       <component
         :is="generateSecretKeyModal.component"
         content="Are you sure you want to generate a new api key and secret key?"
+      />
+      <component
+        :is="deleteModal.component"
+        content="Are you sure you want to delete this project?"
       />
     </ClientOnly>
   </div>
