@@ -25,6 +25,7 @@ type UpdateProps = {
 };
 
 type Options = {
+  mutateCache?: boolean;
   onSuccess?: () => void;
 };
 
@@ -35,7 +36,7 @@ type ResourceModelStore = {
   clear: () => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (id: string, projectApiKey: string) => Promise<void>;
-  fetch: (projectApiKey: string) => Promise<void>;
+  fetch: (projectApiKey: string, options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
@@ -46,10 +47,13 @@ export default defineStore('resource-models', (): ResourceModelStore => {
   const list = ref<ResourceModel[]>([]);
   const target = ref<string>('');
 
+  const cache = useCacheKey();
+
   /**
    * Resets data in state.
    */
   const clear = () => {
+    cache.revalidate();
     list.value = [];
   };
 
@@ -98,7 +102,14 @@ export default defineStore('resource-models', (): ResourceModelStore => {
    *
    * @param projectApiKey{string}
    */
-  const fetch = async (projectApiKey: string): Promise<void> => {
+  const fetch = async (
+    projectApiKey: string,
+    options: Options = {}
+  ): Promise<void> => {
+    if (cache.mutate(options.mutateCache || false)) {
+      return;
+    }
+
     await request(SERVER_PATH, {
       method: 'GET',
       query: { projectApiKey },
