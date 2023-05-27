@@ -79,7 +79,7 @@
     onConfirm: async (closeModal: () => void) => {
       await project.delete(project.target!.id, {
         onSuccess: async () => {
-          await project.fetch();
+          await project.fetch({ mutateCache: true });
 
           closeModal();
 
