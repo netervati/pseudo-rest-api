@@ -15,6 +15,7 @@ type UpdateProps = {
 };
 
 type Options = {
+  mutateCache?: boolean;
   onSuccess?: (key: string) => void;
 };
 
@@ -24,7 +25,7 @@ type ProjectStore = {
   target: Ref<ProjectWithProjectKey | undefined>;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (id: string, options: Options) => Promise<void>;
-  fetch: () => Promise<void>;
+  fetch: (options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
@@ -77,10 +78,16 @@ export default defineStore('projects', (): ProjectStore => {
     });
   };
 
+  const cache = useCacheKey();
+
   /**
    * A function for fetching the Projects from the server.
    */
-  const fetch = async (): Promise<void> => {
+  const fetch = async (options: Options = {}): Promise<void> => {
+    if (cache.mutate(options.mutateCache || false)) {
+      return;
+    }
+
     await request(SERVER_PATH, {
       method: 'GET',
       onResponse({ response }) {
@@ -115,6 +122,8 @@ export default defineStore('projects', (): ProjectStore => {
       },
     });
   };
+
+  onMounted(async () => await fetch());
 
   return {
     /** PROPERTIES */
