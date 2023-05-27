@@ -15,10 +15,7 @@
 
   onMounted(async () => {
     await api.fetch(projectApiKey);
-
-    if (api.list.length === 0) {
-      await resourceModel.fetch(projectApiKey);
-    }
+    await resourceModel.fetch(projectApiKey);
   });
 
   const editApiModal = useModal(EditApi, {
