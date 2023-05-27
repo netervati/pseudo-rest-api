@@ -15,6 +15,7 @@ type UpdateProps = CreateProps & {
 };
 
 type Options = {
+  mutateCache?: boolean;
   onSuccess?: () => void;
 };
 
@@ -24,7 +25,7 @@ type ApiStore = {
   clear: () => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (id: string, projectApiKey: string) => Promise<void>;
-  fetch: (projectApiKey: string) => Promise<void>;
+  fetch: (projectApiKey: string, options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
@@ -34,10 +35,13 @@ export default defineStore('apis', (): ApiStore => {
   const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ApiWithResourceModel[]>([]);
 
+  const cache = useCacheKey();
+
   /**
    * Resets data in state.
    */
   const clear = () => {
+    cache.revalidate();
     list.value = [];
   };
 
@@ -86,7 +90,14 @@ export default defineStore('apis', (): ApiStore => {
    *
    * @param projectApiKey{string}
    */
-  const fetch = async (projectApiKey: string): Promise<void> => {
+  const fetch = async (
+    projectApiKey: string,
+    options: Options = {}
+  ): Promise<void> => {
+    if (cache.mutate(options.mutateCache || false)) {
+      return;
+    }
+
     await request(SERVER_PATH, {
       method: 'GET',
       query: { projectApiKey },
