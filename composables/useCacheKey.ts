@@ -3,6 +3,7 @@ import { ComputedRef } from 'vue';
 type CacheKeyProps = {
   isValidated: ComputedRef<boolean>;
   mutate: (toRevalidate: boolean) => boolean;
+  revalidate: () => void;
 };
 
 /**
@@ -34,8 +35,13 @@ export default function (): CacheKeyProps {
     return false;
   };
 
+  const revalidate = () => {
+    cacheKeys.next += 1;
+  };
+
   return {
     isValidated,
     mutate,
+    revalidate,
   };
 }
