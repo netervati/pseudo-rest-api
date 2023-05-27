@@ -1,8 +1,7 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
-import { ResourceModel } from '~~/types/models';
 import useBaseRequest from './useBaseRequest';
+import { ResourceModel } from '~~/types/models';
 
 type Structure = {
   default: string;
