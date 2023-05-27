@@ -14,8 +14,9 @@
   });
 
   onMounted(async () => {
+    await api.fetch(projectApiKey);
+
     if (api.list.length === 0) {
-      await api.fetch(projectApiKey);
       await resourceModel.fetch(projectApiKey);
     }
   });
@@ -27,7 +28,7 @@
       deps.target = '';
     },
     onSuccess: async () => {
-      await api.fetch(projectApiKey);
+      await api.fetch(projectApiKey, { mutateCache: true });
     },
   });
 
@@ -38,7 +39,7 @@
 
       closeModal();
 
-      await api.fetch(projectApiKey);
+      await api.fetch(projectApiKey, { mutateCache: true });
 
       deps.target = '';
     },
