@@ -2,6 +2,7 @@ import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { ResourceModel } from '~~/types/models';
+import useBaseRequest from './useBaseRequest';
 
 type Structure = {
   default: string;
@@ -41,29 +42,15 @@ type ResourceModelStore = {
 const SERVER_PATH = '/resource-models';
 
 export default defineStore('resource-models', (): ResourceModelStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ResourceModel[]>([]);
   const target = ref<string>('');
-  const toast = useToast();
 
   /**
    * Resets data in state.
    */
   const clear = () => {
     list.value = [];
-  };
-
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
   };
 
   /**

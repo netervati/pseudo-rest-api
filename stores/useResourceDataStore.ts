@@ -1,6 +1,6 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import useBaseRequest from './useBaseRequest';
 import { ResourceData } from '~~/types/models';
 
 type FetchProps = {
@@ -27,28 +27,14 @@ type ResourceDataStore = {
 };
 
 export default defineStore('resource-data', (): ResourceDataStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ResourceDataHash>({});
-  const toast = useToast();
 
   /**
    * Resets data in state.
    */
   const clear = (resourceModelId: string) => {
     list.value[resourceModelId] = [];
-  };
-
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
   };
 
   /**

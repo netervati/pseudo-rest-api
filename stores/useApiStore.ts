@@ -1,6 +1,6 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import useBaseRequest from './useBaseRequest';
 import { ApiWithResourceModel } from '~~/types/models';
 
 type CreateProps = {
@@ -31,32 +31,14 @@ type ApiStore = {
 const SERVER_PATH = '/apis';
 
 export default defineStore('apis', (): ApiStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ApiWithResourceModel[]>([]);
-  const toast = useToast();
 
   /**
    * Resets data in state.
    */
   const clear = () => {
     list.value = [];
-  };
-
-  /**
-   * NOTE: This generic type doesn't validate if HTTP Method is
-   * allowed for url path correctly. Consider revisting this again.
-   */
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
   };
 
   /**

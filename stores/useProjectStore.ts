@@ -1,6 +1,6 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import useBaseRequest from './useBaseRequest';
 import { ProjectWithProjectKey } from '~~/types/models';
 
 type CreateProps = {
@@ -31,23 +31,9 @@ type ProjectStore = {
 const SERVER_PATH = '/projects';
 
 export default defineStore('projects', (): ProjectStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ProjectWithProjectKey[]>([]);
   const target = ref<ProjectWithProjectKey | undefined>();
-  const toast = useToast();
-
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
-  };
 
   /**
    * A function that creates the Project.
