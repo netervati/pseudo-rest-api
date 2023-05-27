@@ -43,8 +43,17 @@
         projectApiKey,
       },
       {
-        onSuccess: () => {
-          navigateTo(`/project/${projectApiKey}/settings`);
+        onSuccess: async () => {
+          await project.fetch({ mutateCache: true });
+
+          project.target = project.list.filter(
+            (proj) => proj.project_keys[0]?.api_key === projectApiKey
+          )[0];
+
+          form.setValues({
+            name: project.target?.name,
+            apiKey: projectApiKey,
+          });
         },
       }
     );
@@ -79,7 +88,7 @@
     onConfirm: async (closeModal: () => void) => {
       await project.delete(project.target!.id, {
         onSuccess: async () => {
-          await project.fetch();
+          await project.fetch({ mutateCache: true });
 
           closeModal();
 

@@ -13,7 +13,7 @@
   const modal = useModal(ModalCreateApi, {
     id: 'create-api',
     onSuccess: async () => {
-      await apis.fetch(projectApiKey);
+      await apis.fetch(projectApiKey, { mutateCache: true });
     },
   });
 

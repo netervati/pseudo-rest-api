@@ -14,10 +14,8 @@
   });
 
   onMounted(async () => {
-    if (api.list.length === 0) {
-      await api.fetch(projectApiKey);
-      await resourceModel.fetch(projectApiKey);
-    }
+    await api.fetch(projectApiKey);
+    await resourceModel.fetch(projectApiKey);
   });
 
   const editApiModal = useModal(EditApi, {
@@ -27,7 +25,7 @@
       deps.target = '';
     },
     onSuccess: async () => {
-      await api.fetch(projectApiKey);
+      await api.fetch(projectApiKey, { mutateCache: true });
     },
   });
 
@@ -38,7 +36,7 @@
 
       closeModal();
 
-      await api.fetch(projectApiKey);
+      await api.fetch(projectApiKey, { mutateCache: true });
 
       deps.target = '';
     },

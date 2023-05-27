@@ -1,6 +1,6 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import useBaseRequest from './useBaseRequest';
 import { ApiWithResourceModel } from '~~/types/models';
 
 type CreateProps = {
@@ -15,6 +15,7 @@ type UpdateProps = CreateProps & {
 };
 
 type Options = {
+  mutateCache?: boolean;
   onSuccess?: () => void;
 };
 
@@ -24,39 +25,24 @@ type ApiStore = {
   clear: () => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (id: string, projectApiKey: string) => Promise<void>;
-  fetch: (projectApiKey: string) => Promise<void>;
+  fetch: (projectApiKey: string, options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
 const SERVER_PATH = '/apis';
 
 export default defineStore('apis', (): ApiStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ApiWithResourceModel[]>([]);
-  const toast = useToast();
+
+  const cache = useCacheKey();
 
   /**
    * Resets data in state.
    */
   const clear = () => {
+    cache.revalidate();
     list.value = [];
-  };
-
-  /**
-   * NOTE: This generic type doesn't validate if HTTP Method is
-   * allowed for url path correctly. Consider revisting this again.
-   */
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
   };
 
   /**
@@ -104,7 +90,14 @@ export default defineStore('apis', (): ApiStore => {
    *
    * @param projectApiKey{string}
    */
-  const fetch = async (projectApiKey: string): Promise<void> => {
+  const fetch = async (
+    projectApiKey: string,
+    options: Options = {}
+  ): Promise<void> => {
+    if (cache.mutate(options.mutateCache || false)) {
+      return;
+    }
+
     await request(SERVER_PATH, {
       method: 'GET',
       query: { projectApiKey },

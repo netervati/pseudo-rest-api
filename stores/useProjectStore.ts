@@ -1,6 +1,6 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import useBaseRequest from './useBaseRequest';
 import { ProjectWithProjectKey } from '~~/types/models';
 
 type CreateProps = {
@@ -15,6 +15,7 @@ type UpdateProps = {
 };
 
 type Options = {
+  mutateCache?: boolean;
   onSuccess?: (key: string) => void;
 };
 
@@ -24,30 +25,16 @@ type ProjectStore = {
   target: Ref<ProjectWithProjectKey | undefined>;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (id: string, options: Options) => Promise<void>;
-  fetch: () => Promise<void>;
+  fetch: (options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
 const SERVER_PATH = '/projects';
 
 export default defineStore('projects', (): ProjectStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ProjectWithProjectKey[]>([]);
   const target = ref<ProjectWithProjectKey | undefined>();
-  const toast = useToast();
-
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
-  };
 
   /**
    * A function that creates the Project.
@@ -91,10 +78,16 @@ export default defineStore('projects', (): ProjectStore => {
     });
   };
 
+  const cache = useCacheKey();
+
   /**
    * A function for fetching the Projects from the server.
    */
-  const fetch = async (): Promise<void> => {
+  const fetch = async (options: Options = {}): Promise<void> => {
+    if (cache.mutate(options.mutateCache || false)) {
+      return;
+    }
+
     await request(SERVER_PATH, {
       method: 'GET',
       onResponse({ response }) {

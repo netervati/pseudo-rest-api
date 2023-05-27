@@ -1,6 +1,6 @@
-import { NitroFetchOptions } from 'nitropack';
 import { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import useBaseRequest from './useBaseRequest';
 import { ResourceModel } from '~~/types/models';
 
 type Structure = {
@@ -24,6 +24,7 @@ type UpdateProps = {
 };
 
 type Options = {
+  mutateCache?: boolean;
   onSuccess?: () => void;
 };
 
@@ -34,36 +35,25 @@ type ResourceModelStore = {
   clear: () => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (id: string, projectApiKey: string) => Promise<void>;
-  fetch: (projectApiKey: string) => Promise<void>;
+  fetch: (projectApiKey: string, options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
 const SERVER_PATH = '/resource-models';
 
 export default defineStore('resource-models', (): ResourceModelStore => {
-  const isLoading = ref(false);
+  const { isLoading, request, toast } = useBaseRequest();
   const list = ref<ResourceModel[]>([]);
   const target = ref<string>('');
-  const toast = useToast();
+
+  const cache = useCacheKey();
 
   /**
    * Resets data in state.
    */
   const clear = () => {
+    cache.revalidate();
     list.value = [];
-  };
-
-  const request = async <T extends string = `/_${string}`>(
-    path: string,
-    config: NitroFetchOptions<T>
-  ) => {
-    isLoading.value = true;
-
-    await $fetch(path, config).catch((error) =>
-      toast.error(error.statusMessage)
-    );
-
-    isLoading.value = false;
   };
 
   /**
@@ -111,7 +101,14 @@ export default defineStore('resource-models', (): ResourceModelStore => {
    *
    * @param projectApiKey{string}
    */
-  const fetch = async (projectApiKey: string): Promise<void> => {
+  const fetch = async (
+    projectApiKey: string,
+    options: Options = {}
+  ): Promise<void> => {
+    if (cache.mutate(options.mutateCache || false)) {
+      return;
+    }
+
     await request(SERVER_PATH, {
       method: 'GET',
       query: { projectApiKey },

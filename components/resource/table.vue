@@ -31,7 +31,7 @@
       closeModal();
 
       resourceModel.clear();
-      await resourceModel.fetch(projectApiKey);
+      await resourceModel.fetch(projectApiKey, { mutateCache: true });
 
       if (state.deleteId === resourceModel.target) {
         resourceModel.target = '';
@@ -50,24 +50,20 @@
     },
     onSuccess: async (id: string) => {
       resourceModel.clear();
-      await resourceModel.fetch(projectApiKey);
+      await resourceModel.fetch(projectApiKey, { mutateCache: true });
       resourceData.clear(id);
       await resourceData.fetch(projectApiKey, id);
     },
   });
 
-  onMounted(async () => {
-    if (resourceModel.list.length === 0) {
-      await resourceModel.fetch(projectApiKey);
-    }
-  });
+  onMounted(async () => await resourceModel.fetch(projectApiKey));
 
   onUnmounted(() => {
     resourceModel.target = '';
   });
 
   watch(refresh, async () => {
-    await resourceModel.fetch(projectApiKey);
+    await resourceModel.fetch(projectApiKey, { mutateCache: true });
   });
 
   const dispatch = (action: string, data: ResourceModel) => {

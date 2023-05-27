@@ -12,7 +12,7 @@ export default async function () {
     return;
   }
 
-  await project.fetch();
+  await project.fetch({ mutateCache: true });
 
   const target = project.list.filter(
     (proj) => proj.project_keys[0].api_key === projectApikey

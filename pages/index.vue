@@ -18,19 +18,16 @@
   const project = useProjectStore();
   const secretKey = ref('');
 
-  onMounted(async () => {
-    if (project.list.length === 0) {
-      await project.fetch();
-    }
-  });
-
   const modal = useModal(ModalCreateProject, {
     id: 'create-project',
     onSuccess: async (key: string) => {
       secretKey.value = key;
-      await project.fetch();
+
+      await project.fetch({ mutateCache: true });
     },
   });
+
+  onMounted(async () => await project.fetch());
 </script>
 
 <template>
