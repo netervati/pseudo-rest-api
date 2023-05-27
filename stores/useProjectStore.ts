@@ -123,8 +123,6 @@ export default defineStore('projects', (): ProjectStore => {
     });
   };
 
-  onMounted(async () => await fetch());
-
   return {
     /** PROPERTIES */
     isLoading,

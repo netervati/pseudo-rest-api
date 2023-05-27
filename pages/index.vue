@@ -26,6 +26,8 @@
       await project.fetch({ mutateCache: true });
     },
   });
+
+  onMounted(async () => await project.fetch());
 </script>
 
 <template>
