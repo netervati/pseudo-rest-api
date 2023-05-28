@@ -21,8 +21,11 @@
 
 <template>
   <section class="bg-base-300 flex h-screen">
-    <article class="bg-base-100 card m-auto p-6 shadow-xl w-96">
-      <Button :loading="loading" @click="handleClick">
+    <article class="bg-base-100 card m-auto p-8 shadow-xl w-96">
+      <img src="full logo.png" />
+      <h4 class="font-bold mt-6 text-xl">Welcome!</h4>
+      <p>Please sign in to your account.</p>
+      <Button class="mt-16" :loading="loading" @click="handleClick">
         Sign in with Github
       </Button>
     </article>
