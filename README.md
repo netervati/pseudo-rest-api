@@ -3,7 +3,9 @@
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/netervati/pseudo-rest-api/build.yml?branch=main&style=flat-square)
 ![GitHub deployments](https://img.shields.io/github/deployments/netervati/pseudo-rest-api/production?label=vercel&logo=vercel&logoColor=white)
 
-[Introduction](https://github.com/netervati/pseudo-rest-api/blob/main/docs/introduction.md)
+[Web](https://github.com/netervati/pseudo-rest-api/blob/main/docs/introduction.md) |
+[Gateway](https://pseudo-rest-api-gateway.vercel.app/) |
+[Official Documentation](https://github.com/netervati/pseudo-rest-api/blob/main/docs/README.md)
 
 **PseudoRESTAPI** is a tool that enables you to create mock REST APIs quickly and easily, without requiring any language or framework skills.
 
