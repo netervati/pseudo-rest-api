@@ -25,7 +25,7 @@
 
 ## Architecture
 
-![Architecture Diagram](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/architecture.png)
+![Architecture Diagram](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/architecture-v1.1.png)
 
 **PseudoRESTAPI** has two main applications: the web and the gateway.
 
