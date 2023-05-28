@@ -10,4 +10,4 @@ I had three goals in mind when I started with this project:
 
 - To deploy a _"production-ready"_ open-source project. While I have previously worked on personal open-source projects, only [Space Distortion](https://netervati.itch.io/space-distortion) was released as production-ready. Since 2022, I have been eager to start another project, and PseudoRESTAPI presented the perfect opportunity for me to do so.
 
-That is the brief history of this project. To get started with PseudoRESTAPI, please continue here.
+That is the brief history of this project. To get started with PseudoRESTAPI, please continue [here](https://github.com/netervati/pseudo-rest-api/blob/main/docs/getting-started.md).

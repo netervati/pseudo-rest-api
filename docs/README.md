@@ -9,6 +9,6 @@ Other documents detail advance usages, and other information that you might want
 ### Table of Contents
 
 1. [Introduction](https://github.com/netervati/pseudo-rest-api/blob/main/docs/introduction.md)
-2. Getting Started
+2. [Getting Started](https://github.com/netervati/pseudo-rest-api/blob/main/docs/getting-started.md)
 3. Advance Usages
 5. Limitations
