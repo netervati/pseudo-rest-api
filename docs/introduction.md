@@ -1,3 +1,5 @@
+## Introduction
+
 **PseudoRESTAPI** is a passion project that I have built and continue to maintain in my free time.
 
 I had three goals in mind when I started with this project:
@@ -8,4 +10,4 @@ I had three goals in mind when I started with this project:
 
 - To deploy a _"production-ready"_ open-source project. While I have previously worked on personal open-source projects, only [Space Distortion](https://netervati.itch.io/space-distortion) was released as production-ready. Since 2022, I have been eager to start another project, and PseudoRESTAPI presented the perfect opportunity for me to do so.
 
-That is the brief history of this project. To get started with PseudoRESTAPI, please read this guide.
+That is the brief history of this project. To get started with PseudoRESTAPI, please continue here.
