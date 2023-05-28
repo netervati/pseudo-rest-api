@@ -21,6 +21,8 @@
 
 ## Architecture
 
+![Architecture Diagram](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/architecture.png)
+
 **PseudoRESTAPI** has two main applications: the web and the gateway.
 
 The web application serves as the interface where users can create resources that are accessible through the gateway application. The gateway exposes these resources through a RESTful endpoint, which the user also creates within the web application.
