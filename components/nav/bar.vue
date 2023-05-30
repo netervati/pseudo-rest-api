@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import {
     ArrowRightOnRectangleIcon,
+    BookOpenIcon,
     UserIcon,
   } from '@heroicons/vue/24/outline';
 
@@ -10,6 +11,11 @@
     await client.auth.signOut();
 
     navigateTo('/login');
+  };
+
+  const redirectToWiki = () => {
+    window.location.href =
+      'https://github.com/netervati/pseudo-rest-api/blob/main/docs/README.md';
   };
 </script>
 
@@ -29,6 +35,9 @@
           <UserIcon class="h-4 m-auto w-4" />
         </label>
         <NavProfileDropdown>
+          <NavProfileDropdownButton @click="redirectToWiki">
+            <BookOpenIcon class="h-4 w-4" /> docs
+          </NavProfileDropdownButton>
           <NavProfileDropdownButton @click="handleLogout">
             <ArrowRightOnRectangleIcon class="h-4 w-4" /> logout
           </NavProfileDropdownButton>
