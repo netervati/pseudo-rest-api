@@ -41,16 +41,14 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Resource model does not exist.');
   }
 
-  const resourceData = [];
+  const data = [];
 
-  while (resourceData.length < body.count) {
-    resourceData.push(
-      await new ResourceDataServices(event).create({
-        data: generateResourceData(resourceModel.structure),
-        resourceModelId: resourceModel.id,
-      })
-    );
+  while (data.length < body.count) {
+    data.push(generateResourceData(resourceModel.structure));
   }
 
-  return resourceData;
+  return await new ResourceDataServices(event).bulkCreate({
+    data,
+    resourceModelId: resourceModel.id,
+  });
 });

@@ -9,6 +9,22 @@ export default class ResourceDataServices extends SupabaseService {
     return 'resource_data';
   }
 
+  async bulkCreate(params: { data: Data[]; resourceModelId: string }) {
+    return await Promise.all(
+      params.data.map((data) => {
+        return this.client
+          .from(this.table)
+          .insert({
+            id: uuidv4(),
+            data,
+            resource_model_id: params.resourceModelId,
+            user_id: this.user.id,
+          })
+          .select('*');
+      })
+    );
+  }
+
   async bulkDelete(resourceModelId: string) {
     const resourceData = await this.client
       .from(this.table)
@@ -19,24 +35,6 @@ export default class ResourceDataServices extends SupabaseService {
       .eq('is_deleted', false)
       .eq('resource_model_id', resourceModelId)
       .eq('user_id', this.user.id)
-      .select('*');
-
-    if (resourceData.error !== null) {
-      throw ErrorResponse.supabase(resourceData.error);
-    }
-
-    return resourceData.data;
-  }
-
-  async create(params: { data: Data; resourceModelId: string }) {
-    const resourceData = await this.client
-      .from(this.table)
-      .insert({
-        id: uuidv4(),
-        data: params.data,
-        resource_model_id: params.resourceModelId,
-        user_id: this.user.id,
-      })
       .select('*');
 
     if (resourceData.error !== null) {
