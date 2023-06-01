@@ -77,12 +77,16 @@ export default defineEventHandler(async (event) => {
     resourceModel.id
   );
 
+  const data = [];
+
   for (let i = 0; i < resourceData.length; i += 1) {
-    await new ResourceDataServices(event).update({
+    data.push({
       data: generateResourceData(structure, resourceData[i].data),
       id: resourceData[i].id,
     });
   }
+
+  await new ResourceDataServices(event).bulkUpdate(data);
 
   return resourceModel;
 });
