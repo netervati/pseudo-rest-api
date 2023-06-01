@@ -25,6 +25,18 @@ export default class ResourceDataServices extends SupabaseService {
     );
   }
 
+  async bulkUpdate(params: { data: Data; id: string }[]) {
+    return await Promise.all(
+      params.map(({ data, id }) => {
+        return this.client
+          .from(this.table)
+          .update({ data })
+          .eq('id', id)
+          .select('*');
+      })
+    );
+  }
+
   async bulkDelete(resourceModelId: string) {
     const resourceData = await this.client
       .from(this.table)
@@ -71,20 +83,6 @@ export default class ResourceDataServices extends SupabaseService {
       .eq('resource_model_id', resourceModelId)
       .eq('user_id', this.user.id)
       .order('created_at', { ascending: false });
-
-    if (resourceData.error !== null) {
-      throw ErrorResponse.supabase(resourceData.error);
-    }
-
-    return resourceData.data;
-  }
-
-  async update(params: { data: Data; id: string }) {
-    const resourceData = await this.client
-      .from(this.table)
-      .update({ data: params.data })
-      .eq('id', params.id)
-      .select('*');
 
     if (resourceData.error !== null) {
       throw ErrorResponse.supabase(resourceData.error);
