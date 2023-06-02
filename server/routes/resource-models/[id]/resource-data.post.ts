@@ -37,16 +37,24 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Resource model does not exist.');
   }
 
+  const list = await new ResourceDataServices(event).list(resourceModel.id);
+
+  if (list.length + body.count >= MAX_RESOURCE_DATA_ALLOWED) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of Resource Data for this Resource Model.'
+    );
+  }
+
   const data = [];
 
   while (data.length < body.count) {
     data.push(generateResourceData(resourceModel.structure));
   }
 
-  const list = await new ResourceDataServices(event).bulkCreate({
+  const created = await new ResourceDataServices(event).bulkCreate({
     data,
     resourceModelId: resourceModel.id,
   });
 
-  return list;
+  return created;
 });
