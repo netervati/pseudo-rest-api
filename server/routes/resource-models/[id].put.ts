@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { PutResourceModelValidation } from '../../validations';
 import { ResourceDataServices, ResourceModelServices } from '../../services';
 import ErrorResponse from '../../utils/errorResponse';
+import extractProjectKey from '~~/server/lib/extractProjectKey';
 import generateResourceData from '~~/server/utils/generateResourceData';
-import validateProjectKey from '~~/server/lib/validateProjectKey';
 
 type Structure = {
   id: string;
@@ -20,10 +20,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body = await readBody<BodyParams>(event);
   const error = new PutResourceModelValidation(body).validate();
 
@@ -63,14 +59,14 @@ function buildStructure(body: BodyParams): Structure[] {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
-  const projectKeys = await validateProjectKey(event, body.projectApiKey);
+  const { projectId } = await extractProjectKey(event, body.projectApiKey);
   const structure = buildStructure(body);
 
   const resourceModel = await new ResourceModelServices(event).update({
     id: event.context.params.id,
     name: body.name,
     structure,
-    projectId: projectKeys[0].project_id,
+    projectId,
   });
 
   const resourceData = await new ResourceDataServices(event).list(

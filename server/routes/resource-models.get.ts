@@ -1,17 +1,14 @@
 import ResourceModelServices from '../services/resourceModelServices';
-import validateProjectKey from '../lib/validateProjectKey';
+import extractProjectKey from '../lib/extractProjectKey';
 
 type QueryParams = {
   projectApiKey: string;
 };
 
 export default defineEventHandler(async (event) => {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const query = getQuery(event) as QueryParams;
-  const projectKeys = await validateProjectKey(event, query.projectApiKey);
+  const { projectId } = await extractProjectKey(event, query.projectApiKey);
+  const list = await new ResourceModelServices(event).list(projectId);
 
-  return await new ResourceModelServices(event).list(projectKeys[0].project_id);
+  return list;
 });

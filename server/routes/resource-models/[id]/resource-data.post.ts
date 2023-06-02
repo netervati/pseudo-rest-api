@@ -6,7 +6,7 @@ import {
 } from '~~/server/services';
 import { PostResourceDataValidation } from '~~/server/validations';
 import generateResourceData from '~~/server/utils/generateResourceData';
-import validateProjectKey from '~~/server/lib/validateProjectKey';
+import extractProjectKey from '~~/server/lib/extractProjectKey';
 
 type BodyParams = {
   count: number;
@@ -14,10 +14,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body = await readBody<BodyParams>(event);
   const error = new PostResourceDataValidation(body).validate();
 
@@ -31,7 +27,7 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
 
-  await validateProjectKey(event, body.projectApiKey);
+  await extractProjectKey(event, body.projectApiKey);
 
   const resourceModel = await new ResourceModelServices(event).find(
     event.context.params.id
@@ -41,14 +37,24 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Resource model does not exist.');
   }
 
+  const list = await new ResourceDataServices(event).list(resourceModel.id);
+
+  if (list.length + body.count >= MAX_RESOURCE_DATA_ALLOWED) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of Resource Data for this Resource Model.'
+    );
+  }
+
   const data = [];
 
   while (data.length < body.count) {
     data.push(generateResourceData(resourceModel.structure));
   }
 
-  return await new ResourceDataServices(event).bulkCreate({
+  const created = await new ResourceDataServices(event).bulkCreate({
     data,
     resourceModelId: resourceModel.id,
   });
+
+  return created;
 });
