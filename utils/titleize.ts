@@ -5,5 +5,5 @@
  * @returns
  */
 export default function (argument: string): string {
-  return argument.replace(/^./, argument[0].toUpperCase());
+  return argument.replace(/^./, argument[0]?.toUpperCase());
 }
