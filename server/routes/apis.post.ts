@@ -46,12 +46,12 @@ export default defineEventHandler(async (event) => {
 
   await new ResourceModelServices(event).find(body.resourceModelId);
 
-  const newApi = await apis.create({
+  const created = await apis.create({
     description: body.description,
     projectId,
     resourceModelId: body.resourceModelId,
     urlPath: body.urlPath,
   });
 
-  return newApi;
+  return created;
 });

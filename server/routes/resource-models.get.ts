@@ -8,7 +8,6 @@ type QueryParams = {
 export default defineEventHandler(async (event) => {
   const query = getQuery(event) as QueryParams;
   const { projectId } = await extractProjectKey(event, query.projectApiKey);
-
   const list = await new ResourceModelServices(event).list(projectId);
 
   return list;

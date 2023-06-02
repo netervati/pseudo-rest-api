@@ -63,26 +63,26 @@ export default defineEventHandler(async (event) => {
   const resourceModels = new ResourceModelServices(event);
   const userResourceModels = await resourceModels.list(projectId);
 
-  if (userResourceModels.length >= 5) {
+  if (userResourceModels.length >= MAX_RESOURCE_MODELS_ALLOWED) {
     throw ErrorResponse.badRequest(
       'You have exceeded the allowed number of Resource Models.'
     );
   }
 
-  const similarResourceModels = await resourceModels.findByName({
+  const matchingResourceModels = await resourceModels.findByName({
     name: body.name,
     projectId,
   });
 
-  if (similarResourceModels.length > 0) {
+  if (matchingResourceModels.length > 0) {
     throw ErrorResponse.badRequest('Resource model already exists.');
   }
 
-  const newResourceModel = await resourceModels.create({
+  const created = await resourceModels.create({
     name: body.name,
     structure: buildStructure(body),
     projectId,
   });
 
-  return newResourceModel;
+  return created;
 });
