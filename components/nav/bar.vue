@@ -6,11 +6,16 @@
   } from '@heroicons/vue/24/outline';
 
   const client = useSupabaseAuthClient();
+  const toast = useToast();
 
   const handleLogout = async () => {
+    toast.info('Signing out...');
+
     await client.auth.signOut();
 
     navigateTo('/login');
+
+    toast.success('Successfully signed out');
   };
 
   const redirectToWiki = () => {
