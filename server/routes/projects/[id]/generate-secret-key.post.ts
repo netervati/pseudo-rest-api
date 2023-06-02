@@ -2,17 +2,13 @@ import { H3Event } from 'h3';
 import shortuuid from 'short-uuid';
 import { ProjectKeyServices, ProjectServices } from '~~/server/services';
 import { PostProjectKeyValidation } from '~~/server/validations';
-import validateProjectKey from '~~/server/lib/validateProjectKey';
+import extractProjectKey from '~~/server/lib/extractProjectKey';
 
 type BodyParams = {
   projectApiKey: string;
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PostProjectKeyValidation(body).validate();
 
@@ -28,13 +24,10 @@ export default defineEventHandler(async (event) => {
 
   await new ProjectServices(event).find(event.context.params.id);
 
-  const existingProjectKey = await validateProjectKey(
-    event,
-    body.projectApiKey
-  );
+  const { projectKey } = await extractProjectKey(event, body.projectApiKey);
   const projectKeys = new ProjectKeyServices(event);
 
-  await projectKeys.delete(existingProjectKey[0].id);
+  await projectKeys.delete(projectKey.id);
 
   const secretKey = generateSecretKey();
   const projectApiKey = shortuuid.generate();

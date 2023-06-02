@@ -1,18 +1,14 @@
 import { ResourceDataServices, ResourceModelServices } from '../../../services';
 import ErrorResponse from '../../../utils/errorResponse';
-import validateProjectKey from '~~/server/lib/validateProjectKey';
+import extractProjectKey from '~~/server/lib/extractProjectKey';
 
 type QueryParams = {
   projectApiKey: string;
 };
 
 export default defineEventHandler(async (event) => {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const query = getQuery(event) as QueryParams;
-  await validateProjectKey(event, query.projectApiKey);
+  await extractProjectKey(event, query.projectApiKey);
 
   const resourceModel = await new ResourceModelServices(event).find(
     event.context.params.id
@@ -22,5 +18,7 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Resource model does not exist.');
   }
 
-  return await new ResourceDataServices(event).list(resourceModel.id);
+  const list = await new ResourceDataServices(event).list(resourceModel.id);
+
+  return list;
 });

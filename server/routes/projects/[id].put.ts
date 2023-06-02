@@ -9,10 +9,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PostProjectValidation(body).validate();
 
@@ -44,8 +40,10 @@ export default defineEventHandler(async (event) => {
     throw ErrorResponse.badRequest('Project already exists.');
   }
 
-  return await projects.update({
+  const updated = await projects.update({
     id: projectKey[0].project_id,
     name: body.name,
   });
+
+  return updated;
 });

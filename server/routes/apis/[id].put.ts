@@ -1,7 +1,7 @@
 import { H3Event } from 'h3';
 import { PutApiValidation } from '~~/server/validations';
 import { ApiServices, ResourceModelServices } from '~~/server/services';
-import validateProjectKey from '~~/server/lib/validateProjectKey';
+import extractProjectKey from '~~/server/lib/extractProjectKey';
 import ErrorResponse from '~~/server/utils/errorResponse';
 
 type BodyParams = {
@@ -12,10 +12,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PutApiValidation(body).validate();
 
@@ -28,12 +24,12 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
-  const projectKeys = await validateProjectKey(event, body.projectApiKey);
+  const { projectId } = await extractProjectKey(event, body.projectApiKey);
 
   if (body.urlPath) {
     const apis = await new ApiServices(event).findByUrlPath({
       urlPath: body.urlPath,
-      projectId: projectKeys[0].project_id,
+      projectId,
     });
 
     if (apis.length > 0 && apis[0].id !== event.context.params.id) {
@@ -45,11 +41,13 @@ export default defineEventHandler(async (event) => {
     await new ResourceModelServices(event).find(body.resourceModelId);
   }
 
-  return await new ApiServices(event).update({
+  const updated = await new ApiServices(event).update({
     id: event.context.params.id,
     description: body.description,
-    projectId: projectKeys[0].project_id,
+    projectId,
     resourceModelId: body.resourceModelId,
     urlPath: body.urlPath,
   });
+
+  return updated;
 });

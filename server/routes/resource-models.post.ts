@@ -2,7 +2,7 @@ import { H3Event } from 'h3';
 import { v4 as uuidv4 } from 'uuid';
 import { PostResourceModelValidation } from '../validations';
 import ResourceModelServices from '../services/resourceModelServices';
-import validateProjectKey from '../lib/validateProjectKey';
+import extractProjectKey from '../lib/extractProjectKey';
 import ErrorResponse from '../utils/errorResponse';
 
 type Structure = {
@@ -19,10 +19,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body = await readBody<BodyParams>(event);
   const error = new PostResourceModelValidation(body).validate();
 
@@ -63,27 +59,30 @@ function buildStructure(body: BodyParams): Structure {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
-  const projectKeys = await validateProjectKey(event, body.projectApiKey);
+  const { projectId } = await extractProjectKey(event, body.projectApiKey);
   const resourceModels = new ResourceModelServices(event);
+  const userResourceModels = await resourceModels.list(projectId);
+
+  if (userResourceModels.length >= 5) {
+    throw ErrorResponse.badRequest(
+      'You have exceeded the allowed number of Resource Models.'
+    );
+  }
 
   const similarResourceModels = await resourceModels.findByName({
     name: body.name,
-    projectId: projectKeys[0].project_id,
+    projectId,
   });
 
   if (similarResourceModels.length > 0) {
     throw ErrorResponse.badRequest('Resource model already exists.');
   }
 
-  if ((await resourceModels.list(projectKeys[0].project_id)).length >= 5) {
-    throw ErrorResponse.badRequest(
-      'You have exceeded the allowed number of Resource Models.'
-    );
-  }
-
-  return await resourceModels.create({
+  const newResourceModel = await resourceModels.create({
     name: body.name,
     structure: buildStructure(body),
-    projectId: projectKeys[0].project_id,
+    projectId,
   });
+
+  return newResourceModel;
 });

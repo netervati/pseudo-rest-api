@@ -10,10 +10,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PostProjectValidation(body).validate();
 
@@ -27,15 +23,19 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
   const project = new ProjectServices(event);
-  const existingProjects = await project.list();
+  const userProjects = await project.list();
 
-  if (existingProjects.length === 2) {
+  if (userProjects.length === MAX_PROJECTS_ALLOWED) {
     throw ErrorResponse.badRequest(
       'You have exceeded the allowed number of Projects.'
     );
   }
 
-  if (existingProjects.filter((proj) => proj.name === body.name).length) {
+  const matchingProjectNames = userProjects.filter(
+    (proj) => proj.name === body.name
+  );
+
+  if (matchingProjectNames.length) {
     throw ErrorResponse.badRequest('Project already exists.');
   }
 

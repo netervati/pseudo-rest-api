@@ -1,7 +1,7 @@
 import { H3Event } from 'h3';
 import { PostApiValidation } from '../validations';
 import { ApiServices, ResourceModelServices } from '../services';
-import validateProjectKey from '../lib/validateProjectKey';
+import extractProjectKey from '../lib/extractProjectKey';
 import ErrorResponse from '../utils/errorResponse';
 
 type BodyParams = {
@@ -12,10 +12,6 @@ type BodyParams = {
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
-  if (event.context.auth.error) {
-    throw event.context.auth.error;
-  }
-
   const body: BodyParams = await readBody<BodyParams>(event);
   const error = new PostApiValidation(body).validate();
 
@@ -28,21 +24,21 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
-  const projectKeys = await validateProjectKey(event, body.projectApiKey);
+  const { projectId } = await extractProjectKey(event, body.projectApiKey);
   const apis = new ApiServices(event);
 
-  if (
-    (
-      await apis.findByUrlPath({
-        urlPath: body.urlPath,
-        projectId: projectKeys[0].project_id,
-      })
-    ).length > 0
-  ) {
+  const matchingApiPaths = await apis.findByUrlPath({
+    urlPath: body.urlPath,
+    projectId,
+  });
+
+  if (matchingApiPaths.length > 0) {
     throw ErrorResponse.badRequest('API Endpoint already exists.');
   }
 
-  if ((await apis.list(projectKeys[0].project_id)).length >= 5) {
+  const list = await apis.list(projectId);
+
+  if (list.length >= MAX_APIS_ALLOWED) {
     throw ErrorResponse.badRequest(
       'You have exceeded the allowed number of API Endpoints.'
     );
@@ -50,10 +46,12 @@ export default defineEventHandler(async (event) => {
 
   await new ResourceModelServices(event).find(body.resourceModelId);
 
-  return await apis.create({
+  const newApi = await apis.create({
     description: body.description,
-    projectId: projectKeys[0].project_id,
+    projectId,
     resourceModelId: body.resourceModelId,
     urlPath: body.urlPath,
   });
+
+  return newApi;
 });
