@@ -1,0 +1,4 @@
+export const MAX_APIS_ALLOWED = 5;
+export const MAX_PROJECTS_ALLOWED = 2;
+export const MAX_RESOURCE_MODELS_ALLOWED = 5;
+export const MAX_RESOURCE_DATA_ALLOWED = 10;
