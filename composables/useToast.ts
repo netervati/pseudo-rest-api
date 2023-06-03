@@ -18,6 +18,7 @@ type ToastProps = {
 type UseToast = {
   error: (content: string) => void;
   info: (content: string) => void;
+  neutral: (content: string) => void;
   show: (content: string, options: ToastProps) => void;
   success: (content: string) => void;
 };
@@ -88,6 +89,15 @@ export default function (): UseToast {
 
   /**
    * A syntactic sugar for displaying toast
+   * with the color `neutral`.
+   * @param content
+   */
+  const neutral = (content: string): void => {
+    show(content, { color: 'neutral' });
+  };
+
+  /**
+   * A syntactic sugar for displaying toast
    * with the color `success`.
    * @param content
    */
@@ -95,5 +105,11 @@ export default function (): UseToast {
     show(content, { color: 'success' });
   };
 
-  return { error, info, show, success };
+  return {
+    error,
+    info,
+    neutral,
+    show,
+    success,
+  };
 }

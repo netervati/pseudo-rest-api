@@ -9,13 +9,13 @@
   const toast = useToast();
 
   const handleLogout = async () => {
-    toast.info('Signing out...');
+    toast.neutral('Signing out...');
 
     await client.auth.signOut();
 
     navigateTo('/login');
 
-    toast.success('Successfully signed out');
+    toast.neutral('Successfully signed out');
   };
 
   const redirectToWiki = () => {
