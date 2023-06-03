@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import ModalCreateProject from '~~/components/modal/createProject.vue';
   import {
-    useApStore,
+    useApiStore,
     useProjectStore,
     useResourceDataTypeStore,
     useResourceModelStore,
@@ -11,7 +11,7 @@
     middleware: 'auth',
   });
 
-  useApStore().clear();
+  useApiStore().clear();
   useResourceDataTypeStore().clear();
   useResourceModelStore().clear();
 
