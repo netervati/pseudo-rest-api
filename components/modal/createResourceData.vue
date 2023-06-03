@@ -1,6 +1,5 @@
 <script lang="ts" setup>
   import { useResourceDataStore, useResourceModelStore } from '~~/stores';
-  import { isMinimum } from '~~/utils/formValidations';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -62,7 +61,7 @@
       <section class="form-control mt-2">
         <FormRange
           :disabled="isDisabled"
-          :rules="{ min: isMinimum('Number should be greater than 0.') }"
+          :rules="{ min: 'Number should be greater than 0.' }"
           :value="form.values.count || '0'"
           :max="maxCountAllowed"
           :min="0"
