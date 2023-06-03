@@ -53,7 +53,7 @@
   <section class="form-control mt-2">
     <FormInput
       :disabled="disabled"
-      :rules="{ required: isRequired('Name is required.') }"
+      :rules="{ required: 'Name is required.' }"
       name="name"
       placeholder="Enter name"
     />
@@ -69,7 +69,7 @@
               structure[key]?.locked === true
           "
           :name="`structure[${key}].name`"
-          :rules="{ required: isRequired('Field name is required.') }"
+          :rules="{ required: 'Field name is required.' }"
           :value="setValue(structure[key].name)"
           placeholder="Enter the field name"
           @change="(value) => emit('change', key, 'name', value)"
@@ -79,7 +79,7 @@
         <FormSelect
           :disabled="disabled || structure[key]?.locked === true"
           :name="`structure[${key}].type`"
-          :rules="{ required: isRequired('Field type is required.') }"
+          :rules="{ required: 'Field type is required.' }"
           :options="dataTypes(structure[key].name)"
           :value="setValue(structure[key].type)"
           placeholder="Select the field type"
@@ -91,7 +91,7 @@
           v-if="isDefaultAllowed(structure[key])"
           :disabled="disabled || structure[key]?.locked === true"
           :name="`structure[${key}].default`"
-          :rules="{ required: isRequired('Default value is required.') }"
+          :rules="{ required: 'Default value is required.' }"
           :value="setValue(structure[key].default)"
           placeholder="Enter the default value"
           @change="(value) => emit('change', key, 'default', value)"
