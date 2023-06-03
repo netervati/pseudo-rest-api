@@ -1,6 +1,5 @@
 <script lang="ts" setup>
   import useProjectStore from '~~/stores/useProjectStore';
-  import { isRequired } from '~~/utils/formValidations';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -43,7 +42,7 @@
       <section class="form-control mt-2">
         <FormInput
           :disabled="isDisabled"
-          :rules="{ required: isRequired('Name is required.') }"
+          :rules="{ required: 'Name is required.' }"
           name="name"
           placeholder="Enter name"
         />
