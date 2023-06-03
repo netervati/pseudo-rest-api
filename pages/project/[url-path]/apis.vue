@@ -8,6 +8,7 @@
   });
 
   const apis = useApiStore();
+  const isDisabled = computed(() => apis.list.length === 5 || apis.isLoading);
   const projectApiKey = useProjectApiKey();
 
   const modal = useModal(ModalCreateApi, {
@@ -22,7 +23,14 @@
 
 <template>
   <div class="p-6">
-    <Button color="success" size="sm" @click="modal.open">New API</Button>
+    <Button
+      :disabled="isDisabled"
+      color="success"
+      size="sm"
+      @click="modal.open"
+    >
+      New API
+    </Button>
     <ApiTable />
     <ClientOnly>
       <modal.component />

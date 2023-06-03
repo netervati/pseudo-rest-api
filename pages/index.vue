@@ -16,6 +16,9 @@
   useResourceModelStore().clear();
 
   const project = useProjectStore();
+  const isDisabled = computed(
+    () => project.list.length === 2 || project.isLoading
+  );
   const secretKey = ref('');
 
   const modal = useModal(ModalCreateProject, {
@@ -32,7 +35,14 @@
 
 <template>
   <div class="p-6">
-    <Button color="success" size="sm" @click="modal.open">New Project</Button>
+    <Button
+      :disabled="isDisabled"
+      color="success"
+      size="sm"
+      @click="modal.open"
+    >
+      New Project
+    </Button>
     <ProjectSecretKeyBox :secret-key="secretKey" />
     <ProjectGrid />
     <ClientOnly>
