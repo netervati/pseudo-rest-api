@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { FormValidator, runValidations } from '~~/utils/formValidations';
+  import { FormRuleSchema, runValidations } from '~~/utils/formValidations';
 
   const emit = defineEmits<{
     (e: 'change', value: string): void;
@@ -10,7 +10,7 @@
     name: string;
     placeholder: string;
     options: { text: string; value: string }[];
-    rules?: { [key: string]: FormValidator | string };
+    rules?: FormRuleSchema;
     value?: string;
   }>();
 
