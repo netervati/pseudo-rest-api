@@ -1,4 +1,5 @@
 export type FormValidator = (value: string) => string | boolean;
+export type FormRuleSchema = { [key: string]: string };
 
 function selectRule(rule: string, message: string): FormValidator | never {
   switch (rule) {
@@ -13,27 +14,13 @@ function selectRule(rule: string, message: string): FormValidator | never {
   }
 }
 
-export function runValidations(schema: {
-  [key: string]: FormValidator | string;
-}) {
+export function runValidations(schema: FormRuleSchema) {
   return function (value: string): string | boolean {
     let error: string | undefined;
 
     Object.keys(schema).forEach((key) => {
       if (!error) {
-        let result;
-
-        /**
-         * Temporarily ignoring this due to TS
-         * unable to detect if / else conditions.
-         */
-        if (typeof schema[key] === 'function') {
-          // @ts-ignore
-          result = schema[key](value);
-        } else {
-          // @ts-ignore
-          result = selectRule(key, schema[key])(value);
-        }
+        const result = selectRule(key, schema[key])(value);
 
         if (typeof result === 'string') {
           error = result;
