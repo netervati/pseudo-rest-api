@@ -10,6 +10,7 @@
   const COLORS: ClassLibrary = {
     error: 'alert-error',
     info: 'alert-info',
+    neutral: 'alert-neutral',
     success: 'alert-success',
     warning: 'alert-warning',
   };
