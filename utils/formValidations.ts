@@ -1,12 +1,26 @@
 export type FormValidator = (value: string) => string | boolean;
+export type FormRuleSchema = { [key: string]: string };
 
-export function runValidations(schema: { [key: string]: FormValidator }) {
-  return function (value: string) {
+function selectRule(rule: string, message: string): FormValidator | never {
+  switch (rule) {
+    case 'required':
+      return isRequired(message);
+    case 'min':
+      return isMinimum(message);
+    case 'url':
+      return isURLPath(message);
+    default:
+      throw new Error('Invalid rule passed.');
+  }
+}
+
+export function runValidations(schema: FormRuleSchema) {
+  return function (value: string): string | boolean {
     let error: string | undefined;
 
     Object.keys(schema).forEach((key) => {
       if (!error) {
-        const result = schema[key](value);
+        const result = selectRule(key, schema[key])(value);
 
         if (typeof result === 'string') {
           error = result;

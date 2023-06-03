@@ -1,6 +1,5 @@
 <script lang="ts" setup>
   import { useProjectStore, useProjectKeyStore } from '~~/stores';
-  import { isRequired } from '~~/utils/formValidations';
   import ModalConfirm from '~~/components/modal/confirm.vue';
   import validateProject from '~~/middleware/validateProject';
 
@@ -116,7 +115,7 @@
             <FormInput
               :disabled="isDisabled"
               :rules="{
-                required: isRequired('Name is required.'),
+                required: 'Name is required.',
               }"
               name="name"
               placeholder="Enter name"
