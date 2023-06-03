@@ -9,7 +9,7 @@
     disabled: boolean;
     name: string;
     placeholder: string;
-    rules?: { [key: string]: FormValidator };
+    rules?: { [key: string]: FormValidator | string };
     value?: string;
   }>();
 

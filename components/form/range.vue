@@ -10,7 +10,7 @@
     max: number;
     min: number;
     name: string;
-    rules?: { [key: string]: FormValidator };
+    rules?: { [key: string]: FormValidator | string };
     value?: string;
   }>();
 

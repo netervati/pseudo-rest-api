@@ -10,7 +10,7 @@
     name: string;
     placeholder: string;
     options: { text: string; value: string }[];
-    rules?: { [key: string]: FormValidator };
+    rules?: { [key: string]: FormValidator | string };
     value?: string;
   }>();
 
