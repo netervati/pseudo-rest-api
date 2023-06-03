@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-  import { isRequired, isURLPath } from '~~/utils/formValidations';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
   defineProps<{
@@ -22,8 +21,8 @@
     <FormInput
       :disabled="disabled"
       :rules="{
-        required: isRequired('URL Path is required.'),
-        urlPath: isURLPath('URL Path is not valid'),
+        required: 'URL Path is required.',
+        url: 'URL Path is not valid.',
       }"
       name="urlPath"
       placeholder="Enter url path"
@@ -36,7 +35,7 @@
   <section class="form-control mt-2">
     <FormSelect
       :disabled="disabled"
-      :rules="{ required: isRequired('Resource model is required.') }"
+      :rules="{ required: 'Resource model is required.' }"
       :options="dropdownOptions"
       name="resourceModelId"
       placeholder="Select the resource model"
