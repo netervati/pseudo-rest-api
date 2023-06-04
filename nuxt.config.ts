@@ -24,7 +24,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      onMaintenance: process.env.NUXT_PUBLIC_ON_MAINTENANCE || 'false',
+      onMaintenance: process.env.NUXT_PUBLIC_ON_MAINTENANCE || false,
     },
   },
   veeValidate: {
