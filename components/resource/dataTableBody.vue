@@ -51,13 +51,7 @@
 
 <template>
   <tbody>
-    <tr v-if="resourceData.isLoading">
-      <td colspan="4">
-        <div class="flex h-full w-full">
-          <LoaderSpinner />
-        </div>
-      </td>
-    </tr>
+    <TableLoader v-if="resourceData.isLoading" :colspan="4" />
     <tr v-for="record in resourceData.list[modelId]" v-else :key="record.id">
       <td>
         <Button color="error" size="xs" @click="handleOpen(record.id)">
