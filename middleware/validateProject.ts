@@ -1,13 +1,13 @@
 import useProjectStore from '~~/stores/useProjectStore';
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) {
     return;
   }
 
   const project = useProjectStore();
-  const projectApikey =
-    from.path === '/' ? to.params.urlpath : useProjectApiKey();
+  const projectApikey = to.params.urlpath;
+  const toast = useToast();
 
   if (project.target?.project_keys[0].api_key === projectApikey) {
     return;
@@ -24,6 +24,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     return;
   }
+
+  toast.error('Project does not exists!');
 
   return navigateTo('/');
 });
