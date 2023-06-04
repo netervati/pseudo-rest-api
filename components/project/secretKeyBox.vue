@@ -10,8 +10,8 @@
     class="bg-emerald-400 p-8 rounded-lg mt-4"
   >
     <p>
-      Below is your project's secret key. Make sure to copy this as you will
-      only see this once!
+      This is your project's secret key. You will only see this once so make
+      sure to copy this!
     </p>
     <div class="mt-2">
       <input class="bg-emerald-300 input w-full" :value="secretKey" />
