@@ -1,6 +1,5 @@
 <script lang="ts" setup>
   import ModalCreateResourceModel from '~~/components/modal/createResourceModel.vue';
-  import validateProject from '~~/middleware/validateProject';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
   definePageMeta({
