@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-  import { isRequired } from '~~/utils/formValidations';
   import { Structure } from '~~/types/forms';
   import useResourceDataType from '~~/stores/useResourceDataTypeStore';
 

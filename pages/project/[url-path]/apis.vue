@@ -1,7 +1,6 @@
 <script lang="ts" setup>
   import ModalCreateApi from '~~/components/modal/createApi.vue';
   import useApiStore from '~~/stores/useApiStore';
-  import validateProject from '~~/middleware/validateProject';
 
   definePageMeta({
     middleware: ['auth', 'validate-project'],

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
   import { useProjectStore, useProjectKeyStore } from '~~/stores';
   import ModalConfirm from '~~/components/modal/confirm.vue';
-  import validateProject from '~~/middleware/validateProject';
 
   definePageMeta({
     middleware: ['auth', 'validate-project'],
@@ -17,7 +16,7 @@
 
   const secretKey = ref('');
 
-  onMounted(async () => {
+  onMounted(() => {
     isMounted.value = true;
 
     form.setValues({
