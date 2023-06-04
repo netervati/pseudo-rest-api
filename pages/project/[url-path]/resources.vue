@@ -4,7 +4,7 @@
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
   definePageMeta({
-    middleware: ['auth'],
+    middleware: ['auth', 'validate-project'],
   });
 
   const resourceModel = useResourceModelStore();
@@ -19,8 +19,6 @@
       refresh.value = Date.now();
     },
   });
-
-  onMounted(async () => await validateProject());
 </script>
 
 <template>

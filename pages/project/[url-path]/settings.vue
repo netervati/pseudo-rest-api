@@ -4,7 +4,7 @@
   import validateProject from '~~/middleware/validateProject';
 
   definePageMeta({
-    middleware: ['auth'],
+    middleware: ['auth', 'validate-project'],
   });
 
   const projectApiKey = useProjectApiKey();
@@ -19,8 +19,6 @@
 
   onMounted(async () => {
     isMounted.value = true;
-
-    await validateProject();
 
     form.setValues({
       name: project.target?.name,

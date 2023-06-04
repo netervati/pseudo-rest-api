@@ -4,7 +4,7 @@
   import validateProject from '~~/middleware/validateProject';
 
   definePageMeta({
-    middleware: ['auth'],
+    middleware: ['auth', 'validate-project'],
   });
 
   const apis = useApiStore();
@@ -17,8 +17,6 @@
       await apis.fetch(projectApiKey, { mutateCache: true });
     },
   });
-
-  onMounted(async () => await validateProject());
 </script>
 
 <template>
