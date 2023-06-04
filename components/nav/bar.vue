@@ -22,6 +22,19 @@
     window.location.href =
       'https://github.com/netervati/pseudo-rest-api/blob/main/docs/README.md';
   };
+
+  const dropdownOptions = [
+    {
+      icon: BookOpenIcon,
+      fn: redirectToWiki,
+      text: 'docs',
+    },
+    {
+      icon: ArrowRightOnRectangleIcon,
+      fn: handleLogout,
+      text: 'logout',
+    },
+  ];
 </script>
 
 <template>
@@ -40,11 +53,13 @@
           <UserIcon class="h-4 m-auto w-4" />
         </label>
         <NavProfileDropdown>
-          <NavProfileDropdownButton @click="redirectToWiki">
-            <BookOpenIcon class="h-4 w-4" /> docs
-          </NavProfileDropdownButton>
-          <NavProfileDropdownButton @click="handleLogout">
-            <ArrowRightOnRectangleIcon class="h-4 w-4" /> logout
+          <NavProfileDropdownButton
+            v-for="(opts, idx) in dropdownOptions"
+            :key="idx"
+            @click="opts.fn"
+          >
+            <component :is="opts.icon" class="h-4 w-4" />
+            {{ opts.text }}
           </NavProfileDropdownButton>
         </NavProfileDropdown>
       </div>

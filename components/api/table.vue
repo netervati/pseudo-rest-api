@@ -74,13 +74,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="api.isLoading">
-              <td colspan="4">
-                <div class="flex h-full w-full">
-                  <LoaderSpinner />
-                </div>
-              </td>
-            </tr>
+            <TableLoader v-if="api.isLoading" :colspan="4" />
             <tr v-for="record in api.list" v-else :key="record.id">
               <td>
                 <Button

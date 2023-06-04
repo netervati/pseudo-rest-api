@@ -22,6 +22,11 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  runtimeConfig: {
+    public: {
+      onMaintenance: process.env.NUXT_PUBLIC_ON_MAINTENANCE || 'false',
+    },
+  },
   veeValidate: {
     // disable or enable auto imports
     autoImports: true,
