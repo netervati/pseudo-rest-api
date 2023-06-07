@@ -27,12 +27,12 @@ export default defineEventHandler(async (event) => {
 
   await new ResourceModelServices(event).find(body.resourceModelId);
 
-  const update = await new ApiServices(event).createUnique({
+  const created = await new ApiServices(event).createUnique({
     description: body.description,
     projectId,
     resourceModelId: body.resourceModelId,
     urlPath: body.urlPath,
   });
 
-  return update;
+  return created;
 });
