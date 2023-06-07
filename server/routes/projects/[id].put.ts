@@ -1,7 +1,7 @@
 import { H3Event } from 'h3';
-import { ProjectKeyServices, ProjectServices } from '~~/server/services';
+import ProjectServices from '~~/server/services/projectServices';
 import { PostProjectValidation } from '~~/server/validations';
-import ErrorResponse from '~~/server/utils/errorResponse';
+import extractProjectKey from '~~/server/lib/extractProjectKey';
 
 type BodyParams = {
   name: string;
@@ -21,27 +21,10 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
+  const { projectId } = await extractProjectKey(event, body.projectApiKey);
 
-  const projectKey = await new ProjectKeyServices(event).findByApiKey(
-    body.projectApiKey
-  );
-
-  if (event.context.params.id !== projectKey[0]?.project_id) {
-    throw ErrorResponse.badRequest("Project doesn't match API key");
-  }
-
-  const projects = new ProjectServices(event);
-  const existingProjects = await projects.findByName(body.name);
-
-  if (
-    existingProjects.length > 0 &&
-    existingProjects[0].id !== event.context.params.id
-  ) {
-    throw ErrorResponse.badRequest('Project already exists.');
-  }
-
-  const updated = await projects.update({
-    id: projectKey[0].project_id,
+  const updated = new ProjectServices(event).updateUnique({
+    id: projectId,
     name: body.name,
   });
 
