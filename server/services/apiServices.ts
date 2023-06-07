@@ -8,7 +8,7 @@ export default class ApiServices extends SupabaseService {
   }
 
   async create(params: {
-    description: string | undefined;
+    description?: string;
     projectId: string;
     resourceModelId: string;
     urlPath: string;
@@ -86,7 +86,7 @@ export default class ApiServices extends SupabaseService {
 
   async update(params: {
     id: string;
-    description?: string | undefined;
+    description?: string;
     projectId: string;
     resourceModelId?: string;
     urlPath?: string;
@@ -122,5 +122,72 @@ export default class ApiServices extends SupabaseService {
     }
 
     return apis.data[0];
+  }
+
+  /**
+   * Creates a new api endpoint only if the api's url path is unique
+   * amongst the user's owned api endpoints.
+   *
+   * @param params - the payload for the `create` query method.
+   * @returns the new api endpoint.
+   * @throws Will throw if user is about to exceed the allowed number of api endpoints.
+   * @throws Will throw if user already has an api with the same url path provided.
+   */
+  async createUnique(params: {
+    description?: string;
+    projectId: string;
+    resourceModelId: string;
+    urlPath: string;
+  }) {
+    const list = await this.list(params.projectId);
+
+    if (list.length >= MAX_APIS_ALLOWED) {
+      throw ErrorResponse.badRequest(
+        'You have exceeded the allowed number of API Endpoints.'
+      );
+    }
+
+    const matchingUrlPaths = list.filter(
+      (apis) => apis.url_path === params.urlPath
+    );
+
+    if (matchingUrlPaths.length > 0) {
+      throw ErrorResponse.badRequest('API Endpoint already exists.');
+    }
+
+    const created = await this.create(params);
+
+    return created;
+  }
+
+  /**
+   * Updates the api endpoint only if the api's url path is unique
+   * amongst the user's owned api endpoints.
+   *
+   * @param params - the payload for the `update` query method
+   * @returns the updated api endpoint.
+   * @throws Will throw if user already has an api with the same url path provided.
+   */
+  async updateUnique(params: {
+    id: string;
+    description?: string;
+    projectId: string;
+    resourceModelId?: string;
+    urlPath?: string;
+  }) {
+    if (params.urlPath) {
+      const apis = await this.findByUrlPath({
+        urlPath: params.urlPath,
+        projectId: params.projectId,
+      });
+
+      if (apis.length > 0 && apis[0].id !== params.id) {
+        throw ErrorResponse.badRequest('API Endpoint already exists.');
+      }
+    }
+
+    const updated = await this.update(params);
+
+    return updated;
   }
 }

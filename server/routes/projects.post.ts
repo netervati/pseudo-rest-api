@@ -1,8 +1,7 @@
 import { H3Event } from 'h3';
 import shortuuid from 'short-uuid';
 import { ProjectKeyServices, ProjectServices } from '../services';
-import { PostProjectValidation } from '../validations';
-import ErrorResponse from '../utils/errorResponse';
+import { PostProjectValidation } from '../validations/projectsValidations';
 
 type BodyParams = {
   name: string;
@@ -22,24 +21,8 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
-  const project = new ProjectServices(event);
-  const userProjects = await project.list();
 
-  if (userProjects.length === MAX_PROJECTS_ALLOWED) {
-    throw ErrorResponse.badRequest(
-      'You have exceeded the allowed number of Projects.'
-    );
-  }
-
-  const matchingProjectNames = userProjects.filter(
-    (proj) => proj.name === body.name
-  );
-
-  if (matchingProjectNames.length) {
-    throw ErrorResponse.badRequest('Project already exists.');
-  }
-
-  const newProject = await project.create({
+  const created = await new ProjectServices(event).createUnique({
     name: body.name,
     description: body.description,
   });
@@ -48,7 +31,7 @@ export default defineEventHandler(async (event) => {
 
   await new ProjectKeyServices(event).create({
     apiKey: shortuuid.generate(),
-    projectId: newProject.id,
+    projectId: created.id,
     secretKey: await hashPassword(secretKey),
   });
 

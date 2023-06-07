@@ -104,4 +104,62 @@ export default class ProjectServices extends SupabaseService {
 
     return projects.data[0];
   }
+
+  /**
+   * Creates a new project only if the project's name is unique
+   * amongst the user's owned projects.
+   *
+   * @param params - the payload for the `create` query method.
+   * @returns the new project.
+   * @throws Will throw if user is about to exceed the allowed number of projects.
+   * @throws Will throw if user already has a project with the same name provided.
+   */
+  async createUnique(params: {
+    name: string;
+    description: string | undefined;
+  }) {
+    const list = await this.list();
+
+    if (list.length === MAX_PROJECTS_ALLOWED) {
+      throw ErrorResponse.badRequest(
+        'You have exceeded the allowed number of Projects.'
+      );
+    }
+
+    const matchingNames = list.filter((proj) => proj.name === params.name);
+
+    if (matchingNames.length) {
+      throw ErrorResponse.badRequest('Project already exists.');
+    }
+
+    const created = await this.create({
+      name: params.name,
+      description: params.description,
+    });
+
+    return created;
+  }
+
+  /**
+   * Updates the project only if the project's name is unique
+   * amongst the user's owned projects.
+   *
+   * @param params - the payload for the `update` query method
+   * @returns the updated project.
+   * @throws Will throw if user already has a project with the same name provided.
+   */
+  async updateUnique(params: { id: string; name: string }) {
+    const list = await this.findByName(params.name);
+
+    if (list.length > 0 && list[0].id !== params.id) {
+      throw ErrorResponse.badRequest('Project already exists.');
+    }
+
+    const updated = await this.update({
+      id: params.id,
+      name: params.name,
+    });
+
+    return updated;
+  }
 }
