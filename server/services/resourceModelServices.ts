@@ -127,4 +127,67 @@ export default class ResourceModelServices extends SupabaseService {
 
     return resourceModels.data[0];
   }
+
+  /**
+   * Creates a new resource model only if the resource model's name is unique
+   * amongst the user's owned resource models.
+   *
+   * @param params - the payload for the `create` query method.
+   * @returns the new resource model.
+   * @throws Will throw if user is about to exceed the allowed number of resource model.
+   * @throws Will throw if user already has a resource model with the same name provided.
+   */
+  async createUnique(params: {
+    name: string;
+    projectId: string;
+    structure: Structure;
+  }) {
+    const list = await this.list(params.projectId);
+
+    if (list.length >= MAX_RESOURCE_MODELS_ALLOWED) {
+      throw ErrorResponse.badRequest(
+        'You have exceeded the allowed number of Resource Models.'
+      );
+    }
+
+    const matchingResourceModels = list.filter((rm) => rm.name === params.name);
+
+    if (matchingResourceModels.length > 0) {
+      throw ErrorResponse.badRequest('Resource model already exists.');
+    }
+
+    const created = await this.create(params);
+
+    return created;
+  }
+
+  /**
+   * Updates the resource model only if the resource model's name is unique
+   * amongst the user's owned resource models.
+   *
+   * @param params - the payload for the `update` query method
+   * @returns the updated resource model.
+   * @throws Will throw if user already has a resource model with the same name provided.
+   */
+  async updateUnique(params: {
+    id: string;
+    name?: string;
+    projectId: string;
+    structure: Structure;
+  }) {
+    if (params.name) {
+      const matchingResourceModels = await this.findByName({
+        name: params.name,
+        projectId: params.projectId,
+      });
+
+      if (matchingResourceModels.length > 0) {
+        throw ErrorResponse.badRequest('Resource model already exists.');
+      }
+    }
+
+    const updated = await this.update(params);
+
+    return updated;
+  }
 }
