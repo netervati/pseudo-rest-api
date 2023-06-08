@@ -33,10 +33,6 @@ export default defineEventHandler(async (event) => {
     event.context.params.id
   );
 
-  if (resourceModel === null) {
-    throw ErrorResponse.badRequest('Resource model does not exist.');
-  }
-
   const list = await new ResourceDataServices(event).list(resourceModel.id);
 
   if (list.length + body.count >= MAX_RESOURCE_DATA_ALLOWED) {
