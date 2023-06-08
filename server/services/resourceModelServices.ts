@@ -81,6 +81,10 @@ export default class ResourceModelServices extends SupabaseService {
       throw ErrorResponse.supabase(resourceModel.error);
     }
 
+    if (resourceModel.data.length === 0) {
+      throw ErrorResponse.badRequest('Resource model does not exist.');
+    }
+
     return resourceModel.data[0];
   }
 

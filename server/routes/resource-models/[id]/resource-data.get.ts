@@ -1,5 +1,4 @@
 import { ResourceDataServices, ResourceModelServices } from '../../../services';
-import ErrorResponse from '../../../utils/errorResponse';
 import extractProjectKey from '~~/server/lib/extractProjectKey';
 
 type QueryParams = {
@@ -14,10 +13,6 @@ export default defineEventHandler(async (event) => {
   const resourceModel = await new ResourceModelServices(event).find(
     event.context.params.id
   );
-
-  if (resourceModel === null) {
-    throw ErrorResponse.badRequest('Resource model does not exist.');
-  }
 
   const list = await new ResourceDataServices(event).list(resourceModel.id);
 
