@@ -8,6 +8,7 @@ type FetchProps = {
   resourceModelId: string;
 };
 
+type BulkDeleteProps = { ids: string } & FetchProps;
 type CreateProps = { count: number } & FetchProps;
 type DeleteProps = { id: string } & FetchProps;
 
@@ -20,6 +21,7 @@ type ResourceDataHash = { [key: string]: ResourceData[] };
 type ResourceDataStore = {
   isLoading: Ref<boolean>;
   list: Ref<ResourceDataHash>;
+  bulkDelete: (params: BulkDeleteProps) => void;
   clear: (resourceModelId: string) => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (params: DeleteProps) => Promise<void>;
@@ -35,6 +37,26 @@ export default defineStore('resource-data', (): ResourceDataStore => {
    */
   const clear = (resourceModelId: string) => {
     list.value[resourceModelId] = [];
+  };
+
+  /**
+   * A function that bulk deletes Resource Data.
+   *
+   * @param params{BulkDeleteProps}
+   */
+  const bulkDelete = async (params: BulkDeleteProps): Promise<void> => {
+    await request(`/resource-models/${params.resourceModelId}/resource-data`, {
+      method: 'DELETE',
+      query: {
+        ids: params.ids,
+        projectApiKey: params.projectApiKey,
+      },
+      onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the resource model!');
+        }
+      },
+    });
   };
 
   /**
@@ -113,6 +135,7 @@ export default defineStore('resource-data', (): ResourceDataStore => {
     list,
 
     /** METHODS */
+    bulkDelete,
     clear,
     create,
     delete: del,
