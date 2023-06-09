@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-  import { ChevronRightIcon } from '@heroicons/vue/24/outline';
   import EditResourceModel from '../modal/editResourceModel.vue';
   import ModalConfirm from '../modal/confirm.vue';
   import { useResourceDataStore, useResourceModelStore } from '~~/stores';
