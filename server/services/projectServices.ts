@@ -90,10 +90,18 @@ export default class ProjectServices extends SupabaseService {
     return projects.data;
   }
 
-  async update(params: { id: string; name: string }) {
+  async update(params: { id: string; description?: string; name: string }) {
+    const payload: { description?: string; name: string } = {
+      name: params.name,
+    };
+
+    if (params.description) {
+      payload.description = params.description;
+    }
+
     const projects = await this.client
       .from(this.table)
-      .update({ name: params.name })
+      .update(payload)
       .eq('id', params.id)
       .eq('user_id', this.user.id)
       .select('*');
@@ -148,17 +156,18 @@ export default class ProjectServices extends SupabaseService {
    * @returns the updated project.
    * @throws Will throw if user already has a project with the same name provided.
    */
-  async updateUnique(params: { id: string; name: string }) {
+  async updateUnique(params: {
+    id: string;
+    description?: string;
+    name: string;
+  }) {
     const list = await this.findByName(params.name);
 
     if (list.length > 0 && list[0].id !== params.id) {
       throw ErrorResponse.badRequest('Project already exists.');
     }
 
-    const updated = await this.update({
-      id: params.id,
-      name: params.name,
-    });
+    const updated = await this.update(params);
 
     return updated;
   }

@@ -18,8 +18,9 @@
 
   onMounted(() => {
     isMounted.value = true;
-
+    
     form.setValues({
+      description: project.target?.description,
       name: project.target?.name,
       apiKey: projectApiKey,
     });
@@ -35,6 +36,7 @@
     await project.update(
       {
         id: project.target!.id,
+        description: values.description,
         name: values.name,
         projectApiKey,
       },
@@ -47,6 +49,7 @@
           )[0];
 
           form.setValues({
+            description: project.target?.description,
             name: project.target?.name,
             apiKey: projectApiKey,
           });
@@ -100,9 +103,10 @@
     <ProjectSecretKeyBox :secret-key="secretKey" />
     <div class="card border border-gray-300 mt-6">
       <div class="card-body">
-        <section v-if="project.isLoading && isMounted" class="animate-pulse">
+        <section v-if="project.isLoading || !isMounted" class="animate-pulse">
           <h3 class="font-bold">Edit Project</h3>
           <div class="rounded-lg bg-slate-200 h-12 mt-2 w-full" />
+          <div class="rounded-lg bg-slate-200 h-20 mt-2 w-full" />
           <div class="rounded-lg bg-slate-200 h-12 mt-2 w-full" />
           <div class="rounded-lg bg-slate-200 float-right h-8 mt-2 w-16" />
         </section>
@@ -116,6 +120,13 @@
               }"
               name="name"
               placeholder="Enter name"
+            />
+          </section>
+          <section class="form-control mt-2">
+            <FormTextArea
+              :disabled="isDisabled"
+              name="description"
+              placeholder="Enter description"
             />
           </section>
           <section class="form-control mt-2">

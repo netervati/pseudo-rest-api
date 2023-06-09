@@ -1,16 +1,17 @@
 import { H3Event } from 'h3';
 import ProjectServices from '~~/server/services/projectServices';
-import { PostProjectValidation } from '~~/server/validations';
+import { PutProjectValidation } from '~~/server/validations/projectsValidations';
 import extractProjectKey from '~~/server/lib/extractProjectKey';
 
 type BodyParams = {
+  description?: string;
   name: string;
   projectApiKey: string;
 };
 
 async function validate(event: H3Event): Promise<BodyParams | never> {
   const body: BodyParams = await readBody<BodyParams>(event);
-  const error = new PostProjectValidation(body).validate();
+  const error = new PutProjectValidation(body).validate();
 
   if (error) {
     throw error;
@@ -25,6 +26,7 @@ export default defineEventHandler(async (event) => {
 
   const updated = new ProjectServices(event).updateUnique({
     id: projectId,
+    description: body.description,
     name: body.name,
   });
 

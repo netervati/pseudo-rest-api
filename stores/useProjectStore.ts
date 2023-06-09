@@ -10,6 +10,7 @@ type CreateProps = {
 
 type UpdateProps = {
   id: string;
+  description?: string;
   name: string;
   projectApiKey: string;
 };
@@ -108,6 +109,7 @@ export default defineStore('projects', (): ProjectStore => {
     await request(`/projects/${body.id}`, {
       method: 'PUT',
       body: {
+        description: body.description,
         name: body.name,
         projectApiKey: body.projectApiKey,
       },
