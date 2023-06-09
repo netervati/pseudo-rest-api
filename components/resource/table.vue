@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-  import { ChevronRightIcon } from '@heroicons/vue/24/outline';
   import EditResourceModel from '../modal/editResourceModel.vue';
   import ModalConfirm from '../modal/confirm.vue';
   import { useResourceDataStore, useResourceModelStore } from '~~/stores';
@@ -95,51 +94,49 @@
 </script>
 
 <template>
-  <div class="flex mt-4">
-    <div class="border card h-96 pr-6 w-1/4">
-      <div class="card-body">
-        <article
-          v-if="resourceModel.isLoading"
-          class="animate-pulse flex flex-row space-x-2 w-full"
-        >
-          <div class="rounded-lg bg-slate-200 h-8 w-full" />
-          <div class="rounded-lg bg-slate-200 h-8 w-10" />
-        </article>
-        <article
+  <div class="flex mb-6">
+    <section class="mr-1">
+      <slot />
+    </section>
+    <section class="flex flex-rows ml-1">
+      <article
+        v-if="resourceModel.isLoading"
+        class="animate-pulse flex flex-row space-x-2 w-full"
+      >
+        <div class="rounded-lg bg-slate-200 h-8 w-full" />
+        <div class="rounded-lg bg-slate-200 h-8 w-10" />
+      </article>
+      <template v-else>
+        <div
           v-for="model in resourceModel.list"
-          v-else
           :key="model.id"
-          class="flex flex-row w-full"
+          class="dropdown grow-0 ml-1 mr-1"
         >
-          <ResourceButton
+          <Button
             :is-active="resourceModel.target === model.id"
-            @click="dispatch('open', model)"
+            color="ghost"
+            tabindex="0"
+            size="sm"
           >
             {{ model.name }}
-          </ResourceButton>
-          <div class="dropdown grow-0 w-10">
-            <Button color="ghost" tabindex="0" class="m-1 w-full" size="sm">
-              <ChevronRightIcon class="h-4 w-4" />
-            </Button>
-            <DropdownMenu tabindex="0">
-              <Option size="xs" @click="dispatch('edit', model)">Edit</Option>
-              <Option size="xs" @click="dispatch('delete', model)">
-                Delete
-              </Option>
-            </DropdownMenu>
-          </div>
-        </article>
-      </div>
-    </div>
-    <div class="pl-6 h-72 w-3/4">
-      <ResourceDataTable />
-    </div>
-    <ClientOnly>
-      <component
-        :is="modal.component"
-        content="Are you sure you want to delete this resource model?"
-      />
-      <component :is="editResourceModelModal.component" />
-    </ClientOnly>
+          </Button>
+          <DropdownMenu tabindex="0">
+            <Option size="xs" @click="dispatch('open', model)">View</Option>
+            <Option size="xs" @click="dispatch('edit', model)">Edit</Option>
+            <Option size="xs" @click="dispatch('delete', model)">
+              Delete
+            </Option>
+          </DropdownMenu>
+        </div>
+      </template>
+    </section>
   </div>
+  <ResourceDataTable />
+  <ClientOnly>
+    <component
+      :is="modal.component"
+      content="Are you sure you want to delete this resource model?"
+    />
+    <component :is="editResourceModelModal.component" />
+  </ClientOnly>
 </template>
