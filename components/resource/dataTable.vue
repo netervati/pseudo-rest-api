@@ -7,8 +7,11 @@
   const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
-  const refreshKey = ref(Date.now());
   const select = useSelect();
+
+  const resourceDataList = computed(
+    () => resourceData.list[resourceModel.target]
+  );
 
   const structure = computed(() => {
     const list = resourceModel.list.filter(
@@ -22,8 +25,8 @@
 
   const modal = useModal(ModalCreateResourceData, {
     id: 'create-resource-data',
-    onSuccess: () => {
-      refreshKey.value = Date.now();
+    onSuccess: async () => {
+      await resourceData.fetch(projectApiKey, resourceModel.target);
     },
   });
 
@@ -73,14 +76,30 @@
       <thead>
         <tr>
           <th v-if="resourceModel.target === ''" />
-          <th v-else class="flex flex-col">
-            <Button class="m-1" color="success" size="xs" @click="modal.open">
-              New Data
-            </Button>
-            <Button class="m-1" color="error" size="xs" @click="deleteModal.open">
-              Delete Data
-            </Button>
-          </th>
+          <template v-else>
+            <th>
+              <input
+                :checked="select.ticked(resourceDataList)"
+                class="checkbox"
+                type="checkbox"
+                @click="select.tick(resourceDataList)"
+              />
+            </th>
+            <th>
+              <Dropdown :disabled="resourceData.isLoading" size="sm">
+                <template #label>Manage Data</template>
+                <template #options>
+                  <DropdownOption @click="modal.open">New</DropdownOption>
+                  <DropdownOption
+                    v-if="!select.isEmpty.value"
+                    @click="deleteModal.open"
+                  >
+                    Delete
+                  </DropdownOption>
+                </template>
+              </Dropdown>
+            </th>
+          </template>
           <th v-for="header in structure" :key="header!.id">
             {{ header!.name }}
           </th>
@@ -88,14 +107,10 @@
       </thead>
       <tbody>
         <TableLoader v-if="resourceData.isLoading" :colspan="4" />
-        <tr
-          v-for="record in resourceData.list[resourceModel.target]"
-          v-else
-          :key="record.id"
-        >
-          <td>
+        <tr v-for="record in resourceDataList" v-else :key="record.id">
+          <td colspan="2">
             <input
-              :checked="false"
+              :checked="select.ticked(record.id)"
               class="checkbox"
               type="checkbox"
               @click="select.tick(record.id)"
@@ -108,10 +123,10 @@
       </tbody>
     </table>
     <ClientOnly>
-      <modal.component />
+      <component :is="modal.component" />
       <component
         :is="deleteModal.component"
-        content="Are you sure you want to delete this resource data?"
+        content="Are you sure you want to delete the selected resource data?"
       />
     </ClientOnly>
   </div>
