@@ -21,7 +21,7 @@ type ResourceDataHash = { [key: string]: ResourceData[] };
 type ResourceDataStore = {
   isLoading: Ref<boolean>;
   list: Ref<ResourceDataHash>;
-  bulkDelete: (params: BulkDeleteProps) => void;
+  bulkDelete: (params: BulkDeleteProps) => Promise<void>;
   clear: (resourceModelId: string) => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
   delete: (params: DeleteProps) => Promise<void>;
