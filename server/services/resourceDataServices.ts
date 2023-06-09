@@ -9,6 +9,23 @@ export default class ResourceDataServices extends SupabaseService {
     return 'resource_data';
   }
 
+  async batchDelete(params: { ids: string[]; resourceModelId: string }) {
+    return await Promise.all(
+      params.ids.map((id) => {
+        return this.client
+          .from(this.table)
+          .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString().toLocaleString(),
+          })
+          .eq('id', id)
+          .eq('resource_model_id', params.resourceModelId)
+          .eq('user_id', this.user.id)
+          .select('*');
+      })
+    );
+  }
+
   async bulkCreate(params: { data: Data[]; resourceModelId: string }) {
     return await Promise.all(
       params.data.map((data) => {
@@ -32,6 +49,7 @@ export default class ResourceDataServices extends SupabaseService {
           .from(this.table)
           .update({ data })
           .eq('id', id)
+          .eq('user_id', this.user.id)
           .select('*');
       })
     );

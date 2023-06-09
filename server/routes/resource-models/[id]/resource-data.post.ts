@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
   const list = await new ResourceDataServices(event).list(resourceModel.id);
 
-  if (list.length + body.count >= MAX_RESOURCE_DATA_ALLOWED) {
+  if (list.length + body.count > MAX_RESOURCE_DATA_ALLOWED) {
     throw ErrorResponse.badRequest(
       'You have exceeded the allowed number of Resource Data for this Resource Model.'
     );
