@@ -7,7 +7,7 @@ type CacheKeyProps = {
 };
 
 /**
- * An internal hook for caching fetch requests. This is only a
+ * An internal composable for caching fetch requests. This is only a
  * temporarily solution to avoid unnecessary re-fetch. Consider
  * using `useLazyFetch` or `useFetch` later.
  *
