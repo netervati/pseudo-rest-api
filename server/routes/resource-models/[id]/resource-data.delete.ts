@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
   const deleted = await new ResourceDataServices(event).batchDelete({
     ids,
-    resourceModelId: event.context.params.path.id,
+    resourceModelId: event.context.params.id,
   });
 
   return deleted;

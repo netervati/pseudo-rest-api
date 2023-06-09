@@ -19,7 +19,7 @@ export default class ResourceDataServices extends SupabaseService {
             deleted_at: new Date().toISOString().toLocaleString(),
           })
           .eq('id', id)
-          .eq('resource_data_id', params.resourceModelId)
+          .eq('resource_model_id', params.resourceModelId)
           .eq('user_id', this.user.id)
           .select('*');
       })
