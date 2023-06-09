@@ -61,46 +61,44 @@
 </script>
 
 <template>
-  <div class="flex mt-4">
-    <div class="h-72 w-full">
-      <div class="overflow-auto h-96">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th />
-              <th>Path</th>
-              <th>Resource</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <TableLoader v-if="api.isLoading" :colspan="4" />
-            <tr v-for="record in api.list" v-else :key="record.id">
-              <td>
-                <Button
-                  class="mr-1"
-                  color="success"
-                  size="xs"
-                  @click="dispatch('edit', record)"
-                >
-                  Edit
-                </Button>
-                <Button
-                  class="ml-1"
-                  color="error"
-                  size="xs"
-                  @click="dispatch('delete', record)"
-                >
-                  Delete
-                </Button>
-              </td>
-              <td>{{ record.url_path }}</td>
-              <td>{{ record.resource_models.name }}</td>
-              <td>{{ record.description }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="mt-4">
+    <div class="overflow-y-scroll" style="height: 70vh">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th />
+            <th>Path</th>
+            <th>Resource</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <TableLoader v-if="api.isLoading" :colspan="4" />
+          <tr v-for="record in api.list" v-else :key="record.id">
+            <td>
+              <Button
+                class="mr-1"
+                color="success"
+                size="xs"
+                @click="dispatch('edit', record)"
+              >
+                Edit
+              </Button>
+              <Button
+                class="ml-1"
+                color="error"
+                size="xs"
+                @click="dispatch('delete', record)"
+              >
+                Delete
+              </Button>
+            </td>
+            <td>{{ record.url_path }}</td>
+            <td>{{ record.resource_models.name }}</td>
+            <td>{{ record.description }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <ClientOnly>
       <component
