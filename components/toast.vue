@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   type Props = {
-    color?: '' | 'error' | 'info' | 'success' | 'warning';
+    color?: '' | 'dark' | 'error' | 'info' | 'success' | 'warning';
     positionY?: 'top' | 'bottom';
     positionX?: 'left' | 'right';
   };
@@ -8,9 +8,9 @@
   type ClassLibrary = { [key: string]: string | undefined };
 
   const COLORS: ClassLibrary = {
+    dark: 'bg-gray-700 text-white',
     error: 'alert-error',
     info: 'alert-info',
-    neutral: 'alert-neutral',
     success: 'alert-success',
     warning: 'alert-warning',
   };
