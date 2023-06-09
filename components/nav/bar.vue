@@ -45,24 +45,21 @@
       </NuxtLink>
     </div>
     <div class="flex-none">
-      <div class="dropdown dropdown-end">
-        <label
-          class="avatar border-gray-300 btn btn-ghost rounded-lg"
-          tabindex="0"
-        >
+      <Dropdown avatar class="rounded-lg" color="ghost" position="end">
+        <template #label>
           <UserIcon class="h-4 m-auto w-4" />
-        </label>
-        <NavProfileDropdown>
-          <NavProfileDropdownButton
+        </template>
+        <template #options>
+          <DropdownOption
             v-for="(opts, idx) in dropdownOptions"
             :key="idx"
             @click="opts.fn"
           >
             <component :is="opts.icon" class="h-4 w-4" />
             {{ opts.text }}
-          </NavProfileDropdownButton>
-        </NavProfileDropdown>
-      </div>
+          </DropdownOption>
+        </template>
+      </Dropdown>
     </div>
   </div>
 </template>
