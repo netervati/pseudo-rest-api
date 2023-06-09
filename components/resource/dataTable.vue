@@ -68,7 +68,7 @@
 </script>
 
 <template>
-  <div class="overflow-auto h-96">
+  <div class="overflow-y-scroll" style="height: 70vh">
     <table class="table w-full">
       <thead>
         <tr>
@@ -103,7 +103,7 @@
         </tr>
       </thead>
       <tbody>
-        <TableLoader v-if="resourceData.isLoading" :colspan="4" />
+        <TableLoader v-if="resourceData.isLoading" :colspan="5" />
         <tr v-for="record in resourceDataList" v-else :key="record.id">
           <td colspan="2">
             <input
