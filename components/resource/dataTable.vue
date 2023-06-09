@@ -50,10 +50,7 @@
   onMounted(async () => {
     select.clear();
 
-    if (
-      resourceModel.target !== '' &&
-      resourceData.list[resourceModel.target].length === 0
-    ) {
+    if (resourceModel.target !== '' && resourceDataList.value.length === 0) {
       await resourceData.fetch(projectApiKey, resourceModel.target);
     }
   });
