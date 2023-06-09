@@ -53,7 +53,7 @@ export default defineStore('resource-data', (): ResourceDataStore => {
       },
       onResponse({ response }) {
         if (response.status === 200) {
-          toast.success('Deleted the resource model!');
+          toast.success('Deleted the resource data!');
         }
       },
     });
