@@ -22,15 +22,16 @@
 
 <template>
   <div class="p-6">
-    <Button
-      :disabled="isDisabled"
-      color="success"
-      size="sm"
-      @click="createModal.open"
-    >
-      New Resource Model
-    </Button>
-    <ResourceTable :refresh="refresh" />
+    <ResourceTable :refresh="refresh">
+      <Button
+        :disabled="isDisabled"
+        color="success"
+        size="sm"
+        @click="createModal.open"
+      >
+        New Resource Model
+      </Button>
+    </ResourceTable>
     <ClientOnly>
       <component :is="createModal.component" />
     </ClientOnly>
