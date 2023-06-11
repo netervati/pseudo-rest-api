@@ -12,16 +12,14 @@ export default function () {
     path: string,
     config: NitroFetchOptions<T>
   ) => {
-    try {
-      isLoading.value = true;
+    isLoading.value = true;
 
-      await $fetch(path, config);
-    } catch (err: any) {
-      console.log(err.statusMessage);
-      toast.error(err.statusMessage);
-    } finally {
-      isLoading.value = false;
-    }
+    await $fetch(path, config).catch((error) => {
+      console.log(error, error.message);
+      toast.error(error.message);
+    });
+
+    isLoading.value = false;
   };
 
   return {
