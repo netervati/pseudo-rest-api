@@ -185,7 +185,10 @@ export default class ResourceModelServices extends SupabaseService {
         projectId: params.projectId,
       });
 
-      if (matchingResourceModels.length > 0) {
+      if (
+        matchingResourceModels.length > 0 &&
+        matchingResourceModels[0].id !== params.id
+      ) {
         throw ErrorResponse.badRequest('Resource model already exists.');
       }
     }
