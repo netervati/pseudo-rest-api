@@ -15,7 +15,7 @@ export default function () {
     isLoading.value = true;
 
     await $fetch(path, config).catch((error) => {
-      console.log(error, error.message);
+      console.log(error, error.data);
       toast.error(error.message);
     });
 
