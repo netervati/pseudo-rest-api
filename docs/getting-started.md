@@ -71,7 +71,7 @@ We can now finally test your mock server.
 You can test your API endpoint using cURL with the following format:
 
 ```curl
-curl -X GET https://pseudo-rest-api-gateway.vercel.app/api/<api-endpoint> -H "Accept: application/json" -u <api-key>:<secret-key>
+curl -X GET https://gateway.pseudorestapi.com/api/<api-endpoint> -H "Accept: application/json" -u <api-key>:<secret-key>
 ```
 
 Note that the gateway application uses the basic scheme to authenticate the user.
