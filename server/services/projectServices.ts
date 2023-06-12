@@ -81,7 +81,8 @@ export default class ProjectServices extends SupabaseService {
       .select('id, name, description, project_keys(api_key)')
       .eq('is_deleted', false)
       .eq('project_keys.is_deleted', false)
-      .eq('user_id', this.user.id);
+      .eq('user_id', this.user.id)
+      .order('created_at', { ascending: false });
 
     if (projects.error !== null) {
       throw ErrorResponse.supabase(projects.error);
