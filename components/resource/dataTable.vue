@@ -23,6 +23,10 @@
     }
   });
 
+  const loaderColSpan = computed(
+    () => Object.keys(structure.value || {}).length + 2
+  );
+
   const modal = useModal(ModalCreateResourceData, {
     id: 'create-resource-data',
     onSuccess: async () => {
@@ -103,7 +107,7 @@
         </tr>
       </thead>
       <tbody>
-        <TableLoader v-if="resourceData.isLoading" :colspan="5" />
+        <TableLoader v-if="resourceData.isLoading" :colspan="loaderColSpan" />
         <tr v-for="record in resourceDataList" v-else :key="record.id">
           <td colspan="2">
             <input
