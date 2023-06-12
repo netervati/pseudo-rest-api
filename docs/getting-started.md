@@ -18,13 +18,13 @@ Once you log in the application, click the **New Project** button and complete t
 
 Then, click the save button. You will notice that after saving, a notification will appear on the page displaying your project's secret key. Make sure to copy this secret key since this is the only time that you will see it!
 
-![Demo - Display Secret Key](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0002-display-secret-key.png)
+![Demo - Display Secret Key](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0002-display-secret-key-v1.1.png)
 
 Afterwards, click your new project. This will redirect you to the API page.
 
 The next step is to create your resources and API endpoints, but before that, you must first acquire your API key. Click the settings button on the left navigation bar, then copy the API key below the project name:
 
-![Demo - Settings Page](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0003-display-api-key.png)
+![Demo - Settings Page](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0003-display-api-key-v1.1.png)
 
 Unlike the secret key, you can always view your API key in the **Settings** page.
 
@@ -42,13 +42,13 @@ After saving, your new resource model will appear on the left side of the interf
 
 You will notice that the table on the right side will adjust based on the schema that we designed earlier. We can populate the table by clicking the **New Data** button.
 
-![Demo - Create Resource Data](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0005-create-resource-data.png)
+![Demo - Create Resource Data](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0005-create-resource-data-v1.1.png)
 
 Adjust the slider based on the number of data that you want to generate, then click save.
 
 The table should now display your mock data:
 
-![Demo - Display Resource Data](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0006-display-resource-data.png)
+![Demo - Display Resource Data](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0006-display-resource-data-v1.1.png)
 
 We can add more resources later, but for now let's proceed with creating the API endpoint.
 
@@ -78,6 +78,6 @@ Note that the gateway application uses the basic scheme to authenticate the user
 
 Here's an example in postman:
 
-![Demo - Postman Request](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0008-postman-request.png)
+![Demo - Postman Request](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/docs/assets/0008-postman-request-v1.1.png)
 
 That's it! You've now created your own mock server.
