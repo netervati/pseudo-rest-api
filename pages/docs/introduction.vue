@@ -43,7 +43,8 @@
     </DocList>
     <DocText>
       That is the brief history of this project. To get started with
-      <b>PseudoRESTAPI</b>, please continue here.
+      <b>PseudoRESTAPI</b>, please continue
+      <DocLink to="/docs/getting-started">here</DocLink>.
     </DocText>
   </section>
 </template>
