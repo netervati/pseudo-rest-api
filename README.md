@@ -5,7 +5,7 @@
 
 [Web](https://pseudorestapi.com/) |
 [Gateway](https://gateway.pseudorestapi.com/) |
-[Official Documentation](https://github.com/netervati/pseudo-rest-api/blob/main/docs/README.md)
+[Official Documentation](https://pseudorestapi.com/docs)
 
 **PseudoRESTAPI** is a tool that enables you to create mock REST APIs quickly and easily, without requiring any language or framework skills.
 
