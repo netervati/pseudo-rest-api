@@ -19,8 +19,7 @@
   };
 
   const redirectToWiki = () => {
-    window.location.href =
-      'https://github.com/netervati/pseudo-rest-api/blob/main/docs/README.md';
+    navigateTo('/docs');
   };
 
   const dropdownOptions = [
