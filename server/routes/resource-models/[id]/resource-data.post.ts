@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
   await extractProjectKey(event, body.projectApiKey);
 
   const resourceModel = await new ResourceModelServices(event).find(
-    event.context.params.id
+    event.context.params?.id ?? ''
   );
 
   const list = await new ResourceDataServices(event).list(resourceModel.id);

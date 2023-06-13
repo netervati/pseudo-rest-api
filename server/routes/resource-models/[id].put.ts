@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
   const structure = buildStructure(body);
 
   const resourceModel = await new ResourceModelServices(event).updateUnique({
-    id: event.context.params.id,
+    id: event.context.params?.id ?? '',
     name: body.name,
     structure,
     projectId,

@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const { projectId } = await extractProjectKey(event, query.projectApiKey);
 
   const deleted = await new ApiServices(event).delete({
-    id: event.context.params.id,
+    id: event.context.params?.id ?? '',
     projectId,
   });
 
