@@ -4,6 +4,7 @@
   const docLinks = [
     { link: '/docs', text: 'Home' },
     { link: '/docs/introduction', text: 'Introduction' },
+    { link: '/docs/getting-started', text: 'Getting Started' },
   ];
 </script>
 
