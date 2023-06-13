@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   await extractProjectKey(event, query.projectApiKey);
 
   const resourceModel = await new ResourceModelServices(event).find(
-    event.context.params.id
+    event.context.params?.id ?? ''
   );
 
   const list = await new ResourceDataServices(event).list(resourceModel.id);
