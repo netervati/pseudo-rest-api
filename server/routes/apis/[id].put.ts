@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const updated = await new ApiServices(event).updateUnique({
-    id: event.context.params.id,
+    id: event.context.params?.id ?? '',
     description: body.description,
     projectId,
     resourceModelId: body.resourceModelId,

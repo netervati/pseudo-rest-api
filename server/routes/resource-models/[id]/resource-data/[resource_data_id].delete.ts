@@ -13,8 +13,8 @@ export default defineEventHandler(async (event) => {
   const path = event.context.params;
 
   const deleted = await new ResourceDataServices(event).delete({
-    id: path.resource_data_id,
-    resourceModelId: path.id,
+    id: path?.resource_data_id ?? '',
+    resourceModelId: path?.id ?? '',
   });
 
   return deleted;

@@ -1,4 +1,4 @@
-import { NuxtError } from 'nuxt/dist/app/composables';
+import { NuxtError } from 'nuxt/app';
 import { validateByRules } from './helpers';
 import { ValidationValue, ValidationDependencies } from './helpers/types';
 

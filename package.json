@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.0",
+    "@nuxt/content": "^2.7.0",
     "@nuxtjs/eslint-config": "^12.0.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/supabase": "^0.3.1",
@@ -30,7 +31,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.9.0",
     "lodash": "^4.17.21",
-    "nuxt": "^3.1.2",
+    "nuxt": "^3.5.3",
     "pinia": "^2.0.32",
     "postcss": "^8.4.21",
     "prettier": "^2.8.3",

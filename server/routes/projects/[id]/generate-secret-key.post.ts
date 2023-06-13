@@ -21,8 +21,9 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 export default defineEventHandler(async (event) => {
   const body = await validate(event);
+  const projectId = event.context.params?.id ?? '';
 
-  await new ProjectServices(event).find(event.context.params.id);
+  await new ProjectServices(event).find(projectId);
 
   const { projectKey } = await extractProjectKey(event, body.projectApiKey);
   const projectKeys = new ProjectKeyServices(event);
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
   await projectKeys.create({
     apiKey: projectApiKey,
-    projectId: event.context.params.id,
+    projectId,
     secretKey: await hashPassword(secretKey),
   });
 
