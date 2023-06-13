@@ -15,7 +15,12 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/supabase', '@pinia/nuxt', '@vee-validate/nuxt'],
+  modules: [
+    '@nuxt/content',
+    '@nuxtjs/supabase',
+    '@pinia/nuxt',
+    '@vee-validate/nuxt',
+  ],
   postcss: {
     plugins: {
       tailwindcss: {},
