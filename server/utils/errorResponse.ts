@@ -1,5 +1,5 @@
 import { PostgrestError } from '@supabase/postgrest-js';
-import { NuxtError } from 'nuxt/dist/app/composables';
+import { NuxtError } from 'nuxt/app';
 
 export default {
   badRequest(message: string): NuxtError {
