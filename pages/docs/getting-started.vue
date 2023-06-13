@@ -4,9 +4,9 @@
   });
 
   const supabase = useSupabaseClient();
-  const img = reactive({});
+  const img = reactive<{ [key: string]: string }>({});
 
-  onMounted(async () => {
+  onMounted(() => {
     const imgMap = {
       create_project: '0001-create-project.png',
       display_secret_key: '0002-display-secret-key-v1.1.png',
@@ -18,15 +18,11 @@
       postman_request: '0008-postman-request-v1.1.png',
     };
 
-    await Promise.all(
-      Object.keys(imgMap).map(async (key: string) => {
-        const { data } = await supabase.storage
-          .from('docs')
-          .getPublicUrl(imgMap[key]);
-
-        img[key] = data.publicUrl;
-      })
-    );
+    Object.keys(imgMap).forEach((key: string) => {
+      // @ts-ignore
+      const { data } = supabase.storage.from('docs').getPublicUrl(imgMap[key]);
+      img[key] = data.publicUrl;
+    });
   });
 </script>
 
