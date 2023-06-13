@@ -7,7 +7,7 @@
   const img = reactive<{ [key: string]: string }>({});
 
   onMounted(() => {
-    const imgMap = {
+    const map = {
       create_project: '0001-create-project.png',
       display_secret_key: '0002-display-secret-key-v1.1.png',
       display_api_key: '0003-display-api-key-v1.1.png',
@@ -18,9 +18,9 @@
       postman_request: '0008-postman-request-v1.1.png',
     };
 
-    Object.keys(imgMap).forEach((key: string) => {
+    Object.keys(map).forEach((key: string) => {
       // @ts-ignore
-      const { data } = supabase.storage.from('docs').getPublicUrl(imgMap[key]);
+      const { data } = supabase.storage.from('docs').getPublicUrl(map[key]);
       img[key] = data.publicUrl;
     });
   });
@@ -29,12 +29,12 @@
 <template>
   <section class="p-6">
     <DocTitle>Getting started</DocTitle>
-    <DocParagraph>
+    <DocText>
       <b>PseudoRESTAPI</b> uses GitHub OAuth to authenticate its users. First,
       you need to create a GitHub account before you can sign in the
       application. Once this is done, you can now proceed with the basic
       concepts:
-    </DocParagraph>
+    </DocText>
     <DocList>
       <DocListItem>
         <b>Project</b> - refers to your mock server. Once you create a project,
@@ -61,95 +61,93 @@
       </DocListItem>
     </DocList>
     <DocHeader>Creating your first project</DocHeader>
-    <DocParagraph>
+    <DocText>
       Once you log in the application, click the <b>New Project</b> button and
       complete the form:
-    </DocParagraph>
+    </DocText>
     <img v-if="img?.create_project" :src="img.create_project" />
-    <DocParagraph>
+    <DocText>
       Then, click the save button. You will notice that after saving, a
       notification will appear on the page displaying your project's secret key.
       Make sure to copy this secret key since this is the only time that you
       will see it!
-    </DocParagraph>
+    </DocText>
     <img v-if="img?.display_secret_key" :src="img.display_secret_key" />
-    <DocParagraph>
+    <DocText>
       Afterwards, click your new project. This will redirect you to the
       <b>API</b> page.
-    </DocParagraph>
-    <DocParagraph>
+    </DocText>
+    <DocText>
       The next step is to create your resources and API endpoints, but before
       that, you must first acquire your API key. Click the settings button on
       the left navigation bar, then copy the API key below your project
       description:
-    </DocParagraph>
+    </DocText>
     <img v-if="img?.display_api_key" :src="img.display_api_key" />
-    <DocParagraph>
+    <DocText>
       Unlike the secret key, you can always view your API key in the
       <b>Settings</b> page.
-    </DocParagraph>
-    <DocParagraph>
+    </DocText>
+    <DocText>
       Now that you've obtained your API key, let's create your database!
-    </DocParagraph>
+    </DocText>
     <DocHeader>Designing and populating your database</DocHeader>
-    <DocParagraph>
+    <DocText>
       Click the resources button on the left navigation bar. This will redirect
       you to the <b>Resources</b> page where you will design the schema and
       generate the data for your fake database.
-    </DocParagraph>
-    <DocParagraph>
+    </DocText>
+    <DocText>
       To create your first model, click the <b>New Resource Model</b> button.
       You will be given many options to design your model but for now, you can
       follow the guide below:
-    </DocParagraph>
+    </DocText>
     <img v-if="img?.create_resource_model" :src="img.create_resource_model" />
-    <DocParagraph>
+    <DocText>
       You will notice that the table on the right side will adjust based on the
       schema that we designed earlier. We can populate the table by clicking the
       <b>Manage Data &#x27E8; New</b> button.
-    </DocParagraph>
+    </DocText>
     <img v-if="img?.create_resource_data" :src="img.create_resource_data" />
-    <DocParagraph>
+    <DocText>
       Adjust the slider based on the number of data that you want to generate,
       then click save.
-    </DocParagraph>
-    <DocParagraph>The table should now display your mock data:</DocParagraph>
+    </DocText>
+    <DocText>The table should now display your mock data:</DocText>
     <img v-if="img?.display_resource_data" :src="img.display_resource_data" />
-    <DocParagraph>
+    <DocText>
       We can add more resources later, but for now let's proceed with creating
       the API endpoint.
-    </DocParagraph>
+    </DocText>
     <DocHeader>Creating the API Endpoint</DocHeader>
-    <DocParagraph>
+    <DocText>
       The last step for your mock server is to create the API endpoint where you
       will expose the resources.
-    </DocParagraph>
-    <DocParagraph>
+    </DocText>
+    <DocText>
       Click the APIs button on the left navigation bar. This will redirect you
       to the <b>APIs</b> page.
-    </DocParagraph>
-    <DocParagraph>
+    </DocText>
+    <DocText>
       Afterwards, click the <b>New API</b> button and complete the form:
-    </DocParagraph>
+    </DocText>
     <img v-if="img?.create_api_endpoint" :src="img.create_api_endpoint" />
-    <DocParagraph>
+    <DocText>
       As you can see, you can select the resources that you created earlier in
       the previous section. Click save once you're satisfied with the details.
-    </DocParagraph>
-    <DocParagraph>We can now finally test your mock server.</DocParagraph>
+    </DocText>
+    <DocText>We can now finally test your mock server.</DocText>
     <DocHeader>Testing the mock server</DocHeader>
-    <DocParagraph>
+    <DocText>
       You can test your API endpoint using cURL with the following format:
-    </DocParagraph>
+    </DocText>
     <pre class="p-3">curl -X GET https://gateway.pseudorestapi.com/api/{api-endpoint} -H "Accept: application/json" -u {api-key}:{secret-key}</pre>
-    <DocParagraph>
+    <DocText>
       Note that the gateway application uses the basic scheme to authenticate
       the user.
-    </DocParagraph>
-    <DocParagraph>Here's an example in postman:</DocParagraph>
+    </DocText>
+    <DocText>Here's an example in postman:</DocText>
     <img v-if="img?.postman_request" :src="img.postman_request" />
-    <DocParagraph>
-      That's it! You've now created your own mock server.
-    </DocParagraph>
+    <DocText>That's it! You've now created your own mock server.</DocText>
   </section>
 </template>

@@ -7,13 +7,13 @@
 <template>
   <section class="p-6">
     <DocTitle>Introduction</DocTitle>
-    <DocParagraph>
+    <DocText>
       <b>PseudoRESTAPI</b> is a passion project that I have built and continue
       to maintain in my free time.
-    </DocParagraph>
-    <DocParagraph>
+    </DocText>
+    <DocText>
       I had three goals in mind when I started with this project:
-    </DocParagraph>
+    </DocText>
     <DocList>
       <DocListItem>
         To create a valuable tool for developers and QA engineers. One common
@@ -41,9 +41,9 @@
         perfect opportunity for me to do so.
       </DocListItem>
     </DocList>
-    <DocParagraph>
+    <DocText>
       That is the brief history of this project. To get started with
       <b>PseudoRESTAPI</b>, please continue here.
-    </DocParagraph>
+    </DocText>
   </section>
 </template>
