@@ -15,5 +15,5 @@
 </script>
 
 <template>
-  <h1 :class="mergedClass" class="font-bold pb-3 pt-3 text-2xl"><slot /></h1>
+  <h1 :class="mergedClass" class="font-bold pb-3 mt-12 text-2xl"><slot /></h1>
 </template>
