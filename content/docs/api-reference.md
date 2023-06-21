@@ -10,7 +10,7 @@ This will return all resources that are associated on that endpoint:
 curl -X GET https://gateway.pseudorestapi.com/api/{api-endpoint} -H "Accept: application/json" -u {api-key}:{secret-key}
 ```
 
-You can also filter the list by the resource attribute, which you define when creating your Resource Model.
+You can also filter the list by the resource attribute, which you define when creating your **Resource Model**.
 
 For example, let's say our API endpoint is `employees` and it returns the following JSON data:
 
