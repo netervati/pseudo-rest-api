@@ -20,6 +20,7 @@
     () => project.list.length === 2 || project.isLoading
   );
   const secretKey = ref('');
+  const signIn = useSignInProgress();
 
   const modal = useModal(ModalCreateProject, {
     id: 'create-project',
@@ -30,7 +31,10 @@
     },
   });
 
-  onMounted(async () => await project.fetch());
+  onMounted(async () => {
+    await project.fetch();
+    signIn.complete();
+  });
 </script>
 
 <template>
