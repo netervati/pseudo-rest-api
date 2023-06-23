@@ -8,12 +8,12 @@
   const { auth } = useSupabaseAuthClient();
   const loading = useLocalStorage('pra-login', false);
 
-  watchEffect(() => {
-    if (user.value) {
-      loading.value = false;
-
-      navigateTo('/');
-    }
+  onMounted(() => {
+    watchEffect(() => {
+      if (user.value) {
+        navigateTo('/');
+      }
+    });
   });
 
   const getURL = () => {

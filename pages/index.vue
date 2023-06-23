@@ -7,6 +7,8 @@
     useResourceModelStore,
   } from '~~/stores';
 
+  useLocalStorage('pra-login').value = false;
+
   definePageMeta({
     middleware: 'auth',
   });
