@@ -20,7 +20,7 @@
     () => project.list.length === 2 || project.isLoading
   );
   const secretKey = ref('');
-  const toast = useToast();
+  const signIn = useSignInProgress();
 
   const modal = useModal(ModalCreateProject, {
     id: 'create-project',
@@ -33,14 +33,7 @@
 
   onMounted(async () => {
     await project.fetch();
-
-    const loading = useLocalStorage('pra-login', false);
-
-    if (loading.value) {
-      loading.value = false;
-
-      toast.dark('Successfully signed in');
-    }
+    signIn.complete();
   });
 </script>
 

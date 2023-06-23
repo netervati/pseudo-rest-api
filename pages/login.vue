@@ -6,18 +6,10 @@
   const config = useRuntimeConfig();
   const user = useSupabaseUser();
   const { auth } = useSupabaseAuthClient();
-  const loading = useLocalStorage('pra-login', false);
-  const toast = useToast();
+  const signIn = useSignInProgress();
 
   onMounted(() => {
-    if (loading.value) {
-      toast.dark('Signing in user...');
-
-      setTimeout(
-        () => toast.dark("It's taking us longer to sign you in..."),
-        6000
-      );
-    }
+    signIn.process();
 
     watchEffect(() => {
       if (user.value) {
@@ -45,7 +37,8 @@
         redirectTo: getURL(),
       },
     });
-    loading.value = true;
+
+    signIn.begin();
   };
 </script>
 
@@ -56,7 +49,11 @@
         <img src="/full-logo.png" />
         <h4 class="font-bold mt-6 text-xl">Welcome!</h4>
         <p>Please sign in to your account.</p>
-        <Button class="mt-16" :loading="loading" @click="handleClick">
+        <Button
+          class="mt-16"
+          :loading="signIn.loading.value"
+          @click="handleClick"
+        >
           Sign in with Github
         </Button>
       </article>
