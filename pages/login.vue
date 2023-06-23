@@ -15,7 +15,7 @@
 
       setTimeout(
         () => toast.dark("It's taking us longer to sign you in..."),
-        1000
+        3000
       );
     }
 
