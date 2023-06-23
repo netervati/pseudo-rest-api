@@ -31,4 +31,4 @@
 
 The web application serves as the interface where users can create resources that are accessible through the gateway application. The gateway exposes these resources through a RESTful endpoint, which the user also creates within the web application.
 
-The user is given an API key and secret key to access each endpoint in the gateway. Further details regarding this topic can be read in the [documentation](https://github.com/netervati/pseudo-rest-api/blob/main/docs/README.md).
+The user is given an API key and secret key to access each endpoint in the gateway. Further details regarding this topic can be read in the [documentation](https://pseudorestapi.com/docs).
