@@ -7,8 +7,13 @@
   const user = useSupabaseUser();
   const { auth } = useSupabaseAuthClient();
   const loading = useLocalStorage('pra-login', false);
+  const toast = useToast();
 
   onMounted(() => {
+    if (loading.value) {
+      toast.dark('Signing in user...');
+    }
+
     watchEffect(() => {
       if (user.value) {
         navigateTo('/');
@@ -40,14 +45,16 @@
 </script>
 
 <template>
-  <section class="bg-base-300 flex h-screen">
-    <article class="bg-base-100 card m-auto p-8 shadow-xl w-96">
-      <img src="/full-logo.png" />
-      <h4 class="font-bold mt-6 text-xl">Welcome!</h4>
-      <p>Please sign in to your account.</p>
-      <Button class="mt-16" :loading="loading" @click="handleClick">
-        Sign in with Github
-      </Button>
-    </article>
-  </section>
+  <ClientOnly>
+    <section class="bg-base-300 flex h-screen">
+      <article class="bg-base-100 card m-auto p-8 shadow-xl w-96">
+        <img src="/full-logo.png" />
+        <h4 class="font-bold mt-6 text-xl">Welcome!</h4>
+        <p>Please sign in to your account.</p>
+        <Button class="mt-16" :loading="loading" @click="handleClick">
+          Sign in with Github
+        </Button>
+      </article>
+    </section>
+  </ClientOnly>
 </template>
