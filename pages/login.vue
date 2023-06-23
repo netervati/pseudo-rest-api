@@ -6,11 +6,12 @@
   const config = useRuntimeConfig();
   const user = useSupabaseUser();
   const { auth } = useSupabaseAuthClient();
-  const { data } = await auth.getSession();
-  const loading = ref(false);
+  const loading = useLocalStorage('pra-login', false);
 
   watchEffect(() => {
     if (user.value) {
+      loading.value = false;
+
       navigateTo('/');
     }
   });
@@ -44,11 +45,7 @@
       <img src="/full-logo.png" />
       <h4 class="font-bold mt-6 text-xl">Welcome!</h4>
       <p>Please sign in to your account.</p>
-      <Button
-        class="mt-16"
-        :loading="loading || data.session !== null"
-        @click="handleClick"
-      >
+      <Button class="mt-16" :loading="loading" @click="handleClick">
         Sign in with Github
       </Button>
     </article>
