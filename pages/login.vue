@@ -12,6 +12,11 @@
   onMounted(() => {
     if (loading.value) {
       toast.dark('Signing in user...');
+
+      setTimeout(
+        () => toast.dark("It's taking us longer to sign you in..."),
+        1000
+      );
     }
 
     watchEffect(() => {
