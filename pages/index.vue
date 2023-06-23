@@ -45,19 +45,19 @@
 </script>
 
 <template>
-  <ClientOnly>
-    <div class="p-6">
-      <Button
-        :disabled="isDisabled"
-        color="success"
-        size="sm"
-        @click="modal.open"
-      >
-        New Project
-      </Button>
-      <ProjectSecretKeyBox :secret-key="secretKey" />
-      <ProjectGrid />
+  <div class="p-6">
+    <Button
+      :disabled="isDisabled"
+      color="success"
+      size="sm"
+      @click="modal.open"
+    >
+      New Project
+    </Button>
+    <ProjectSecretKeyBox :secret-key="secretKey" />
+    <ProjectGrid />
+    <ClientOnly>
       <component :is="modal.component" />
-    </div>
-  </ClientOnly>
+    </ClientOnly>
+  </div>
 </template>
