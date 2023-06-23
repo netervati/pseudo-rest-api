@@ -11,9 +11,6 @@
     middleware: 'auth',
   });
 
-
-  useLocalStorage('pra-login').value = false;
-
   useApiStore().clear();
   useResourceDataTypeStore().clear();
   useResourceModelStore().clear();
@@ -33,7 +30,11 @@
     },
   });
 
-  onMounted(async () => await project.fetch());
+  onMounted(async () => {
+    await project.fetch();
+
+    useLocalStorage('pra-login', false);
+  });
 </script>
 
 <template>
