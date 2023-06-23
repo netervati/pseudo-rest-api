@@ -3,6 +3,7 @@
     layout: 'blank',
   });
 
+  const config = useRuntimeConfig();
   const user = useSupabaseUser();
   const { auth } = useSupabaseAuthClient();
   const loading = ref(false);
@@ -13,8 +14,25 @@
     }
   });
 
+  const getURL = () => {
+    let url =
+      config.public.siteUrl !== ''
+        ? config.public.siteUrl
+        : config.public.testUrl;
+
+    url = url.includes('http') ? url : `https://${url}`;
+    url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+
+    return url;
+  };
+
   const handleClick = () => {
-    auth.signInWithOAuth({ provider: 'github' });
+    auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: getURL(),
+      },
+    });
     loading.value = true;
   };
 </script>
