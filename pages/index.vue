@@ -33,7 +33,7 @@
   onMounted(async () => {
     await project.fetch();
 
-    useLocalStorage('pra-login', false);
+    useLocalStorage('pra-login', false).value = false;
   });
 </script>
 
