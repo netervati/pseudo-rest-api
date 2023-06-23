@@ -30,6 +30,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       onMaintenance: process.env.NUXT_PUBLIC_ON_MAINTENANCE || 'false',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL,
+      testUrl: process.env.NUXT_PUBLIC_TEST_URL,
     },
   },
   veeValidate: {
