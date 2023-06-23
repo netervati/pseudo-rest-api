@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@pinia/nuxt',
     '@vee-validate/nuxt',
+    '@vueuse/nuxt',
   ],
   postcss: {
     plugins: {

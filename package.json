@@ -43,6 +43,8 @@
   "dependencies": {
     "@heroicons/vue": "^2.0.16",
     "@types/node": "^18.11.18",
+    "@vueuse/core": "^10.2.0",
+    "@vueuse/nuxt": "^10.2.0",
     "supabase": "^1.38.2"
   },
   "overrides": {
