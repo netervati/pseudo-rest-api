@@ -43,20 +43,22 @@ export default function (): SignInProgressProps {
     toast.dark(msg);
   };
 
-  watchEffect(() => {
-    if (route.hash.includes('#access_token')) {
-      isLoading.value = true;
+  onMounted(() => {
+    watchEffect(() => {
+      if (route.hash.includes('#access_token')) {
+        isLoading.value = true;
 
-      display('Signing in user...');
+        display('Signing in user...');
 
-      setTimeout(() => {
-        display("It's taking us longer to sign you in...");
-      }, 10000);
-    }
+        setTimeout(() => {
+          display("It's taking us longer to sign you in...");
+        }, 10000);
+      }
 
-    if (user.value) {
-      navigateTo('/login');
-    }
+      if (user.value) {
+        navigateTo('/login');
+      }
+    });
   });
 
   return {
