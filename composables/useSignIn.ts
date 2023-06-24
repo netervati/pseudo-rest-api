@@ -55,7 +55,7 @@ export default function (): SignInProgressProps {
     }
 
     if (user.value) {
-      navigateTo('/login');
+      navigateTo('/');
     }
   });
 
