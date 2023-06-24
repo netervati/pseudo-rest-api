@@ -3,43 +3,9 @@
     layout: 'blank',
   });
 
-  const config = useRuntimeConfig();
-  const user = useSupabaseUser();
-  const { auth } = useSupabaseAuthClient();
-  const signIn = useSignInProgress();
+  preloadRouteComponents('/');
 
-  onMounted(() => {
-    signIn.process();
-
-    watchEffect(() => {
-      if (user.value) {
-        navigateTo('/');
-      }
-    });
-  });
-
-  const getURL = () => {
-    let url =
-      config.public.siteUrl !== ''
-        ? config.public.siteUrl
-        : config.public.testUrl;
-
-    url = url.includes('http') ? url : `https://${url}`;
-    url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
-
-    return url;
-  };
-
-  const handleClick = () => {
-    auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: getURL(),
-      },
-    });
-
-    signIn.begin();
-  };
+  const signIn = useSignIn();
 </script>
 
 <template>
@@ -51,8 +17,8 @@
         <p>Please sign in to your account.</p>
         <Button
           class="mt-16"
-          :loading="signIn.loading.value"
-          @click="handleClick"
+          :loading="signIn.isLoading.value"
+          @click="signIn.Oauth"
         >
           Sign in with Github
         </Button>
