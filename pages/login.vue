@@ -6,10 +6,11 @@
   const config = useRuntimeConfig();
   const user = useSupabaseUser();
   const { auth } = useSupabaseAuthClient();
+  const { data } = await auth.getSession();
   const signIn = useSignInProgress();
 
   onMounted(() => {
-    signIn.process();
+    signIn.process(data.session === null);
 
     watchEffect(() => {
       if (user.value) {

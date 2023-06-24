@@ -4,7 +4,7 @@ type SignInProgressProps = {
   loading: Ref<boolean>;
   begin: () => void;
   complete: () => void;
-  process: () => void;
+  process: (unset: boolean) => void;
 };
 
 /** A simple hook to manage the sign in progress */
@@ -28,7 +28,13 @@ export default function (): SignInProgressProps {
     }
   };
 
-  const process = () => {
+  const process = (unset = false) => {
+    if (unset) {
+      loading.value = false;
+
+      return;
+    }
+
     if (loading.value) {
       display('Signing in user...');
 
