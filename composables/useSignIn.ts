@@ -28,14 +28,6 @@ export default function (): SignInProgressProps {
     return url;
   };
 
-  onMounted(() => {
-    watchEffect(() => {
-      if (user.value) {
-        navigateTo('/');
-      }
-    });
-  });
-
   const Oauth = () => {
     auth.signInWithOAuth({
       provider: 'github',
