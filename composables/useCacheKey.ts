@@ -1,9 +1,6 @@
-import { ComputedRef } from 'vue';
-
 type CacheKeyProps = {
-  isValidated: ComputedRef<boolean>;
-  mutate: (toRevalidate: boolean) => boolean;
-  revalidate: () => void;
+  invalidate: () => void;
+  mutate: (toInvalidate: boolean) => boolean;
 };
 
 /**
@@ -19,14 +16,16 @@ export default function (): CacheKeyProps {
     next: 1,
   });
 
-  const isValidated = computed(() => cacheKeys.current === cacheKeys.next);
+  const invalidate = () => {
+    cacheKeys.next += 1;
+  };
 
-  const mutate = (toRevalidate?: boolean) => {
-    if (toRevalidate) {
-      cacheKeys.next += 1;
+  const mutate = (toInvalidate?: boolean) => {
+    if (toInvalidate) {
+      invalidate();
     }
 
-    if (isValidated.value) {
+    if (cacheKeys.current === cacheKeys.next) {
       return true;
     }
 
@@ -35,13 +34,8 @@ export default function (): CacheKeyProps {
     return false;
   };
 
-  const revalidate = () => {
-    cacheKeys.next += 1;
-  };
-
   return {
-    isValidated,
+    invalidate,
     mutate,
-    revalidate,
   };
 }
