@@ -52,7 +52,7 @@ export default defineStore('resource-models', (): ResourceModelStore => {
    * Resets data in state.
    */
   const clear = () => {
-    cache.revalidate();
+    cache.invalidate();
     list.value = [];
   };
 

@@ -41,7 +41,7 @@ export default defineStore('apis', (): ApiStore => {
    * Resets data in state.
    */
   const clear = () => {
-    cache.revalidate();
+    cache.invalidate();
     list.value = [];
   };
 
