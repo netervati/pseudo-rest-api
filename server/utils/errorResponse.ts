@@ -20,4 +20,10 @@ export default {
       statusMessage: error.message,
     });
   },
+  unauthenticated(): NuxtError {
+    return createError({
+      statusCode: HTTP_STATUS_UNAUTHORIZED,
+      statusMessage: 'You are not authenticated.',
+    });
+  },
 };
