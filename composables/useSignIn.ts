@@ -28,15 +28,15 @@ export default function (): SignInProgressProps {
     return url;
   };
 
-  const Oauth = () => {
-    auth.signInWithOAuth({
+  const Oauth = async () => {
+    isLoading.value = true;
+
+    await auth.signInWithOAuth({
       provider: 'github',
       options: {
         redirectTo: getURL(),
       },
     });
-
-    isLoading.value = true;
   };
 
   const display = (msg: string) => {
