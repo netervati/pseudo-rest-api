@@ -11,7 +11,6 @@
     id: string;
   }>();
 
-  const projectApiKey = useProjectApiKey();
   const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 
@@ -77,10 +76,13 @@
     }));
 
     await resourceModel.create(
-      { name: values.name, projectApiKey, structure: cleanStructure },
       {
-        onSuccess: () => {
-          emit('success', '');
+        name: values.name,
+        structure: cleanStructure,
+      },
+      {
+        onSuccess: async () => {
+          resourceModel.fetch({ mutateCache: true });
           handleClose();
         },
       }

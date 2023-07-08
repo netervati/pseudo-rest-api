@@ -10,19 +10,15 @@
   const isDisabled = computed(
     () => resourceModel.list.length === 5 || resourceModel.isLoading
   );
-  const refresh = ref(Date.now());
 
   const createModal = useModal(ModalCreateResourceModel, {
     id: 'create-resouce-model',
-    onSuccess: () => {
-      refresh.value = Date.now();
-    },
   });
 </script>
 
 <template>
   <div class="p-6">
-    <ResourceTable :refresh="refresh">
+    <ResourceTable>
       <Button
         :disabled="isDisabled"
         color="success"
