@@ -5,16 +5,12 @@
   import useResourceModelStore from '~~/stores/useResourceModelStore';
   import { Api } from '~~/types/models';
 
+  const deps = reactive({ target: '' });
+
   const api = useApiStore();
   const resourceModel = useResourceModelStore();
 
-  const deps = reactive({
-    target: '',
-  });
-
-  onMounted(async () => {
-    await Promise.all([api.fetch(), resourceModel.fetch()]);
-  });
+  useMountedFetch([api, resourceModel]);
 
   const editApiModal = useModal(EditApi, {
     id: 'edit-api',
@@ -38,14 +34,14 @@
   });
 
   const dispatch = (action: string, data: Api) => {
+    deps.target = data.id;
+
     switch (action) {
       case 'delete':
-        deps.target = data.id;
         deleteApiModal.open();
 
         break;
       case 'edit':
-        deps.target = data.id;
         editApiModal.open();
 
         break;

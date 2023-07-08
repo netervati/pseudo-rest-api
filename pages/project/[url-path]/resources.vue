@@ -13,16 +13,10 @@
     () => resourceModel.list.length === 5 || resourceModel.isLoading
   );
 
+  useMountedFetch([resourceModel, resourceDataType]);
+
   const createModal = useModal(ModalCreateResourceModel, {
     id: 'create-resouce-model',
-  });
-
-  onMounted(async () => {
-    await resourceModel.fetch();
-
-    if (resourceDataType.list.length === 0) {
-      await resourceDataType.fetch();
-    }
   });
 </script>
 
