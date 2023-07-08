@@ -65,12 +65,6 @@
     }
   });
 
-  onMounted(async () => {
-    if (resourceDataType.list.length === 0) {
-      await resourceDataType.fetch();
-    }
-  });
-
   const handleClose = () => {
     formStructure.value = {};
     form.resetForm({
