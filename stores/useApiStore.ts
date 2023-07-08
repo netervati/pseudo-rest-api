@@ -5,7 +5,6 @@ import { ApiWithResourceModel } from '~~/types/models';
 
 type CreateProps = {
   description: string;
-  projectApiKey: string;
   resourceModelId: string;
   urlPath: string;
 };
@@ -16,7 +15,7 @@ type UpdateProps = CreateProps & {
 
 type Options = {
   mutateCache?: boolean;
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<() => void>;
 };
 
 type ApiStore = {
@@ -24,8 +23,8 @@ type ApiStore = {
   list: Ref<ApiWithResourceModel[]>;
   clear: () => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
-  delete: (id: string, projectApiKey: string) => Promise<void>;
-  fetch: (projectApiKey: string, options?: Options) => Promise<void>;
+  delete: (id: string) => Promise<void>;
+  fetch: (options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
@@ -51,16 +50,22 @@ export default defineStore('apis', (): ApiStore => {
    * @param body{CreateProps}
    * @param options{Options}
    */
-  const create = async (body: CreateProps, options: Options): Promise<void> => {
+  const create = async (
+    payload: CreateProps,
+    options: Options
+  ): Promise<void> => {
     await request(SERVER_PATH, {
       method: 'POST',
-      body,
-      onResponse({ response }) {
+      body: {
+        ...payload,
+        projectApiKey: useProjectApiKey(),
+      },
+      async onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Created an API endpoint!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess();
+            await options.onSuccess();
           }
         }
       },
@@ -73,10 +78,10 @@ export default defineStore('apis', (): ApiStore => {
    * @param id{string}
    * @param projectApiKey{string}
    */
-  const del = async (id: string, projectApiKey: string): Promise<void> => {
+  const del = async (id: string): Promise<void> => {
     await request(`/apis/${id}`, {
       method: 'DELETE',
-      query: { projectApiKey },
+      query: { projectApiKey: useProjectApiKey() },
       onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Deleted the api!');
@@ -90,17 +95,14 @@ export default defineStore('apis', (): ApiStore => {
    *
    * @param projectApiKey{string}
    */
-  const fetch = async (
-    projectApiKey: string,
-    options: Options = {}
-  ): Promise<void> => {
+  const fetch = async (options: Options = {}): Promise<void> => {
     if (cache.mutate(options.mutateCache || false)) {
       return;
     }
 
     await request(SERVER_PATH, {
       method: 'GET',
-      query: { projectApiKey },
+      query: { projectApiKey: useProjectApiKey() },
       onResponse({ response }) {
         if (response.status === 200) {
           list.value = response._data;
@@ -115,16 +117,22 @@ export default defineStore('apis', (): ApiStore => {
    * @param body{UpdateProps}
    * @param options{Options}
    */
-  const update = async (body: UpdateProps, options: Options): Promise<void> => {
-    await request(`/apis/${body.id}`, {
+  const update = async (
+    payload: UpdateProps,
+    options: Options
+  ): Promise<void> => {
+    await request(`/apis/${payload.id}`, {
       method: 'PUT',
-      body,
-      onResponse({ response }) {
+      body: {
+        ...payload,
+        projectApiKey: useProjectApiKey(),
+      },
+      async onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Updated the api!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess();
+            await options.onSuccess();
           }
         }
       },
