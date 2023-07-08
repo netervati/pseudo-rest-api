@@ -43,7 +43,6 @@
     },
   });
 
-
   onUnmounted(() => {
     resourceModel.target = '';
   });
@@ -86,8 +85,8 @@
         v-if="resourceModel.isLoading"
         class="animate-pulse flex flex-row space-x-2 w-full"
       >
-        <div class="rounded-lg bg-slate-200 h-8 w-full" />
-        <div class="rounded-lg bg-slate-200 h-8 w-10" />
+        <div class="rounded-lg bg-slate-200 h-8 w-20" />
+        <div class="rounded-lg bg-slate-200 h-8 w-20" />
       </article>
       <template v-else>
         <div
