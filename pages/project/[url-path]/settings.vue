@@ -38,7 +38,6 @@
         id: project.target!.id,
         description: values.description,
         name: values.name,
-        projectApiKey,
       },
       {
         onSuccess: async () => {
@@ -61,22 +60,16 @@
   const generateSecretKeyModal = useModal(ModalConfirm, {
     id: 'confirm-generate-secret-key',
     onConfirm: async (closeModal: () => void) => {
-      await projectKey.regenerate(
-        {
-          id: project.target!.id,
-          projectApiKey,
+      await projectKey.regenerate(project.target!.id, {
+        onSuccess: (result: { projectApiKey: string; secretKey: string }) => {
+          navigateTo({
+            path: `/project/${result.projectApiKey}/settings`,
+            query: {
+              secret_key: result.secretKey,
+            },
+          });
         },
-        {
-          onSuccess: (result: { projectApiKey: string; secretKey: string }) => {
-            navigateTo({
-              path: `/project/${result.projectApiKey}/settings`,
-              query: {
-                secret_key: result.secretKey,
-              },
-            });
-          },
-        }
-      );
+      });
 
       closeModal();
     },
