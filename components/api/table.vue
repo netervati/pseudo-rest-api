@@ -6,7 +6,6 @@
   import { Api } from '~~/types/models';
 
   const api = useApiStore();
-  const projectApiKey = useProjectApiKey();
   const resourceModel = useResourceModelStore();
 
   const deps = reactive({
@@ -15,7 +14,7 @@
 
   onMounted(async () => {
     await api.fetch();
-    await resourceModel.fetch(projectApiKey);
+    await resourceModel.fetch();
   });
 
   const editApiModal = useModal(EditApi, {
@@ -23,9 +22,6 @@
     deps,
     onClose: () => {
       deps.target = '';
-    },
-    onSuccess: async () => {
-      await api.fetch({ mutateCache: true });
     },
   });
 
