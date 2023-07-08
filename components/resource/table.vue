@@ -43,7 +43,6 @@
     },
   });
 
-  onMounted(async () => await resourceModel.fetch());
 
   onUnmounted(() => {
     resourceModel.target = '';
