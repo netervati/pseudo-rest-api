@@ -4,10 +4,7 @@
   import useResourceModelStore from '~~/stores/useResourceModelStore';
   import { Api } from '~~/types/models';
 
-  const emit = defineEmits<{
-    (e: 'close'): void;
-    (e: 'success', key: string): void;
-  }>();
+  const emit = defineEmits<{ (e: 'close'): void }>();
 
   const props = defineProps<{
     id: string;
@@ -19,7 +16,6 @@
   const api = useApiStore();
   const form = useForm();
   const isDisabled = computed(() => form.isSubmitting.value === true);
-  const projectApiKey = useProjectApiKey();
   const resourceModel = useResourceModelStore();
   const dropdownOptions = computed(() =>
     resourceModel.list.map((model) => ({
@@ -54,13 +50,12 @@
       {
         id: props.deps.target,
         description: values.description,
-        projectApiKey,
         resourceModelId: values.resourceModelId,
         urlPath: values.urlPath,
       },
       {
-        onSuccess: () => {
-          emit('success', '');
+        onSuccess: async () => {
+          await api.fetch({ mutateCache: true });
           handleClose();
         },
       }
