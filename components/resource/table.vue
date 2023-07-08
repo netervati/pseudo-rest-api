@@ -51,7 +51,7 @@
       resourceModel.clear();
       await resourceModel.fetch(projectApiKey, { mutateCache: true });
       resourceData.clear(id);
-      await resourceData.fetch(projectApiKey, id);
+      await resourceData.fetch(id);
     },
   });
 
