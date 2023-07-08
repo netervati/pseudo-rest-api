@@ -27,6 +27,10 @@ export default defineStore('resource-data-types', (): ResourceDataTypeStore => {
    * A function for fetching resource data types from the server.
    */
   const fetch = async (): Promise<void> => {
+    if (list.value.length > 0) {
+      return;
+    }
+
     await $fetch('/resource-data-types', {
       method: 'GET',
       onResponse({ response }) {
