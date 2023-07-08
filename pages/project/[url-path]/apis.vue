@@ -8,14 +8,7 @@
 
   const apis = useApiStore();
   const isDisabled = computed(() => apis.list.length === 5 || apis.isLoading);
-  const projectApiKey = useProjectApiKey();
-
-  const modal = useModal(ModalCreateApi, {
-    id: 'create-api',
-    onSuccess: async () => {
-      await apis.fetch(projectApiKey, { mutateCache: true });
-    },
-  });
+  const modal = useModal(ModalCreateApi, { id: 'create-api' });
 </script>
 
 <template>
@@ -30,7 +23,7 @@
     </Button>
     <ApiTable />
     <ClientOnly>
-      <modal.component />
+      <component :is="modal.component" />
     </ClientOnly>
   </div>
 </template>

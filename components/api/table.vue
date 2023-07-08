@@ -6,7 +6,6 @@
   import { Api } from '~~/types/models';
 
   const api = useApiStore();
-  const projectApiKey = useProjectApiKey();
   const resourceModel = useResourceModelStore();
 
   const deps = reactive({
@@ -14,8 +13,7 @@
   });
 
   onMounted(async () => {
-    await api.fetch(projectApiKey);
-    await resourceModel.fetch(projectApiKey);
+    await Promise.all([api.fetch(), resourceModel.fetch()]);
   });
 
   const editApiModal = useModal(EditApi, {
@@ -24,19 +22,16 @@
     onClose: () => {
       deps.target = '';
     },
-    onSuccess: async () => {
-      await api.fetch(projectApiKey, { mutateCache: true });
-    },
   });
 
   const deleteApiModal = useModal(ModalConfirm, {
     id: 'confirm-delete-api',
     onConfirm: async (closeModal: () => void) => {
-      await api.delete(deps.target, projectApiKey);
+      await api.delete(deps.target);
 
       closeModal();
 
-      await api.fetch(projectApiKey, { mutateCache: true });
+      await api.fetch({ mutateCache: true });
 
       deps.target = '';
     },

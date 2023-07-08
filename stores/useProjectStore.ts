@@ -12,7 +12,6 @@ type UpdateProps = {
   id: string;
   description?: string;
   name: string;
-  projectApiKey: string;
 };
 
 type Options = {
@@ -105,13 +104,16 @@ export default defineStore('projects', (): ProjectStore => {
    * @param body{UpdateProps}
    * @param options{Options}
    */
-  const update = async (body: UpdateProps, options: Options): Promise<void> => {
-    await request(`/projects/${body.id}`, {
+  const update = async (
+    payload: UpdateProps,
+    options: Options
+  ): Promise<void> => {
+    await request(`/projects/${payload.id}`, {
       method: 'PUT',
       body: {
-        description: body.description,
-        name: body.name,
-        projectApiKey: body.projectApiKey,
+        description: payload.description,
+        name: payload.name,
+        projectApiKey: useProjectApiKey(),
       },
       onResponse({ response }) {
         if (response.status === 200) {

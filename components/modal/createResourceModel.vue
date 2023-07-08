@@ -11,7 +11,6 @@
     id: string;
   }>();
 
-  const projectApiKey = useProjectApiKey();
   const resourceDataType = useResourceDataTypeStore();
   const resourceModel = useResourceModelStore();
 
@@ -42,12 +41,8 @@
   });
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
-  onMounted(async () => {
+  onMounted(() => {
     form.setFieldValue('structure', formStructure.value);
-
-    if (resourceDataType.list.length === 0) {
-      await resourceDataType.fetch();
-    }
   });
 
   const handleClose = () => {
@@ -77,10 +72,13 @@
     }));
 
     await resourceModel.create(
-      { name: values.name, projectApiKey, structure: cleanStructure },
       {
-        onSuccess: () => {
-          emit('success', '');
+        name: values.name,
+        structure: cleanStructure,
+      },
+      {
+        onSuccess: async () => {
+          resourceModel.fetch({ mutateCache: true });
           handleClose();
         },
       }

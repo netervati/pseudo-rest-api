@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-  import ModalConfirm from '~~/components/modal/confirm.vue';
   import ModalCreateResourceData from '../modal/createResourceData.vue';
+  import ModalConfirm from '~~/components/modal/confirm.vue';
   import useResourceDataStore from '~~/stores/useResourceDataStore';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
 
-  const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
   const select = useSelect();
@@ -30,7 +29,7 @@
   const modal = useModal(ModalCreateResourceData, {
     id: 'create-resource-data',
     onSuccess: async () => {
-      await resourceData.fetch(projectApiKey, resourceModel.target);
+      await resourceData.fetch(resourceModel.target);
     },
   });
 
@@ -39,13 +38,12 @@
     onConfirm: async (closeModal: () => void) => {
       await resourceData.bulkDelete({
         ids: Array.from(select.list.value).join(','),
-        projectApiKey,
         resourceModelId: resourceModel.target,
       });
 
       closeModal();
       resourceData.clear(resourceModel.target);
-      await resourceData.fetch(projectApiKey, resourceModel.target);
+      await resourceData.fetch(resourceModel.target);
 
       select.clear();
     },
@@ -55,7 +53,7 @@
     select.clear();
 
     if (resourceModel.target !== '' && resourceDataList.value.length === 0) {
-      await resourceData.fetch(projectApiKey, resourceModel.target);
+      await resourceData.fetch(resourceModel.target);
     }
   });
 
@@ -65,7 +63,7 @@
 
   watchEffect(() => {
     if (resourceModel.target !== '') {
-      resourceData.fetch(projectApiKey, resourceModel.target);
+      resourceData.fetch(resourceModel.target);
       select.clear();
     }
   });

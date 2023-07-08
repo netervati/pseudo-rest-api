@@ -1,14 +1,8 @@
 <script lang="ts" setup>
   import useApiStore from '~~/stores/useApiStore';
 
-  const emit = defineEmits<{
-    (e: 'close'): void;
-    (e: 'success', key: string): void;
-  }>();
-
-  defineProps<{
-    id: string;
-  }>();
+  const emit = defineEmits<{ (e: 'close'): void }>();
+  defineProps<{ id: string }>();
 
   const api = useApiStore();
   const form = useForm({
@@ -18,8 +12,8 @@
       urlPath: '',
     },
   });
+
   const isDisabled = computed(() => form.isSubmitting.value === true);
-  const projectApiKey = useProjectApiKey();
 
   const handleClose = () => {
     form.resetForm();
@@ -27,20 +21,12 @@
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await api.create(
-      {
-        description: values.description,
-        projectApiKey,
-        resourceModelId: values.resourceModelId,
-        urlPath: values.urlPath,
+    await api.create(values, {
+      onSuccess: async () => {
+        await api.fetch({ mutateCache: true });
+        handleClose();
       },
-      {
-        onSuccess: () => {
-          emit('success', '');
-          handleClose();
-        },
-      }
-    );
+    });
   });
 </script>
 

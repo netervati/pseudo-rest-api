@@ -18,7 +18,6 @@
   const isDisabled = computed(() => form.isSubmitting.value === true);
   const maxCountAllowed = ref(10);
 
-  const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 
@@ -41,7 +40,6 @@
     await resourceData.create(
       {
         count: Number(values.count),
-        projectApiKey,
         resourceModelId: resourceModel.target,
       },
       {
