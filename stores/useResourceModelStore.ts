@@ -12,20 +12,18 @@ type Structure = {
 
 type CreateProps = {
   name: string;
-  projectApiKey: string;
   structure: Structure;
 };
 
 type UpdateProps = {
   id: string;
   name?: string;
-  projectApiKey: string;
   structure: Structure;
 };
 
 type Options = {
   mutateCache?: boolean;
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<void>;
 };
 
 type ResourceModelStore = {
@@ -34,8 +32,8 @@ type ResourceModelStore = {
   target: Ref<string>;
   clear: () => void;
   create: (body: CreateProps, options: Options) => Promise<void>;
-  delete: (id: string, projectApiKey: string) => Promise<void>;
-  fetch: (projectApiKey: string, options?: Options) => Promise<void>;
+  delete: (id: string) => Promise<void>;
+  fetch: (options?: Options) => Promise<void>;
   update: (body: UpdateProps, options: Options) => Promise<void>;
 };
 
@@ -62,16 +60,22 @@ export default defineStore('resource-models', (): ResourceModelStore => {
    * @param body{CreateProps}
    * @param options{Options}
    */
-  const create = async (body: CreateProps, options: Options): Promise<void> => {
+  const create = async (
+    payload: CreateProps,
+    options: Options
+  ): Promise<void> => {
     await request(SERVER_PATH, {
       method: 'POST',
-      body,
-      onResponse({ response }) {
+      body: {
+        ...payload,
+        projectApiKey: useProjectApiKey(),
+      },
+      async onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Created a resource model!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess();
+            await options.onSuccess();
           }
         }
       },
@@ -84,10 +88,10 @@ export default defineStore('resource-models', (): ResourceModelStore => {
    * @param id{string}
    * @param projectApiKey{string}
    */
-  const del = async (id: string, projectApiKey: string): Promise<void> => {
+  const del = async (id: string): Promise<void> => {
     await request(`/resource-models/${id}`, {
       method: 'DELETE',
-      query: { projectApiKey },
+      query: { projectApiKey: useProjectApiKey() },
       onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Deleted the resource model!');
@@ -101,17 +105,14 @@ export default defineStore('resource-models', (): ResourceModelStore => {
    *
    * @param projectApiKey{string}
    */
-  const fetch = async (
-    projectApiKey: string,
-    options: Options = {}
-  ): Promise<void> => {
+  const fetch = async (options: Options = {}): Promise<void> => {
     if (cache.mutate(options.mutateCache || false)) {
       return;
     }
 
     await request(SERVER_PATH, {
       method: 'GET',
-      query: { projectApiKey },
+      query: { projectApiKey: useProjectApiKey() },
       onResponse({ response }) {
         if (response.status === 200) {
           list.value = response._data;
@@ -132,7 +133,7 @@ export default defineStore('resource-models', (): ResourceModelStore => {
       projectApiKey: string;
       structure: Structure;
     } = {
-      projectApiKey: body.projectApiKey,
+      projectApiKey: useProjectApiKey(),
       structure: body.structure,
     };
 
@@ -143,12 +144,12 @@ export default defineStore('resource-models', (): ResourceModelStore => {
     await request(`/resource-models/${body.id}`, {
       method: 'PUT',
       body: payload,
-      onResponse({ response }) {
+      async onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Updated the resource model!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess();
+            await options.onSuccess();
           }
         }
       },
