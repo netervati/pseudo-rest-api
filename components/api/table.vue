@@ -13,8 +13,7 @@
   });
 
   onMounted(async () => {
-    await api.fetch();
-    await resourceModel.fetch();
+    await Promise.all([api.fetch(), resourceModel.fetch()]);
   });
 
   const editApiModal = useModal(EditApi, {
