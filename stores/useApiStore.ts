@@ -15,7 +15,7 @@ type UpdateProps = CreateProps & {
 
 type Options = {
   mutateCache?: boolean;
-  onSuccess?: () => void | Promise<() => void>;
+  onSuccess?: () => void | Promise<void>;
 };
 
 type ApiStore = {
