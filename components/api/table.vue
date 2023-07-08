@@ -14,7 +14,7 @@
   });
 
   onMounted(async () => {
-    await api.fetch(projectApiKey);
+    await api.fetch();
     await resourceModel.fetch(projectApiKey);
   });
 
@@ -25,18 +25,18 @@
       deps.target = '';
     },
     onSuccess: async () => {
-      await api.fetch(projectApiKey, { mutateCache: true });
+      await api.fetch({ mutateCache: true });
     },
   });
 
   const deleteApiModal = useModal(ModalConfirm, {
     id: 'confirm-delete-api',
     onConfirm: async (closeModal: () => void) => {
-      await api.delete(deps.target, projectApiKey);
+      await api.delete(deps.target);
 
       closeModal();
 
-      await api.fetch(projectApiKey, { mutateCache: true });
+      await api.fetch({ mutateCache: true });
 
       deps.target = '';
     },
