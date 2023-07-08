@@ -4,12 +4,6 @@
   import { useResourceDataStore, useResourceModelStore } from '~~/stores';
   import { ResourceModel } from '~~/types/models';
 
-  const props = defineProps<{
-    refresh: number;
-  }>();
-
-  const { refresh } = toRefs(props);
-  const projectApiKey = useProjectApiKey();
   const resourceData = useResourceDataStore();
   const resourceModel = useResourceModelStore();
 
@@ -25,12 +19,12 @@
   const modal = useModal(ModalConfirm, {
     id: 'confirm-delete-resource-model',
     onConfirm: async (closeModal) => {
-      await resourceModel.delete(state.deleteId, projectApiKey);
+      await resourceModel.delete(state.deleteId);
 
       closeModal();
 
       resourceModel.clear();
-      await resourceModel.fetch(projectApiKey, { mutateCache: true });
+      await resourceModel.fetch({ mutateCache: true });
 
       if (state.deleteId === resourceModel.target) {
         resourceModel.target = '';
@@ -47,22 +41,12 @@
     onClose: () => {
       deps.target = '';
     },
-    onSuccess: async (id: string) => {
-      resourceModel.clear();
-      await resourceModel.fetch(projectApiKey, { mutateCache: true });
-      resourceData.clear(id);
-      await resourceData.fetch(id);
-    },
   });
 
-  onMounted(async () => await resourceModel.fetch(projectApiKey));
+  onMounted(async () => await resourceModel.fetch());
 
   onUnmounted(() => {
     resourceModel.target = '';
-  });
-
-  watch(refresh, async () => {
-    await resourceModel.fetch(projectApiKey, { mutateCache: true });
   });
 
   const dispatch = (action: string, data: ResourceModel) => {
