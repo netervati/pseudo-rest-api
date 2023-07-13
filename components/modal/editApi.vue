@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
   import useApi from '~~/stores/useApi';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import useResourceModel from '~~/stores/useResourceModel';
   import { Api } from '~~/types/models';
 
   const emit = defineEmits<{ (e: 'close'): void }>();
@@ -16,7 +16,7 @@
   const api = useApi();
   const form = useForm();
   const isDisabled = computed(() => form.isSubmitting.value === true);
-  const resourceModel = useResourceModelStore();
+  const resourceModel = useResourceModel();
   const dropdownOptions = computed(() =>
     resourceModel.list.map((model) => ({
       text: model.name,

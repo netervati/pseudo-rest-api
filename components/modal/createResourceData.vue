@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { useResourceDataStore, useResourceModelStore } from '~~/stores';
+  import { useResourceDataStore, useResourceModel } from '~~/stores';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -19,7 +19,7 @@
   const maxCountAllowed = ref(10);
 
   const resourceData = useResourceDataStore();
-  const resourceModel = useResourceModelStore();
+  const resourceModel = useResourceModel();
 
   watch(resourceData.list, () => {
     const currentCount = resourceData.list[resourceModel.target]?.length || 0;

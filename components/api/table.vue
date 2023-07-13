@@ -2,15 +2,13 @@
   import EditApi from '../modal/editApi.vue';
   import ModalConfirm from '../modal/confirm.vue';
   import useApi from '~~/stores/useApi';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import useResourceModel from '~~/stores/useResourceModel';
   import { Api } from '~~/types/models';
 
-  const deps = reactive({ target: '' });
+  useResourceModel();
 
   const api = useApi();
-  const resourceModel = useResourceModelStore();
-
-  useMountedFetch([resourceModel]);
+  const deps = reactive({ target: '' });
 
   const editApiModal = useModal(EditApi, {
     id: 'edit-api',

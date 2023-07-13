@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import useResourceModel from '~~/stores/useResourceModel';
 
   defineProps<{
     disabled: boolean;
     title: string;
   }>();
 
-  const resourceModel = useResourceModelStore();
+  const resourceModel = useResourceModel();
   const dropdownOptions = computed(() =>
     resourceModel.list.map((model) => ({
       text: model.name,

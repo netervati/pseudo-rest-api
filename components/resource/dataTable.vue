@@ -2,10 +2,10 @@
   import ModalCreateResourceData from '../modal/createResourceData.vue';
   import ModalConfirm from '~~/components/modal/confirm.vue';
   import useResourceDataStore from '~~/stores/useResourceDataStore';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import useResourceModel from '~~/stores/useResourceModel';
 
   const resourceData = useResourceDataStore();
-  const resourceModel = useResourceModelStore();
+  const resourceModel = useResourceModel();
   const select = useSelect();
 
   const resourceDataList = computed(

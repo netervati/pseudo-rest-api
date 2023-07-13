@@ -1,11 +1,11 @@
 <script lang="ts" setup>
   import EditResourceModel from '../modal/editResourceModel.vue';
   import ModalConfirm from '../modal/confirm.vue';
-  import { useResourceDataStore, useResourceModelStore } from '~~/stores';
+  import { useResourceDataStore, useResourceModel } from '~~/stores';
   import { ResourceModel } from '~~/types/models';
 
   const resourceData = useResourceDataStore();
-  const resourceModel = useResourceModelStore();
+  const resourceModel = useResourceModel();
 
   const deps = reactive({
     target: '',
@@ -22,9 +22,6 @@
       await resourceModel.delete(state.deleteId);
 
       closeModal();
-
-      resourceModel.clear();
-      await resourceModel.fetch({ mutateCache: true });
 
       if (state.deleteId === resourceModel.target) {
         resourceModel.target = '';

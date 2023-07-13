@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-  import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import useResourceModel from '~~/stores/useResourceModel';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -11,8 +10,7 @@
     id: string;
   }>();
 
-  const resourceDataType = useResourceDataTypeStore();
-  const resourceModel = useResourceModelStore();
+  const resourceModel = useResourceModel();
 
   type Structure = {
     [key: string]: {
@@ -77,8 +75,7 @@
         structure: cleanStructure,
       },
       {
-        onSuccess: async () => {
-          resourceModel.fetch({ mutateCache: true });
+        onSuccess: () => {
           handleClose();
         },
       }
