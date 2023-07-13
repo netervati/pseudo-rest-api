@@ -2,7 +2,7 @@
   import ModalCreateProject from '~~/components/modal/createProject.vue';
   import {
     useApiStore,
-    useProjectStore,
+    useProject,
     useResourceDataTypeStore,
     useResourceModelStore,
   } from '~~/stores';
@@ -15,7 +15,7 @@
   useResourceDataTypeStore().clear();
   useResourceModelStore().clear();
 
-  const project = useProjectStore();
+  const project = useProject();
   const isDisabled = computed(
     () => project.list.length === 2 || project.isLoading
   );
@@ -23,14 +23,10 @@
 
   const modal = useModal(ModalCreateProject, {
     id: 'create-project',
-    onSuccess: async (key: string) => {
+    onSuccess: (key: string) => {
       secretKey.value = key;
-
-      await project.fetch({ mutateCache: true });
     },
   });
-
-  onMounted(async () => await project.fetch());
 </script>
 
 <template>
