@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
-  import useApiStore from '~~/stores/useApiStore';
+  import useApi from '~~/stores/useApi';
   import useResourceModelStore from '~~/stores/useResourceModelStore';
   import { Api } from '~~/types/models';
 
@@ -13,7 +13,7 @@
     }>;
   }>();
 
-  const api = useApiStore();
+  const api = useApi();
   const form = useForm();
   const isDisabled = computed(() => form.isSubmitting.value === true);
   const resourceModel = useResourceModelStore();
@@ -54,8 +54,7 @@
         urlPath: values.urlPath,
       },
       {
-        onSuccess: async () => {
-          await api.fetch({ mutateCache: true });
+        onSuccess: () => {
           handleClose();
         },
       }

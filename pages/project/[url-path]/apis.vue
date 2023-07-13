@@ -1,29 +1,28 @@
 <script lang="ts" setup>
   import ModalCreateApi from '~~/components/modal/createApi.vue';
-  import useApiStore from '~~/stores/useApiStore';
+  import useApi from '~~/stores/useApi';
 
   definePageMeta({
     middleware: ['auth', 'validate-project'],
   });
 
-  const apis = useApiStore();
-  const isDisabled = computed(() => apis.list.length === 5 || apis.isLoading);
-  const modal = useModal(ModalCreateApi, { id: 'create-api' });
+  const api = useApi();
+  const createModal = useModal(ModalCreateApi, { id: 'create-api' });
 </script>
 
 <template>
   <div class="p-6">
     <Button
-      :disabled="isDisabled"
+      :disabled="api.isDisabled"
       color="success"
       size="sm"
-      @click="modal.open"
+      @click="createModal.open"
     >
       New API
     </Button>
     <ApiTable />
     <ClientOnly>
-      <component :is="modal.component" />
+      <component :is="createModal.component" />
     </ClientOnly>
   </div>
 </template>
