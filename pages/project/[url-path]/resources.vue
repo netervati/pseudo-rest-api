@@ -1,16 +1,14 @@
 <script lang="ts" setup>
   import ModalCreateResourceModel from '~~/components/modal/createResourceModel.vue';
-  import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
-  import useResourceModel from '~~/stores/useResourceModel';
+  import { useResourceDataType, useResourceModel } from '~~/stores';
 
   definePageMeta({
     middleware: ['auth', 'validate-project'],
   });
 
-  const resourceDataType = useResourceDataTypeStore();
-  const resourceModel = useResourceModel();
+  useResourceDataType();
 
-  useMountedFetch([resourceDataType]);
+  const resourceModel = useResourceModel();
 
   const createModal = useModal(ModalCreateResourceModel, {
     id: 'create-resouce-model',
