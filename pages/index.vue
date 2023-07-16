@@ -1,24 +1,12 @@
 <script lang="ts" setup>
   import ModalCreateProject from '~~/components/modal/createProject.vue';
-  import {
-    useApiStore,
-    useProject,
-    useResourceDataTypeStore,
-    useResourceModelStore,
-  } from '~~/stores';
+  import useProject from '~~/stores/useProject';
 
   definePageMeta({
     middleware: 'auth',
   });
 
-  useApiStore().clear();
-  useResourceDataTypeStore().clear();
-  useResourceModelStore().clear();
-
   const project = useProject();
-  const isDisabled = computed(
-    () => project.list.length === 2 || project.isLoading
-  );
   const secretKey = ref('');
 
   const modal = useModal(ModalCreateProject, {
@@ -32,7 +20,7 @@
 <template>
   <div class="p-6">
     <Button
-      :disabled="isDisabled"
+      :disabled="project.isDisabled"
       color="success"
       size="sm"
       @click="modal.open"
