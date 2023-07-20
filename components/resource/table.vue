@@ -1,121 +1,110 @@
 <script lang="ts" setup>
-  import EditResourceModel from '../modal/editResourceModel.vue';
-  import ModalConfirm from '../modal/confirm.vue';
-  import { useResourceDataStore, useResourceModel } from '~~/stores';
-  import { ResourceModel } from '~~/types/models';
+  import ModalCreateResourceData from '../modal/createResourceData.vue';
+  import ModalConfirm from '~~/components/modal/confirm.vue';
+  import { useResourceData, useResourceModel } from '~~/stores';
 
-  const resourceData = useResourceDataStore();
+  const resourceData = useResourceData();
   const resourceModel = useResourceModel();
+  const select = useSelect();
 
-  const deps = reactive({
-    target: '',
+  const structure = computed(() => {
+    const list = resourceModel.list.filter(
+      (target) => target.id === resourceModel.target
+    );
+
+    if (list.length === 1) {
+      return list[0].structure;
+    }
   });
 
-  const state = reactive({
-    deleting: false,
-    deleteId: '',
+  const loaderColSpan = computed(
+    () => Object.keys(structure.value || {}).length + 2
+  );
+
+  const modal = useModal(ModalCreateResourceData, {
+    id: 'create-resource-data',
   });
 
-  const modal = useModal(ModalConfirm, {
-    id: 'confirm-delete-resource-model',
-    onConfirm: async (closeModal) => {
-      await resourceModel.delete(state.deleteId);
+  const deleteModal = useModal(ModalConfirm, {
+    id: 'confirm-delete-resource-data',
+    onConfirm: async (closeModal: () => void) => {
+      const ids = Array.from(select.list.value).join(',');
+
+      await resourceData.bulkDelete(ids);
 
       closeModal();
 
-      if (state.deleteId === resourceModel.target) {
-        resourceModel.target = '';
-      }
-
-      resourceData.clear(state.deleteId);
-      state.deleteId = '';
+      select.clear();
     },
   });
 
-  const editResourceModelModal = useModal(EditResourceModel, {
-    id: 'edit-resource-model',
-    deps,
-    onClose: () => {
-      deps.target = '';
-    },
+  onMounted(() => {
+    select.clear();
   });
 
-  onUnmounted(() => {
-    resourceModel.target = '';
-  });
-
-  const dispatch = (action: string, data: ResourceModel) => {
-    switch (action) {
-      case 'delete':
-        state.deleteId = data.id;
-        modal.open();
-
-        break;
-      case 'edit':
-        deps.target = data.id;
-        editResourceModelModal.open();
-
-        break;
-      case 'open':
-        if (resourceModel.target !== data.id) {
-          if (!(data.id in resourceData.list)) {
-            resourceData.clear(resourceModel.target);
-          }
-
-          resourceModel.target = data.id;
-        }
-
-        break;
-      default:
-        break;
+  watchEffect(async () => {
+    if (resourceModel.target !== '') {
+      await resourceData.setResourceModelId(resourceModel.target);
+      select.clear();
     }
-  };
+  });
 </script>
 
 <template>
-  <div class="flex mb-6">
-    <section class="mr-1">
-      <slot />
-    </section>
-    <section class="flex flex-rows ml-1">
-      <article
-        v-if="resourceModel.isLoading"
-        class="animate-pulse flex flex-row space-x-2 w-full"
-      >
-        <div class="rounded-lg bg-slate-200 h-8 w-20" />
-        <div class="rounded-lg bg-slate-200 h-8 w-20" />
-      </article>
-      <template v-else>
-        <div
-          v-for="model in resourceModel.list"
-          :key="model.id"
-          class="dropdown grow-0 ml-1 mr-1"
-        >
-          <Button
-            :is-active="resourceModel.target === model.id"
-            color="ghost"
-            tabindex="0"
-            size="sm"
-          >
-            {{ model.name }}
-          </Button>
-          <DropdownMenu tabindex="0">
-            <Option size="xs" @click="dispatch('open', model)">View</Option>
-            <Option size="xs" @click="dispatch('edit', model)">Edit</Option>
-            <Option size="xs" @click="dispatch('delete', model)">
-              Delete
-            </Option>
-          </DropdownMenu>
-        </div>
-      </template>
-    </section>
+  <div class="overflow-y-scroll" style="height: 70vh">
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>
+            <input
+              :checked="select.ticked(resourceData.list)"
+              class="checkbox"
+              type="checkbox"
+              @click="select.tick(resourceData.list)"
+            />
+          </th>
+          <th>
+            <Dropdown :disabled="resourceData.isLoading" size="sm">
+              <template #label>Manage Data</template>
+              <template #options>
+                <DropdownOption @click="modal.open">New</DropdownOption>
+                <DropdownOption
+                  v-if="!select.isEmpty.value"
+                  @click="deleteModal.open"
+                >
+                  Delete
+                </DropdownOption>
+              </template>
+            </Dropdown>
+          </th>
+          <th v-for="header in structure" :key="header!.id">
+            {{ header!.name }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <TableLoader v-if="resourceData.isLoading" :colspan="loaderColSpan" />
+        <tr v-for="record in resourceData.list" v-else :key="record.id">
+          <td colspan="2">
+            <input
+              :checked="select.ticked(record.id)"
+              class="checkbox"
+              type="checkbox"
+              @click="select.tick(record.id)"
+            />
+          </td>
+          <td v-for="[key, value] in Object.entries(record.data)" :key="key">
+            {{ value }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ClientOnly>
+      <component :is="modal.component" />
+      <component
+        :is="deleteModal.component"
+        content="Are you sure you want to delete the selected resource data?"
+      />
+    </ClientOnly>
   </div>
-  <ResourceDataTable />
-  <ClientOnly>
-    <component
-      :is="modal.component"
-      content="Are you sure you want to delete this resource model?"
-    />
-    <component :is="editResourceModelModal.component" />
-  </ClientOnly>
 </template>

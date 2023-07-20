@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import cloneDeep from 'lodash/cloneDeep';
+  import merge from 'lodash/merge';
   import useResourceModel from '~~/stores/useResourceModel';
 
   const emit = defineEmits<{
@@ -25,38 +27,24 @@
     structure: Structure;
   };
 
-  const formStructure = ref<Structure>({
+  const createField = ({ id = true } = {}) => ({
     [String(Date.now())]: {
-      name: 'id',
+      name: id ? 'id' : '',
       type: '',
       default: '',
     },
   });
+
   const form = useForm<CreateResourceModelForm>({
     initialValues: {
-      structure: {},
+      structure: createField(),
     },
   });
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
-  onMounted(() => {
-    form.setFieldValue('structure', formStructure.value);
-  });
-
   const handleClose = () => {
-    formStructure.value = {
-      [String(Date.now())]: {
-        name: 'id',
-        type: '',
-        default: '',
-      },
-    };
-    form.resetForm({
-      values: {
-        name: '',
-        structure: formStructure.value,
-      },
-    });
+    form.resetForm();
+    form.setFieldValue('structure', createField());
 
     emit('close');
   };
@@ -87,24 +75,24 @@
   // ------------------------
 
   const addField = () => {
-    formStructure.value[String(Date.now())] = {
-      name: '',
-      type: '',
-      default: '',
-    };
+    const updated = merge(form.values.structure, createField({ id: false }));
 
-    form.setFieldValue('structure', formStructure.value);
+    form.setFieldValue('structure', updated);
   };
 
   const handleChange = (target: string, key: string, value: string) => {
+    const updated = cloneDeep(form.values.structure);
     // @ts-ignore
-    formStructure.value[target][key] = value;
+    updated[target][key] = value;
+    form.setFieldValue('structure', updated);
   };
 
   const removeField = (target: string) => {
-    delete formStructure.value[target];
+    const updated = cloneDeep(form.values.structure);
 
-    form.setFieldValue('structure', formStructure.value);
+    delete updated[target];
+
+    form.setFieldValue('structure', updated);
   };
 </script>
 

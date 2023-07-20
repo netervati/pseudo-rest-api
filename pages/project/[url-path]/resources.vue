@@ -17,7 +17,7 @@
 
 <template>
   <div class="p-6">
-    <ResourceTable>
+    <ResourceContainer>
       <Button
         :disabled="resourceModel.isDisabled"
         color="success"
@@ -26,7 +26,7 @@
       >
         New Resource Model
       </Button>
-    </ResourceTable>
+    </ResourceContainer>
     <ClientOnly>
       <component :is="createModal.component" />
     </ClientOnly>
