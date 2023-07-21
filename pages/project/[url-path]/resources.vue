@@ -1,19 +1,14 @@
 <script lang="ts" setup>
   import ModalCreateResourceModel from '~~/components/modal/createResourceModel.vue';
-  import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import { useResourceDataType, useResourceModel } from '~~/stores';
 
   definePageMeta({
     middleware: ['auth', 'validate-project'],
   });
 
-  const resourceDataType = useResourceDataTypeStore();
-  const resourceModel = useResourceModelStore();
-  const isDisabled = computed(
-    () => resourceModel.list.length === 5 || resourceModel.isLoading
-  );
+  useResourceDataType();
 
-  useMountedFetch([resourceModel, resourceDataType]);
+  const resourceModel = useResourceModel();
 
   const createModal = useModal(ModalCreateResourceModel, {
     id: 'create-resouce-model',
@@ -22,16 +17,16 @@
 
 <template>
   <div class="p-6">
-    <ResourceTable>
+    <ResourceContainer>
       <Button
-        :disabled="isDisabled"
+        :disabled="resourceModel.isDisabled"
         color="success"
         size="sm"
         @click="createModal.open"
       >
         New Resource Model
       </Button>
-    </ResourceTable>
+    </ResourceContainer>
     <ClientOnly>
       <component :is="createModal.component" />
     </ClientOnly>

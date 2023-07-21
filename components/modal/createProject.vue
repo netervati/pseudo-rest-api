@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import useProjectStore from '~~/stores/useProjectStore';
+  import useProject from '~~/stores/useProject';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -11,7 +11,7 @@
   }>();
 
   const form = useForm();
-  const project = useProjectStore();
+  const project = useProject();
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
   const handleClose = () => {

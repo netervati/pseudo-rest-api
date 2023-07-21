@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { Structure } from '~~/types/forms';
-  import useResourceDataType from '~~/stores/useResourceDataTypeStore';
+  import useResourceDataType from '~~/stores/useResourceDataType';
 
   type Props = {
     disabled: boolean;

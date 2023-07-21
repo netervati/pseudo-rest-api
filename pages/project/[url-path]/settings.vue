@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { useProjectStore, useProjectKeyStore } from '~~/stores';
+  import { useProject, useProjectKey } from '~~/stores';
   import ModalConfirm from '~~/components/modal/confirm.vue';
 
   definePageMeta({
@@ -7,8 +7,8 @@
   });
 
   const projectApiKey = useProjectApiKey();
-  const projectKey = useProjectKeyStore();
-  const project = useProjectStore();
+  const projectKey = useProjectKey();
+  const project = useProject();
 
   const form = useForm();
   const isMounted = ref(false);
@@ -41,7 +41,7 @@
       },
       {
         onSuccess: async () => {
-          await project.fetch({ mutateCache: true });
+          await project.refresh();
 
           project.target = project.list.filter(
             (proj) => proj.project_keys[0]?.api_key === projectApiKey
@@ -80,8 +80,7 @@
     onConfirm: async (closeModal: () => void) => {
       await project.delete(project.target!.id, {
         onSuccess: async () => {
-          await project.fetch({ mutateCache: true });
-
+          await project.refresh();
           closeModal();
 
           navigateTo('/');

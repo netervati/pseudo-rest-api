@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-  import useApiStore from '~~/stores/useApiStore';
+  import useApi from '~~/stores/useApi';
 
   const emit = defineEmits<{ (e: 'close'): void }>();
   defineProps<{ id: string }>();
 
-  const api = useApiStore();
+  const api = useApi();
   const form = useForm({
     initialValues: {
       description: '',
@@ -22,8 +22,7 @@
 
   const onSubmit = form.handleSubmit(async (values) => {
     await api.create(values, {
-      onSuccess: async () => {
-        await api.fetch({ mutateCache: true });
+      onSuccess: () => {
         handleClose();
       },
     });

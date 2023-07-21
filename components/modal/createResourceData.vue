@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { useResourceDataStore, useResourceModelStore } from '~~/stores';
+  import useResourceData from '~~/stores/useResourceData';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -18,11 +18,10 @@
   const isDisabled = computed(() => form.isSubmitting.value === true);
   const maxCountAllowed = ref(10);
 
-  const resourceData = useResourceDataStore();
-  const resourceModel = useResourceModelStore();
+  const resourceData = useResourceData();
 
   watch(resourceData.list, () => {
-    const currentCount = resourceData.list[resourceModel.target]?.length || 0;
+    const currentCount = resourceData.list.length || 0;
 
     maxCountAllowed.value = 10 - currentCount;
   });
@@ -37,18 +36,12 @@
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await resourceData.create(
-      {
-        count: Number(values.count),
-        resourceModelId: resourceModel.target,
+    await resourceData.create(Number(values.count), {
+      onSuccess: () => {
+        emit('success');
+        handleClose();
       },
-      {
-        onSuccess: () => {
-          emit('success');
-          handleClose();
-        },
-      }
-    );
+    });
   });
 </script>
 

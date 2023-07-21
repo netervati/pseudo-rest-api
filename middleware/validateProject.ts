@@ -1,11 +1,11 @@
-import useProjectStore from '~~/stores/useProjectStore';
+import useProject from '~/stores/useProject';
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (process.server) {
     return;
   }
 
-  const project = useProjectStore();
+  const project = useProject();
   const projectApikey = to.params.urlpath;
   const toast = useToast();
 
@@ -13,7 +13,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return;
   }
 
-  await project.fetch({ mutateCache: true });
+  await project.refresh();
 
   const target = project.list.filter(
     (proj) => proj.project_keys[0].api_key === projectApikey

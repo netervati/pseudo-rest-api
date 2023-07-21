@@ -1,8 +1,6 @@
 <script lang="ts" setup>
   import { UnwrapNestedRefs } from 'nuxt/dist/app/compat/capi';
-  import useResourceDataTypeStore from '~~/stores/useResourceDataTypeStore';
-  import useResourceDataStore from '~~/stores/useResourceDataStore';
-  import useResourceModelStore from '~~/stores/useResourceModelStore';
+  import { useResourceData, useResourceModel } from '~~/stores';
 
   const emit = defineEmits<{
     (e: 'close'): void;
@@ -25,9 +23,8 @@
     };
   };
 
-  const resourceDataType = useResourceDataTypeStore();
-  const resourceData = useResourceDataStore();
-  const resourceModel = useResourceModelStore();
+  const resourceData = useResourceData();
+  const resourceModel = useResourceModel();
 
   type EditResourceModelForm = {
     name: string;
@@ -94,11 +91,7 @@
       },
       {
         onSuccess: async () => {
-          resourceModel.clear();
-          await resourceModel.fetch({ mutateCache: true });
-
-          resourceData.clear(props.deps.target);
-          await resourceData.fetch(props.deps.target);
+          await resourceData.refresh();
 
           handleClose();
         },

@@ -1,42 +1,26 @@
 <script lang="ts" setup>
   import ModalCreateProject from '~~/components/modal/createProject.vue';
-  import {
-    useApiStore,
-    useProjectStore,
-    useResourceDataTypeStore,
-    useResourceModelStore,
-  } from '~~/stores';
+  import useProject from '~~/stores/useProject';
 
   definePageMeta({
     middleware: 'auth',
   });
 
-  useApiStore().clear();
-  useResourceDataTypeStore().clear();
-  useResourceModelStore().clear();
-
-  const project = useProjectStore();
-  const isDisabled = computed(
-    () => project.list.length === 2 || project.isLoading
-  );
+  const project = useProject();
   const secretKey = ref('');
 
   const modal = useModal(ModalCreateProject, {
     id: 'create-project',
-    onSuccess: async (key: string) => {
+    onSuccess: (key: string) => {
       secretKey.value = key;
-
-      await project.fetch({ mutateCache: true });
     },
   });
-
-  onMounted(async () => await project.fetch());
 </script>
 
 <template>
   <div class="p-6">
     <Button
-      :disabled="isDisabled"
+      :disabled="project.isDisabled"
       color="success"
       size="sm"
       @click="modal.open"
