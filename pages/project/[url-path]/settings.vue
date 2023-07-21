@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { useProject, useProjectKeyStore } from '~~/stores';
+  import { useProject, useProjectKey } from '~~/stores';
   import ModalConfirm from '~~/components/modal/confirm.vue';
 
   definePageMeta({
@@ -7,7 +7,7 @@
   });
 
   const projectApiKey = useProjectApiKey();
-  const projectKey = useProjectKeyStore();
+  const projectKey = useProjectKey();
   const project = useProject();
 
   const form = useForm();
