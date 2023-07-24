@@ -21,14 +21,6 @@
 
   const resourceDataType = useResourceDataType();
 
-  const isDefaultAllowed = (structure: { name: string; type: string }) => {
-    return (
-      structure.name !== 'id' &&
-      !structure.type.includes('faker') &&
-      !structure.type.includes('uuid')
-    );
-  };
-
   const setValue = (value: string | undefined) => {
     if (props.withDefaults) {
       return value;
@@ -63,7 +55,7 @@
           @change="(value) => emit('change', key, 'name', value)"
         />
       </section>
-      <section class="basis-2/12 form-control ml-2 mr-2">
+      <section class="basis-4/12 form-control ml-2 mr-2">
         <FormSelect
           :disabled="disabled || structure[key]?.locked === true"
           :name="`structure[${key}].type`"
@@ -72,17 +64,6 @@
           :value="setValue(structure[key].type)"
           placeholder="Select the field type"
           @change="(value) => emit('change', key, 'type', value)"
-        />
-      </section>
-      <section class="basis-4/12 form-control ml-2 mr-2">
-        <FormInput
-          v-if="isDefaultAllowed(structure[key])"
-          :disabled="disabled || structure[key]?.locked === true"
-          :name="`structure[${key}].default`"
-          :rules="{ required: 'Default value is required.' }"
-          :value="setValue(structure[key].default)"
-          placeholder="Enter the default value"
-          @change="(value) => emit('change', key, 'default', value)"
         />
       </section>
       <section class="basis-2/12 flex ml-2">
