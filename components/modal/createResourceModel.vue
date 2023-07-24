@@ -27,13 +27,26 @@
     structure: Structure;
   };
 
-  const createField = ({ id = true } = {}) => ({
-    [String(Date.now())]: {
-      name: id ? 'id' : '',
-      type: '',
-      default: '',
-    },
-  });
+  const createField = ({ id = true } = {}) => {
+    const fieldId = String(Date.now());
+
+    const field = {
+      [fieldId]: {
+        default: '',
+        locked: false,
+        name: '',
+        type: '',
+      },
+    };
+
+    if (id) {
+      field[fieldId].locked = true;
+      field[fieldId].name = 'id';
+      field[fieldId].type = 'data_type_uuid';
+    }
+
+    return field;
+  };
 
   const form = useForm<CreateResourceModelForm>({
     initialValues: {
