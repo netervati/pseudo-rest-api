@@ -5,9 +5,6 @@ export const HTTP_STATUS_NOT_FOUND = 404;
 
 // RESOURCE MODEL DATA TYPE
 export const RESOURCE_DATA_TYPES: { [key: string]: string } = {
-  data_type_boolean: 'Boolean',
-  data_type_number: 'Number',
-  data_type_string: 'String',
   data_type_uuid: 'UUID',
   faker_animal: 'Fake animal',
   faker_city: 'Fake city',

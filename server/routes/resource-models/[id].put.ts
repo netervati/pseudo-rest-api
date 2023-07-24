@@ -38,12 +38,6 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 
 function buildStructure(body: BodyParams): Structure[] {
   return body.structure.map((item) => {
-    const coercedValue = coerce(item.type, item.default);
-
-    if (coercedValue !== null) {
-      item.default = coercedValue;
-    }
-
     if (item.locked === true) {
       delete item.locked;
 

@@ -21,17 +21,6 @@
 
   const resourceDataType = useResourceDataType();
 
-  const dataTypes = (name: string) => {
-    if (name === 'id') {
-      return resourceDataType.list.filter(
-        (type) =>
-          type.value === 'data_type_number' || type.value === 'data_type_uuid'
-      );
-    }
-
-    return resourceDataType.list;
-  };
-
   const isDefaultAllowed = (structure: { name: string; type: string }) => {
     return (
       structure.name !== 'id' &&
@@ -79,7 +68,7 @@
           :disabled="disabled || structure[key]?.locked === true"
           :name="`structure[${key}].type`"
           :rules="{ required: 'Field type is required.' }"
-          :options="dataTypes(structure[key].name)"
+          :options="resourceDataType.list"
           :value="setValue(structure[key].type)"
           placeholder="Select the field type"
           @change="(value) => emit('change', key, 'type', value)"

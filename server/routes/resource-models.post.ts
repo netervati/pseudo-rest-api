@@ -42,15 +42,7 @@ async function validate(event: H3Event): Promise<BodyParams | never> {
 }
 
 function buildStructure(body: BodyParams): Structure {
-  let coercedValue = null;
-
   return body.structure.map((item) => {
-    coercedValue = coerce(item.type, item.default);
-
-    if (coercedValue !== null) {
-      item.default = coercedValue;
-    }
-
     item.id = uuidv4();
 
     return item;
