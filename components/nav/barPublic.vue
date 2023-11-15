@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { Bars3Icon } from '@heroicons/vue/24/outline';
+  import { Bars3Icon, ComputerDesktopIcon } from '@heroicons/vue/24/outline';
 </script>
 
 <template>
@@ -24,6 +24,11 @@
         <li><NuxtLink to="https://github.com/netervati/pseudo-rest-api">Source</NuxtLink></li>
       </ul>
     </div>
-    <div class="navbar-end"></div>
+    <div class="navbar-end">
+      <NuxtLink class="btn btn-sm" to="/dashboard">
+        <ComputerDesktopIcon class="h-6 w-6" />
+        <span class="hidden md:block md:ml-2">Dashboard</span>
+      </NuxtLink>
+    </div>
   </div>
 </template>
