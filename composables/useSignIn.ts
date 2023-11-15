@@ -26,6 +26,8 @@ export default function (): SignInProgressProps {
     url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
     url = `${url}dashboard`;
 
+    console.log(url);
+
     return url;
   };
 
