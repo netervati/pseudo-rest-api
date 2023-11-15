@@ -27,5 +27,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   toast.error('Project does not exists!');
 
-  return navigateTo('/');
+  return navigateTo('/dashboard');
 });

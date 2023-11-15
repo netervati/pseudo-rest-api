@@ -1,36 +1,17 @@
-<script lang="ts" setup>
-  import ModalCreateProject from '~~/components/modal/createProject.vue';
-  import useProject from '~~/stores/useProject';
-
+<script setup lang="ts">
   definePageMeta({
-    middleware: 'auth',
-  });
-
-  const project = useProject();
-  const secretKey = ref('');
-
-  const modal = useModal(ModalCreateProject, {
-    id: 'create-project',
-    onSuccess: (key: string) => {
-      secretKey.value = key;
-    },
+    layout: 'blank',
   });
 </script>
 
 <template>
-  <div class="p-6">
-    <Button
-      :disabled="project.isDisabled"
-      color="success"
-      size="sm"
-      @click="modal.open"
-    >
-      New Project
-    </Button>
-    <ProjectSecretKeyBox :secret-key="secretKey" />
-    <ProjectGrid />
-    <ClientOnly>
-      <component :is="modal.component" />
-    </ClientOnly>
-  </div>
+  <NavBarPublic />
+  <section class="flex flex-col md:flex-row gap-3 p-2 md:p-8">
+    <LandingPageCode />
+    <header class="m-auto">
+      <h1 class="font-bold text-4xl md:text-6xl">Intuitive way to mock REST endpoints</h1>
+      <p class="mt-8 text-lg md:text-2xl">Build your own fake REST APIs without having to learn any programming language or framework</p>
+    </header>
+  </section>
+  <Footer />
 </template>

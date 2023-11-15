@@ -63,7 +63,7 @@
       await projectKey.regenerate(project.target!.id, {
         onSuccess: (result: { projectApiKey: string; secretKey: string }) => {
           navigateTo({
-            path: `/project/${result.projectApiKey}/settings`,
+            path: `/dashboard/project/${result.projectApiKey}/settings`,
             query: {
               secret_key: result.secretKey,
             },
@@ -83,7 +83,7 @@
           await project.refresh();
           closeModal();
 
-          navigateTo('/');
+          navigateTo('/dashboard');
         },
       });
     },
