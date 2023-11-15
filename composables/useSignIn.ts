@@ -24,6 +24,7 @@ export default function (): SignInProgressProps {
 
     url = url.includes('http') ? url : `https://${url}`;
     url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+    url = `${url}dashboard`;
 
     return url;
   };
@@ -55,7 +56,7 @@ export default function (): SignInProgressProps {
     }
 
     if (user.value) {
-      navigateTo('/');
+      navigateTo('/dashboard');
     }
   });
 

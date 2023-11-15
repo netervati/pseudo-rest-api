@@ -9,7 +9,7 @@
   const route = useRoute();
 
   const links = computed(() => {
-    const base = [{ name: 'Home', icon: HomeIcon, to: '/' }];
+    const base = [{ name: 'Home', icon: HomeIcon, to: '/dashboard' }];
 
     if (route.path.includes('project') && route.params.urlpath !== null) {
       base.push(
@@ -17,17 +17,17 @@
           {
             name: 'APIs',
             icon: ServerStackIcon,
-            to: `/project/${route.params.urlpath}/apis`,
+            to: `/dashboard/project/${route.params.urlpath}/apis`,
           },
           {
             name: 'Resources',
             icon: CircleStackIcon,
-            to: `/project/${route.params.urlpath}/resources`,
+            to: `/dashboard/project/${route.params.urlpath}/resources`,
           },
           {
             name: 'Settings',
             icon: WrenchScrewdriverIcon,
-            to: `/project/${route.params.urlpath}/settings`,
+            to: `/dashboard/project/${route.params.urlpath}/settings`,
           },
         ]
       );

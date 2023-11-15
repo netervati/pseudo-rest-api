@@ -3,7 +3,7 @@
     layout: 'blank',
   });
 
-  preloadRouteComponents('/');
+  preloadRouteComponents('/dashboard');
 
   const signIn = useSignIn();
 </script>

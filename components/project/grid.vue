@@ -11,7 +11,7 @@
     */
     projectStore.target = project;
 
-    navigateTo(`/project/${project.project_keys[0].api_key}/apis`);
+    navigateTo(`/dashboard/project/${project.project_keys[0].api_key}/apis`);
   };
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   const config = useRuntimeConfig();
 
-  if (config.public.onMaintenance) {
+  if (config.public.onMaintenance === 'true') {
     throw createError({
       statusCode: 503,
       statusMessage:
