@@ -8,4 +8,5 @@
   <section class="p-6">
     <ContentDoc />
   </section>
+  <Footer />
 </template>
