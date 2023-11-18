@@ -2,7 +2,6 @@
   import {
     CircleStackIcon,
     HomeIcon,
-    ServerStackIcon,
     WrenchScrewdriverIcon,
   } from '@heroicons/vue/24/outline';
 
@@ -11,23 +10,18 @@
   const links = computed(() => {
     const base = [{ name: 'Home', icon: HomeIcon, to: '/dashboard' }];
 
-    if (route.path.includes('project') && route.params.urlpath !== null) {
+    if (route.path.includes('app') && route.params.urlpath !== null) {
       base.push(
         ...[
           {
-            name: 'APIs',
-            icon: ServerStackIcon,
-            to: `/dashboard/project/${route.params.urlpath}/apis`,
-          },
-          {
-            name: 'Resources',
+            name: 'Apps',
             icon: CircleStackIcon,
-            to: `/dashboard/project/${route.params.urlpath}/resources`,
+            to: `/dashboard/app/${route.params.urlpath}/models`,
           },
           {
             name: 'Settings',
             icon: WrenchScrewdriverIcon,
-            to: `/dashboard/project/${route.params.urlpath}/settings`,
+            to: `/dashboard/app/${route.params.urlpath}/settings`,
           },
         ]
       );

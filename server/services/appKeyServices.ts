@@ -35,7 +35,7 @@ export default class ProjectKeyServices extends SupabaseService {
     return projects.data[0];
   }
 
-  async findAppKey(apiKey: string) {
+  async findByApiKey(apiKey: string) {
     const appKey = await this.client
       .from('app_keys')
       .select('*')

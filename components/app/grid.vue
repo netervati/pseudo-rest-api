@@ -11,7 +11,7 @@
     */
     appStore.target = app;
 
-    navigateTo(`/dashboard/app/${app.app_keys[0].api_key}/`);
+    navigateTo(`/dashboard/app/${app.app_keys[0].api_key}/models`);
   };
 </script>
 
@@ -24,7 +24,7 @@
       @click="handleOpen(app)"
     >
       <div class="card-body cursor-pointer">
-        <h3 class="font-bold">{{ app.title }}</h3>
+        <h3 class="text-lg font-medium">{{ app.title }}</h3>
       </div>
     </article>
   </section>

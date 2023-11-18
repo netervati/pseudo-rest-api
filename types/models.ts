@@ -42,3 +42,5 @@ export type App = Tables['apps']['Row'];
 export type AppWithAppKey = App & {
   app_keys: AppKey[];
 };
+
+export type Model = Tables['models']['Row'];

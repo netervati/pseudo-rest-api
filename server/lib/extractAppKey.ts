@@ -3,18 +3,17 @@ import AppKeyServices from '../services/appKeyServices';
 import ErrorResponse from '../utils/errorResponse';
 
 /**
- * Finds the project api key record based on the
- * `appKey` param.
+ * Finds the app key based on the `apiKey` param.
  *
  * @param event
- * @param appKey
+ * @param apiKey
  * @returns The app key and app ID
  */
-export default async function (event: H3Event, appKey: string) {
-  const appKeys = await new AppKeyServices(event).findAppKey(appKey);
+export default async function (event: H3Event, apiKey: string) {
+  const appKeys = await new AppKeyServices(event).findByApiKey(apiKey);
 
   if (appKeys.length === 0) {
-    throw ErrorResponse.notFound('Project key does not exist');
+    throw ErrorResponse.notFound('App key does not exist');
   }
 
   return {
