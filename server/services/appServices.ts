@@ -2,10 +2,7 @@ import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
 export default class AppServices extends SupabaseService {
-  async create(params: {
-    title: string;
-    description?: string;
-  }) {
+  async create(params: { title: string; description?: string }) {
     const apps = await this.client
       .from('apps')
       .insert({
@@ -16,7 +13,6 @@ export default class AppServices extends SupabaseService {
       .select('*');
 
     if (apps.error !== null) {
-      console.log(apps.error);
       throw ErrorResponse.supabase(apps.error);
     }
 
@@ -33,7 +29,6 @@ export default class AppServices extends SupabaseService {
       .order('created_at', { ascending: false });
 
     if (apps.error !== null) {
-      console.log(apps.error);
       throw ErrorResponse.supabase(apps.error);
     }
 

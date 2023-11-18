@@ -13,13 +13,10 @@ type Options = {
 export default defineStore('apps', () => {
   const toast = useToast();
 
-  const { data, pending, refresh } = useLazyFetch<AppWithAppKey[]>(
-    '/apps',
-    {
-      method: 'GET',
-      server: false,
-    }
-  );
+  const { data, pending, refresh } = useLazyFetch<AppWithAppKey[]>('/apps', {
+    method: 'GET',
+    server: false,
+  });
 
   const list = computed(() => data.value || []);
   const isDisabled = computed(() => list.value.length === 2 || pending.value);
