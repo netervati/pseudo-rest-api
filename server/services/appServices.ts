@@ -16,37 +16,24 @@ export default class AppServices extends SupabaseService {
       .select('*');
 
     if (apps.error !== null) {
+      console.log(apps.error);
       throw ErrorResponse.supabase(apps.error);
     }
 
     return apps.data[0];
   }
 
-  async findByName(title: string) {
-    const app = await this.client
-      .from('apps')
-      .select('*')
-      .eq('deleted_at', null)
-      .eq('title', title)
-      .eq('user_id', this.user.id);
-
-    if (app.error !== null) {
-      throw ErrorResponse.supabase(app.error);
-    }
-
-    return app.data;
-  }
-
   async list() {
     const apps = await this.client
       .from('apps')
-      .select('id, title, description, app_keys(api_key)')
-      .eq('deleted_at', null)
-      .eq('app_keys.deleted_at', null)
+      .select('id, title, description, app_keys(app_key)')
+      .is('deleted_at', null)
+      .is('app_keys.deleted_at', null)
       .eq('user_id', this.user.id)
       .order('created_at', { ascending: false });
 
     if (apps.error !== null) {
+      console.log(apps.error);
       throw ErrorResponse.supabase(apps.error);
     }
 

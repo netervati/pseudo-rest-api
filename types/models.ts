@@ -33,3 +33,12 @@ export type ProjectKeyWithProject = ProjectKey & {
 export type ProjectWithProjectKey = Project & {
   project_keys: ProjectKey[];
 };
+
+// ===================== REVAMP
+
+export type AppKey = Tables['app_keys']['Row'];
+export type App = Tables['apps']['Row'];
+
+export type AppWithAppKey = App & {
+  project_keys: AppKey[];
+};

@@ -12,8 +12,7 @@ export default class ProjectKeyServices extends SupabaseService {
       .insert({
         app_id: params.appId,
         app_key: params.appKey,
-        secret_key: params.secretKey,
-        user_id: this.user.id,
+        secret_key: params.secretKey
       })
       .select('*');
 

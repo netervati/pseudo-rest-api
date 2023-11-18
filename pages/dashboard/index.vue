@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-  import ModalCreateProject from '~~/components/modal/createProject.vue';
-  import useProject from '~~/stores/useProject';
+  import ModalCreateApp from '~~/components/modal/createApp.vue';
+  import useApp from '~~/stores/useApp';
 
   definePageMeta({
     middleware: 'auth',
   });
 
-  const project = useProject();
+  const app = useApp();
   const secretKey = ref('');
 
-  const modal = useModal(ModalCreateProject, {
-    id: 'create-project',
+  const modal = useModal(ModalCreateApp, {
+    id: 'create-app',
     onSuccess: (key: string) => {
       secretKey.value = key;
     },
@@ -20,15 +20,15 @@
 <template>
   <div class="p-6">
     <Button
-      :disabled="project.isDisabled"
+      :disabled="app.isDisabled"
       color="success"
       size="sm"
       @click="modal.open"
     >
-      New Project
+      New App
     </Button>
-    <ProjectSecretKeyBox :secret-key="secretKey" />
-    <ProjectGrid />
+    <AppSecretKeyBox :secret-key="secretKey" />
+    <AppGrid />
     <ClientOnly>
       <component :is="modal.component" />
     </ClientOnly>
