@@ -16,7 +16,7 @@
   <NuxtLink
     :href="href"
     :target="target"
-    class="decoration-2 font-bold text-success underline underline-offset-2"
+    class="decoration-2 font-bold text-violet-600 underline underline-offset-2"
   >
     <slot />
   </NuxtLink>

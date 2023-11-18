@@ -39,9 +39,7 @@
 <template>
   <div class="bg-base-100 border-b border-gray-300 navbar">
     <div class="flex-1">
-      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/dashboard">
-        <img width="200" src="/full-logo.png" />
-      </NuxtLink>
+      <LogoLink to="/dashboard" />
     </div>
     <div class="flex-none">
       <Dropdown avatar class="rounded-lg" color="ghost" position="end">

@@ -17,6 +17,7 @@
           <label for="my-drawer" class="btn btn-ghost btn-sm drawer-button">
             <Bars3Icon class="h-6 w-6" />
           </label>
+          <LogoLink />
         </div>
         <div class="flex-none" />
       </nav>

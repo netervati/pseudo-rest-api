@@ -53,7 +53,7 @@
 
 <template>
   <button
-    class="btn"
+    class="btn normal-case font-normal text-lg"
     :class="mergedClass"
     :disabled="loading || disabled"
     :type="type"
