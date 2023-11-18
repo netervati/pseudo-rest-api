@@ -6,7 +6,7 @@
     middleware: ['auth', 'validate-app'],
   });
 
-  const appRefKey = useAppRefKey();
+  const apiKey = useAppRefKey();
   const appKey = useAppKey();
   const app = useApp();
 
@@ -22,7 +22,7 @@
     form.setValues({
       description: app.target?.description,
       title: app.target?.title,
-      appKey: appRefKey,
+      apiKey,
     });
 
     const querySecretKey = useRoute().query?.secret_key;
@@ -44,13 +44,13 @@
           await app.refresh();
 
           app.target = app.list.filter(
-            (proj) => proj.app_keys[0]?.app_key === appRefKey
+            (proj) => proj.app_keys[0]?.api_key === apiKey
           )[0];
 
           form.setValues({
             description: app.target?.description,
             title: app.target?.title,
-            appKey: appRefKey,
+            apiKey,
           });
         },
       }
@@ -61,9 +61,9 @@
     id: 'confirm-generate-secret-key',
     onConfirm: async (closeModal: () => void) => {
       await appKey.regenerate(app.target!.id, {
-        onSuccess: (result: { appKey: string; secretKey: string }) => {
+        onSuccess: (result: { apiKey: string; secretKey: string }) => {
           navigateTo({
-            path: `/dashboard/app/${result.appKey}/settings`,
+            path: `/dashboard/app/${result.apiKey}/settings`,
             query: {
               secret_key: result.secretKey,
             },
@@ -122,7 +122,7 @@
             />
           </section>
           <section class="form-control mt-2">
-            <FormInput :disabled="true" name="appKey" placeholder="" />
+            <FormInput :disabled="true" name="apiKey" placeholder="" />
           </section>
           <section class="mt-2">
             <Button
@@ -146,7 +146,7 @@
           color="error"
           @click="generateSecretKeyModal.open()"
         >
-          Generate new App Key and Secret Key
+          Generate new API Key and Secret Key
         </Button>
         <Button
           :disabled="isDisabled || isMounted !== true"
@@ -161,7 +161,7 @@
     <ClientOnly>
       <component
         :is="generateSecretKeyModal.component"
-        content="Are you sure you want to generate a new app key and secret key?"
+        content="Are you sure you want to generate a new API key and secret key?"
       />
       <component
         :is="deleteModal.component"

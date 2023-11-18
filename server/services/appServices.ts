@@ -72,7 +72,7 @@ export default class AppServices extends SupabaseService {
   async list() {
     const apps = await this.client
       .from('apps')
-      .select('id, title, description, app_keys(app_key)')
+      .select('id, title, description, app_keys(api_key)')
       .is('deleted_at', null)
       .is('app_keys.deleted_at', null)
       .eq('user_id', this.user.id)

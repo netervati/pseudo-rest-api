@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 
 type Options = {
-  onSuccess?: (data: { appKey: string; secretKey: string }) => void;
+  onSuccess?: (data: { apiKey: string; secretKey: string }) => void;
 };
 
 type AppKeyStore = {

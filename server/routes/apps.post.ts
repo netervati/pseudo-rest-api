@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const secretKey = generateSecretKey();
 
   await new AppKeyServices(event).create({
-    appKey: shortuuid.generate(),
+    apiKey: shortuuid.generate(),
     appId: created.id,
     secretKey: await hashPassword(secretKey),
   });

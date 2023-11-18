@@ -18,16 +18,16 @@ export default defineEventHandler(async (event) => {
   await appKeys.delete(appKey.id);
 
   const secretKey = generateSecretKey();
-  const newAppKey = shortuuid.generate();
+  const apiKey = shortuuid.generate();
 
   await appKeys.create({
-    appKey: newAppKey,
+    apiKey,
     appId,
     secretKey: await hashPassword(secretKey),
   });
 
   return {
-    appKey: newAppKey,
+    apiKey,
     secretKey,
   };
 });

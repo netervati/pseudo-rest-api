@@ -11,7 +11,7 @@
     */
     appStore.target = app;
 
-    navigateTo(`/dashboard/app/${app.app_keys[0].app_key}/`);
+    navigateTo(`/dashboard/app/${app.app_keys[0].api_key}/`);
   };
 </script>
 
