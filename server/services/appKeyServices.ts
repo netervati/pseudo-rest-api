@@ -18,4 +18,34 @@ export default class ProjectKeyServices extends SupabaseService {
 
     return appKeys.data[0];
   }
+
+  async delete(id: string) {
+    const projects = await this.client
+      .from('app_keys')
+      .update({
+        deleted_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select('*');
+
+    if (projects.error !== null) {
+      throw ErrorResponse.supabase(projects.error);
+    }
+
+    return projects.data[0];
+  }
+
+  async findAppKey(apiKey: string) {
+    const appKey = await this.client
+      .from('app_keys')
+      .select('*')
+      .eq('app_key', apiKey)
+      .is('deleted_at', null);
+
+    if (appKey.error !== null) {
+      throw ErrorResponse.supabase(appKey.error);
+    }
+
+    return appKey.data;
+  }
 }

@@ -6,6 +6,12 @@ type CreateProps = {
   title: string;
 };
 
+type UpdateProps = {
+  id: string;
+  description?: string;
+  title: string;
+};
+
 type Options = {
   onSuccess?: (key: string) => void;
 };
@@ -40,6 +46,48 @@ export default defineStore('apps', () => {
     });
   };
 
+  const del = async (id: string, options: Options): Promise<void> => {
+    await $fetch(`/apps/${id}`, {
+      method: 'DELETE',
+      async onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the app!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess(response._data);
+          }
+
+          await refresh();
+        }
+      },
+    });
+  };
+
+  const update = async (
+    payload: UpdateProps,
+    options: Options
+  ): Promise<void> => {
+    await $fetch(`/apps/${payload.id}`, {
+      method: 'PUT',
+      body: {
+        description: payload.description,
+        title: payload.title,
+        appKey: useAppRefKey(),
+      },
+      async onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Updated app!');
+
+          if (typeof options.onSuccess === 'function') {
+            options.onSuccess(response._data.secretKey);
+          }
+
+          await refresh();
+        }
+      },
+    });
+  };
+
   return {
     /** PROPERTIES */
     isDisabled,
@@ -49,6 +97,8 @@ export default defineStore('apps', () => {
 
     /** METHODS */
     create,
+    delete: del,
     refresh,
+    update,
   };
 });
