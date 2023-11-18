@@ -1,9 +1,10 @@
 <script setup lang="ts">
+  import { Model } from '~~/types/models';
   import useModel from '~~/stores/useModel';
 
   const model = useModel();
 
-  const highlightTab = (id) => {
+  const highlightTab = (id: string) => {
     return {
       'border-b-2': true,
       'tab-active border-b-slate-600': id === model.target?.id,
@@ -11,7 +12,7 @@
     };
   }
 
-  const handleSelectModel = (md) => {
+  const handleSelectModel = (md: Model) => {
     model.target = md;
   };
 </script>
@@ -20,7 +21,6 @@
   <section class="flex gap-x-2 w-full">
     <slot />
     <div role="tablist" class="tabs">
-      <!-- tab-active -->
       <a
         v-for="md in model.list"
         :key="md.id"
@@ -40,10 +40,14 @@
           <tr>
             <th />
             <th
-              v-for="sch in model.target?.schema"
+              v-for="
+                // @ts-ignore
+                sch in model.target?.schema"
               class="font-normal normal-case text-base"
             >
-              {{ sch.name }}
+              {{
+                // @ts-ignore
+                sch.name }}
             </th>
           </tr>
         </thead>

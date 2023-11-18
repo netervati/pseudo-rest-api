@@ -30,7 +30,7 @@ export default defineStore('models', () => {
       body: {
         apiKey,
         name: body.name,
-        schema: body.schema
+        schema: body.schema,
       },
       async onResponse({ response }) {
         if (response.status === 200) {
