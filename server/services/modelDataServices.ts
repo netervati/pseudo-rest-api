@@ -3,7 +3,7 @@ import SupabaseService from './supabaseService';
 
 type Schema = {
   name: string;
-  type: string
+  type: string;
 };
 
 export default class ModelDataService extends SupabaseService {

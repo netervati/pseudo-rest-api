@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { Model } from '~/types/models';
 import cloneDeep from 'lodash/cloneDeep';
+import { NormalizedModel } from '~/types/models';
 
 type CreateProps = {
   name: string;
@@ -14,24 +14,27 @@ type Options = {
 export default defineStore('models', () => {
   const toast = useToast();
   const apiKey = useAppRefKey();
-  const target = ref<Model>();
+  const target = ref<NormalizedModel>();
 
-  const { data, pending, refresh } = useLazyFetch<Model[]>('/models', {
-    method: 'GET',
-    query: { apiKey },
-    server: false,
-  });
+  const { data, pending, refresh } = useLazyFetch<NormalizedModel[]>(
+    '/models',
+    {
+      method: 'GET',
+      query: { apiKey },
+      server: false,
+    }
+  );
 
   const list = computed(() => data.value || []);
   const isDisabled = computed(() => list.value.length === 10 || pending.value);
 
-  const setTarget = (md: Model) => {
+  const setTarget = (md: NormalizedModel) => {
     target.value = cloneDeep(md);
   };
 
   const unsetTarget = () => {
     target.value = undefined;
-  }
+  };
 
   const create = async (body: CreateProps, options: Options): Promise<void> => {
     await $fetch('/models', {
@@ -66,6 +69,6 @@ export default defineStore('models', () => {
     /** METHODS */
     create,
     setTarget,
-    unsetTarget
+    unsetTarget,
   };
 });

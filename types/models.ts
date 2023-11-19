@@ -44,3 +44,6 @@ export type AppWithAppKey = App & {
 };
 
 export type Model = Tables['models']['Row'];
+export type NormalizedModel = Omit<Model, 'schema'> & {
+  schema: { name: string; type: string }[];
+};

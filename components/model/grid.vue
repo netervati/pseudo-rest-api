@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
-  import { Model } from '~~/types/models';
+  import { NormalizedModel } from '~~/types/models';
   import useModel from '~~/stores/useModel';
   import ModalCreateModelData from '~~/components/modal/createModelData.vue';
 
@@ -14,7 +14,7 @@
     };
   }
 
-  const handleSelectModel = (md: Model) => {
+  const handleSelectModel = (md: NormalizedModel) => {
     model.setTarget(md);
   };
 

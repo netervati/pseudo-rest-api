@@ -16,7 +16,8 @@ type UseModal = {
   open: () => void;
 };
 
-const sleep = (ms: number) => new Promise((res) => setTimeout(() => res(ms), ms));
+const sleep = (ms: number) =>
+  new Promise((resolve, _reject) => setTimeout(() => resolve(ms), ms));
 
 /**
  * A composable for managing modals.

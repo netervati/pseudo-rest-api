@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
 
-const DataOptions = {
-  string: {
-    animal: 'Animal',
-    city: 'City',
-    color: 'Color',
-    country: 'Country',
-    date: 'Date',
-    email_address: 'Email Address',
-  }
-};
+// const DataOptions = {
+//   string: {
+//     animal: 'Animal',
+//     city: 'City',
+//     color: 'Color',
+//     country: 'Country',
+//     date: 'Date',
+//     email_address: 'Email Address',
+//   }
+// };
 
-function setValue(option: string) {
+export default function (option: string) {
   switch (option) {
     case 'faker_animal':
       return faker.animal.type();
@@ -44,10 +44,6 @@ function setValue(option: string) {
     case 'faker_vehicle':
       return faker.vehicle.type();
     default:
-      throw Error(`The faker option ${option} does not exists.`);
+      throw new Error(`The faker option ${option} does not exists.`);
   }
-}
-
-export default function () {
-
 }

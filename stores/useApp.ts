@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { AppWithAppKey } from '~/types/models';
 import cloneDeep from 'lodash/cloneDeep';
+import { AppWithAppKey } from '~/types/models';
 
 type CreateProps = {
   description: string;

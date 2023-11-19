@@ -1,9 +1,5 @@
 import ErrorResponse from '../../../utils/errorResponse';
-import {
-  ModelServices,
-  ModelDataServices,
-} from '~~/server/services';
-import generateResourceData from '~~/server/utils/generateResourceData';
+import { ModelServices, ModelDataServices } from '~~/server/services';
 import extractAppKey from '~~/server/lib/extractAppKey';
 
 type FakeSchema = {
@@ -14,7 +10,7 @@ type FakeSchema = {
 type BodyParams = {
   apiKey: string;
   increase: number;
-  mockData: FakeSchema[]
+  mockData: FakeSchema[];
 };
 
 export default defineEventHandler(async (event) => {

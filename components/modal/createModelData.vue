@@ -14,7 +14,11 @@
   type SchemaRow = { name: string, type: string, immutable: boolean };
 
   const model = useModel();
-  const defaultSchema = model.target?.schema.map((sch: SchemaRow) => sch);
+  const defaultSchema = model.target?.schema?.map((sch) => ({
+    name: sch.name,
+    type: sch.type,
+    immutable: sch.name === 'id'
+  })) ?? [];
   const form = useForm({
     initialValues: {
       name: '',
