@@ -3,14 +3,17 @@ import { ModelServices, ModelDataServices } from '~~/server/services';
 import extractAppKey from '~~/server/lib/extractAppKey';
 
 type FakeSchema = {
+  max?: number;
+  min?: number;
   name: string;
   option: string;
+  type: string;
 };
 
 type BodyParams = {
   apiKey: string;
   increase: number;
-  mockData: FakeSchema[];
+  schema: FakeSchema[];
 };
 
 export default defineEventHandler(async (event) => {
@@ -30,16 +33,10 @@ export default defineEventHandler(async (event) => {
     );
   }
 
-  // const data = [];
+  const created = await new ModelDataServices(event).bulkCreate({
+    data: generateModelData(body.schema, body.increase),
+    modelId: model.id,
+  });
 
-  // while (data.length < body.count) {
-  //   data.push(generateResourceData(resourceModel.structure));
-  // }
-
-  // const created = await new ResourceDataServices(event).bulkCreate({
-  //   data,
-  //   resourceModelId: resourceModel.id,
-  // });
-
-  // return created;
+  return created;
 });

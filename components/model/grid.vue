@@ -2,7 +2,6 @@
   import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
   import { NormalizedModel } from '~~/types/models';
   import useModel from '~~/stores/useModel';
-  import ModalCreateModelData from '~~/components/modal/createModelData.vue';
 
   const model = useModel();
 
@@ -17,8 +16,6 @@
   const handleSelectModel = (md: NormalizedModel) => {
     model.setTarget(md);
   };
-
-  const createModelDataModal = useModal(ModalCreateModelData, { id: 'create-model-data' });
 </script>
 
 <template>
@@ -35,9 +32,6 @@
         <Cog6ToothIcon class="h-4 w-4" />
       </template>
       <template #options>
-        <DropdownOption @click="createModelDataModal.open()">
-          Generate
-        </DropdownOption>
         <DropdownOption>Edit</DropdownOption>
         <DropdownOption>Delete</DropdownOption>
       </template>
@@ -62,46 +56,10 @@
       </a>
     </div>
   </section>
-  <div class="mt-4">
-    <div class="overflow-y-scroll" style="height: 70vh">
-      <table class="table w-full">
-        <thead>
-          <tr>
-            <th />
-            <th
-              v-for="
-                // @ts-ignore
-                sch in model.target?.schema"
-              class="font-normal normal-case text-base"
-            >
-              {{
-                // @ts-ignore
-                sch.name }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <TableLoader v-if="model.isLoading" :colspan="4" />
-          <!-- <tr v-for="record in api.list" v-else :key="record.id">
-            <td>
-              <Button
-                class="ml-1"
-                color="error"
-                size="xs"
-                @click="dispatch('delete', record)"
-              >
-                Delete
-              </Button>
-            </td>
-            <td>{{ record.url_path }}</td>
-            <td>{{ record.resource_models.name }}</td>
-            <td>{{ record.description }}</td>
-          </tr> -->
-        </tbody>
-      </table>
-    </div>
-    <ClientOnly>
-      <component :is="createModelDataModal.component" />
-    </ClientOnly>
+  <div v-if="model.target">
+    <ModelTable
+      :key="model.target.id"
+      :schema="model.target?.schema ?? []"
+    />
   </div>
 </template>

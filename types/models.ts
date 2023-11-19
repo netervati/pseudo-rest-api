@@ -47,3 +47,8 @@ export type Model = Tables['models']['Row'];
 export type NormalizedModel = Omit<Model, 'schema'> & {
   schema: { name: string; type: string }[];
 };
+
+export type ModelData = Tables['model_data']['Row'];
+export type NormalizedModelData = Omit<ModelData, 'schema'> & {
+  schema: any[];
+};

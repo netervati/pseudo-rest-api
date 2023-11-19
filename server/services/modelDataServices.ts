@@ -1,13 +1,8 @@
 import ErrorResponse from '../utils/errorResponse';
 import SupabaseService from './supabaseService';
 
-type Schema = {
-  name: string;
-  type: string;
-};
-
 export default class ModelDataService extends SupabaseService {
-  async bulkCreate(params: { data: Schema[]; modelId: string }) {
+  async bulkCreate(params: { data: any[]; modelId: string }) {
     return await Promise.all(
       params.data.map((schema) => {
         return this.client
@@ -15,7 +10,6 @@ export default class ModelDataService extends SupabaseService {
           .insert({
             schema,
             model_id: params.modelId,
-            user_id: this.user.id,
           })
           .select('*');
       })
