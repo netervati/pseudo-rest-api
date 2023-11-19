@@ -16,7 +16,7 @@
   const form = useForm({
     initialValues: {
       name: '',
-      schema: [defaultSchema]
+      schema: [defaultSchema],
     }
   });
   const model = useModel();
@@ -25,10 +25,13 @@
   const { remove, push, fields } = useFieldArray<SchemaRow>('schema'); 
 
   const handleClose = () => {
-    // TODO: Make sure form resets the schema size.
-    // Refer to community: https://github.com/logaretm/vee-validate/discussions/4548
-    form.handleReset();
-  
+    form.resetForm();
+
+    const length = fields.value.length;
+    for (let i = 1; i <= length; i++) {
+      remove(i);
+    }
+
     emit('close');
   };
 
@@ -66,10 +69,6 @@
       { name: '', type: '', immutable: false }
     );
   };
-
-  // const handleDeleteSchema = (idx: number) => {
-  //   schema.value.splice(idx, 1);
-  // };
 
   const onSubmit = form.handleSubmit(async (values) => {
     await model.create(
