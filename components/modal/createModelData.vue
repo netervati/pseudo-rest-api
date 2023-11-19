@@ -14,32 +14,16 @@
   type SchemaRow = { name: string, type: string, immutable: boolean };
 
   const model = useModel();
+  const defaultSchema = model.target?.schema.map((sch: SchemaRow) => sch);
   const form = useForm({
     initialValues: {
       name: '',
-      schema: [],
+      schema: defaultSchema,
     }
   });
 
   const isDisabled = computed(() => form.isSubmitting.value === true);
-
-  const { remove, push, fields } = useFieldArray<SchemaRow>('schema');
-
-  const resetDefaultSchema = () => {
-    for (let i = 0; i < fields.value.length; i++) {
-      remove(i);
-    }
-
-    model.target?.schema.forEach((sch: SchemaRow) => {
-      push(sch);
-    });
-  };
-
-  watch(() => model.target, () => {
-    // Temporary solution to reactively assign the
-    // default schema to the form
-    resetDefaultSchema();
-  });
+  const { fields } = useFieldArray<SchemaRow>('schema');
 
   const handleClose = () => {
     form.handleReset();
