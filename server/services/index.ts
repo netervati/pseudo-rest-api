@@ -1,6 +1,7 @@
 export { default as AppServices } from './appServices';
 export { default as AppKeyServices } from './appKeyServices';
 export { default as ModelServices } from './modelServices';
+export { default as ModelDataServices } from './modelDataServices';
 
 export { default as ApiServices } from './apiServices';
 export { default as ProjectKeyServices } from './projectKeyServices';

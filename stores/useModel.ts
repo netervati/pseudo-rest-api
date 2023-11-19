@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Model } from '~/types/models';
+import cloneDeep from 'lodash/cloneDeep';
 
 type CreateProps = {
   name: string;
@@ -23,6 +24,14 @@ export default defineStore('models', () => {
 
   const list = computed(() => data.value || []);
   const isDisabled = computed(() => list.value.length === 10 || pending.value);
+
+  const setTarget = (md: Model) => {
+    target.value = cloneDeep(md);
+  };
+
+  const unsetTarget = () => {
+    target.value = undefined;
+  }
 
   const create = async (body: CreateProps, options: Options): Promise<void> => {
     await $fetch('/models', {
@@ -50,10 +59,13 @@ export default defineStore('models', () => {
     /** PROPERTIES */
     isDisabled,
     isLoading: pending,
+    data,
     list,
     target,
 
     /** METHODS */
     create,
+    setTarget,
+    unsetTarget
   };
 });

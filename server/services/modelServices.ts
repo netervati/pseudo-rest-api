@@ -22,6 +22,25 @@ export default class ModelServices extends SupabaseService {
     return models.data[0];
   }
 
+  async find(id: string) {
+    const models = await this.client
+      .from('models')
+      .select('*')
+      .is('deleted_at', null)
+      .eq('id', id)
+      .eq('user_id', this.user.id);
+
+    if (models.error !== null) {
+      throw ErrorResponse.supabase(models.error);
+    }
+
+    if (models.data.length === 0) {
+      throw ErrorResponse.notFound('Model does not exist.');
+    }
+
+    return models.data[0];
+  }
+
   async list(appId: string) {
     const models = await this.client
       .from('models')

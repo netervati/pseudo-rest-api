@@ -1,6 +1,8 @@
 <script setup lang="ts">
+  import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
   import { Model } from '~~/types/models';
   import useModel from '~~/stores/useModel';
+  import ModalCreateModelData from '~~/components/modal/createModelData.vue';
 
   const model = useModel();
 
@@ -13,13 +15,40 @@
   }
 
   const handleSelectModel = (md: Model) => {
-    model.target = md;
+    model.setTarget(md);
   };
+
+  const createModelDataModal = useModal(ModalCreateModelData, { id: 'create-model-data' });
 </script>
 
 <template>
   <section class="flex gap-x-2 w-full">
     <slot />
+    <Dropdown
+      :disabled="!model.target"
+      avatar
+      class="rounded-lg"
+      color="ghost"
+      size="sm"
+    >
+      <template #label>
+        <Cog6ToothIcon class="h-4 w-4" />
+      </template>
+      <template #options>
+        <DropdownOption @click="createModelDataModal.open()">
+          Generate
+        </DropdownOption>
+        <DropdownOption>Edit</DropdownOption>
+        <DropdownOption>Delete</DropdownOption>
+      </template>
+    </Dropdown>
+    <article
+      v-if="model.isLoading"
+      class="animate-pulse flex flex-row space-x-2 w-full"
+    >
+      <div class="rounded-lg bg-slate-200 h-8 w-20" />
+      <div class="rounded-lg bg-slate-200 h-8 w-20" />
+    </article>
     <div role="tablist" class="tabs">
       <a
         v-for="md in model.list"
@@ -71,5 +100,8 @@
         </tbody>
       </table>
     </div>
+    <ClientOnly>
+      <component :is="createModelDataModal.component" />
+    </ClientOnly>
   </div>
 </template>

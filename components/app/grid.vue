@@ -9,7 +9,7 @@
       We can directly assign the app to the target here
       to reduce backend requests.
     */
-    appStore.target = app;
+    appStore.setTarget(app);
 
     navigateTo(`/dashboard/app/${app.app_keys[0].api_key}/models`);
   };

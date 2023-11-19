@@ -8,6 +8,10 @@
 
   const model = useModel();
   const createModal = useModal(ModalCreateModel, { id: 'create-model' });
+
+  onUnmounted(() => {
+    model.unsetTarget();
+  });
 </script>
 
 <template>

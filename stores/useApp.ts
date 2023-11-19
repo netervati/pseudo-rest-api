@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { AppWithAppKey } from '~/types/models';
+import cloneDeep from 'lodash/cloneDeep';
 
 type CreateProps = {
   description: string;
@@ -27,6 +28,10 @@ export default defineStore('apps', () => {
   const list = computed(() => data.value || []);
   const isDisabled = computed(() => list.value.length === 2 || pending.value);
   const target = ref<AppWithAppKey | undefined>();
+
+  const setTarget = (app: AppWithAppKey) => {
+    target.value = cloneDeep(app);
+  };
 
   const create = async (body: CreateProps, options: Options): Promise<void> => {
     await $fetch('/apps', {
@@ -99,6 +104,7 @@ export default defineStore('apps', () => {
     create,
     delete: del,
     refresh,
+    setTarget,
     update,
   };
 });
