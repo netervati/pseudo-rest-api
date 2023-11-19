@@ -26,7 +26,7 @@ export default defineStore('model-data', () => {
   const apiKey = useAppRefKey();
 
   const model = useModel();
-  const modelId = computed(() => model.target!.id);
+  const modelId = computed(() => model.target?.id);
 
   const { data, pending, refresh } = useLazyFetch<NormalizedModelData[]>(
     () => `/models/${modelId.value}/model-data`,
@@ -34,8 +34,16 @@ export default defineStore('model-data', () => {
       method: 'GET',
       query: { apiKey },
       server: false,
+      // So we can manually fetch
+      watch: false,
     }
   );
+
+  watch(modelId, () => {
+    if (modelId.value) {
+      refresh();
+    }
+  })
 
   const list = computed(() => data.value || []);
   const isDisabled = computed(() => list.value.length === 50 || pending.value);
