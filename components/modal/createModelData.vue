@@ -90,7 +90,7 @@
 <template>
   <ModalBase :id="id" @close="handleClose" size="lg">
     <form @submit="onSubmit">
-      <h3 class="text-lg font-bold">Generate Model Data</h3>
+      <h3 class="text-lg font-bold">Insert Model Data</h3>
       <div class="flex">
         <section class="form-control mt-2 w-full">
           <label class="mb-2 text-lg">No. of data:</label>

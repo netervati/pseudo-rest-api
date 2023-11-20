@@ -43,10 +43,24 @@ export default defineStore('model-data', () => {
     if (modelId.value) {
       refresh();
     }
-  })
+  });
 
   const list = computed(() => data.value || []);
   const isDisabled = computed(() => list.value.length === 50 || pending.value);
+
+  const bulkDelete = async (ids: string): Promise<void> => {
+    await $fetch(`/models/${modelId.value}/model-data`, {
+      method: 'DELETE',
+      query: { ids, apiKey },
+      async onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the model data!');
+
+          await refresh();
+        }
+      },
+    });
+  };
 
   const create = async (body: CreateProps, options: Options): Promise<void> => {
     await $fetch(`/models/${modelId.value}/model-data`, {
@@ -78,6 +92,7 @@ export default defineStore('model-data', () => {
     list,
 
     /** METHODS */
+    bulkDelete,
     create,
   };
 });

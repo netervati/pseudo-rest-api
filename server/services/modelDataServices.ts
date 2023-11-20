@@ -16,6 +16,21 @@ export default class ModelDataService extends SupabaseService {
     );
   }
 
+  async bulkDelete(params: { ids: string[]; modelId: string }) {
+    return await Promise.all(
+      params.ids.map((id) => {
+        return this.client
+          .from('model_data')
+          .update({
+            deleted_at: new Date().toISOString(),
+          })
+          .eq('id', id)
+          .eq('model_id', params.modelId)
+          .select('*');
+      })
+    );
+  }
+
   async count(modelId: string) {
     const modelData = await this.client
       .from('model_data')
