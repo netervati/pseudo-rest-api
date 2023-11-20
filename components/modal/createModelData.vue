@@ -16,6 +16,7 @@
   const model = useModel();
   const modelData = useModelData();
   const modelDataType = useModelDataType();
+  const maxCountAllowed = ref(10 - modelData.list.length || 0);
 
   const defaultSchema = model.target?.schema?.map((sch) => ({
     max: undefined,
@@ -91,13 +92,14 @@
     <form @submit="onSubmit">
       <h3 class="text-lg font-bold">Generate Model Data</h3>
       <div class="flex">
-        <section class="form-control mt-2">
-          <FormInput
+        <section class="form-control mt-2 w-full">
+          <label class="mb-2 text-lg">No. of data:</label>
+          <FormRange
             :disabled="isDisabled"
-            :rules="{ required: 'Increase is required.' }"
+            :max="maxCountAllowed"
+            :min="1"
+            :rules="{ min: 'Number should be greater than 0.' }"
             name="increase"
-            placeholder="Enter increase"
-            type="number"
           />
         </section>
       </div>

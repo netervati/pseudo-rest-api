@@ -58,7 +58,7 @@ export default defineStore('model-data', () => {
       },
       async onResponse({ response }) {
         if (response.status === 200) {
-          toast.success('Created a model!');
+          toast.success('Generated new data!');
 
           if (typeof options.onSuccess === 'function') {
             options.onSuccess(response._data.secretKey);
