@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware((to, _from) => {
 
   if (typeof to.params.urlpath === 'string') {
     updated = to.params.urlpath;
-  } else{
+  } else {
     updated = '';
   }
 
