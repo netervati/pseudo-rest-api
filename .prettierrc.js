@@ -3,5 +3,6 @@ module.exports = {
   trailingComma: 'es5',
   semi: true,
   singleQuote: true,
-  vueIndentScriptAndStyle: true
+  vueIndentScriptAndStyle: true,
+  endOfLine: 'auto'
 };

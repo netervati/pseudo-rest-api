@@ -16,6 +16,9 @@ type UseModal = {
   open: () => void;
 };
 
+const sleep = (ms: number) =>
+  new Promise((resolve, _reject) => setTimeout(() => resolve(ms), ms));
+
 /**
  * A composable for managing modals.
  *
@@ -42,6 +45,7 @@ export default function (
   options: ModalProps = { id: 'base' }
 ): UseModal {
   const display = ref(false);
+  const refreshKey = ref(new Date());
 
   const close = () => {
     display.value = false;
@@ -51,7 +55,12 @@ export default function (
     }
   };
 
-  const open = () => {
+  const open = async () => {
+    refreshKey.value = new Date();
+
+    await nextTick();
+    await sleep(50);
+
     display.value = true;
   };
 
@@ -68,6 +77,7 @@ export default function (
       render() {
         return h(component, {
           ...options,
+          key: refreshKey.value,
           onClose: close,
         });
       },

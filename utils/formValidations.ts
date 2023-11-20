@@ -43,8 +43,12 @@ export function isMinimum(message: string, min = 0) {
 }
 
 export function isRequired(message: string) {
-  return function (value: string) {
-    if (value === undefined || value.trim() === '') {
+  return function (value: string | number) {
+    if (!value) {
+      return message;
+    }
+
+    if (typeof value === 'string' && value.trim() === '') {
       return message;
     }
 

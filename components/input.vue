@@ -10,6 +10,7 @@
     error?: boolean;
     modelValue: string;
     placeholder?: string;
+    type?: 'text' | 'number';
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -17,6 +18,7 @@
     disabled: false,
     error: false,
     placeholder: '',
+    type: 'text',
   });
 
   const mergedClass = computed(() => {
@@ -41,7 +43,7 @@
   <input
     v-model="inputValue"
     class="input input-bordered w-full max-w-vs"
-    type="text"
+    :type="props.type"
     :class="mergedClass"
     :disabled="disabled"
     :placeholder="placeholder"

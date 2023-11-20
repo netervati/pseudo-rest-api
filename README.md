@@ -7,6 +7,8 @@
 [Gateway](https://gateway.pseudorestapi.com/) |
 [Official Documentation](https://pseudorestapi.com/docs)
 
+> ⚠️ I'm currently reworking this project.
+
 **PseudoRESTAPI** is a tool that enables you to create mock REST APIs quickly and easily, without requiring any language or framework skills.
 
 - Create API endpoints for your mock server

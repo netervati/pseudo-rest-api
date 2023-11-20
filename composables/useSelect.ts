@@ -8,6 +8,11 @@ type SelectProps = {
   tick: (target: string | { id: string }[]) => void;
 };
 
+type ObjectWithId = {
+  id: string;
+  [key: string]: any;
+};
+
 /**
  * A simple composable for storing list of resource data ID.
  */
@@ -19,7 +24,7 @@ export function useSelect(): SelectProps {
     list.value.clear();
   };
 
-  const ticked = (target: string | { id: string }[]) => {
+  const ticked = (target: string | ObjectWithId[]) => {
     if (Array.isArray(target)) {
       if (target.length === 0) {
         return false;
@@ -31,7 +36,7 @@ export function useSelect(): SelectProps {
     return list.value.has(target);
   };
 
-  const tick = (target: string | { id: string }[]) => {
+  const tick = (target: string | ObjectWithId[]) => {
     if (Array.isArray(target)) {
       if (list.value.size !== target.length) {
         clear();

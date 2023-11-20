@@ -5,13 +5,18 @@
     (e: 'change', value: string): void;
   }>();
 
-  const props = defineProps<{
+  interface Props {
     disabled: boolean;
     name: string;
     placeholder: string;
     rules?: FormRuleSchema;
+    type?: 'text' | 'number';
     value?: string;
-  }>();
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    type: 'text',
+  });
 
   const validate = !props.rules ? () => true : runValidations(props.rules);
   const { value, errorMessage } = useField(() => props.name, validate);
@@ -29,6 +34,7 @@
     :disabled="props.disabled"
     :error="errorMessage !== undefined"
     :placeholder="props.placeholder"
+    :type="props.type"
     @change="emit('change', value)"
   />
   <p class="text-red-600">
