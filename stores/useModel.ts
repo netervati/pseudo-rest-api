@@ -58,6 +58,20 @@ export default defineStore('models', () => {
     });
   };
 
+  const del = async (id: string): Promise<void> => {
+    await $fetch(`/models/${id}`, {
+      method: 'DELETE',
+      query: { apiKey },
+      async onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Deleted the model!');
+
+          await refresh();
+        }
+      },
+    });
+  };
+
   return {
     /** PROPERTIES */
     isDisabled,
@@ -68,6 +82,7 @@ export default defineStore('models', () => {
 
     /** METHODS */
     create,
+    delete: del,
     setTarget,
     unsetTarget,
   };

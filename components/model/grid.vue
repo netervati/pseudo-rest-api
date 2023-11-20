@@ -2,6 +2,7 @@
   import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
   import { NormalizedModel } from '~~/types/models';
   import useModel from '~~/stores/useModel';
+  import ModalConfirm from '~~/components/modal/confirm.vue';
 
   const model = useModel();
 
@@ -16,13 +17,26 @@
   const handleSelectModel = (md: NormalizedModel) => {
     model.setTarget(md);
   };
+
+  const deleteModelModal = useModal(ModalConfirm, {
+    id: 'confirm-delete-model',
+    onConfirm: async (closeModal) => {
+      const deleteId = model.target?.id;
+
+      await model.delete(deleteId);
+
+      closeModal();
+
+      model.unsetTarget();
+    },
+  });
 </script>
 
 <template>
   <section class="flex gap-x-2 w-full">
     <slot />
     <Dropdown
-      :disabled="!model.target"
+      :disabled="model.isLoading || !model.target"
       avatar
       class="rounded-lg"
       color="ghost"
@@ -33,7 +47,9 @@
       </template>
       <template #options>
         <DropdownOption>Edit</DropdownOption>
-        <DropdownOption>Delete</DropdownOption>
+        <DropdownOption @click="deleteModelModal.open()">
+          Delete
+        </DropdownOption>
       </template>
     </Dropdown>
     <article
@@ -55,6 +71,12 @@
         {{ md.name }}
       </a>
     </div>
+    <ClientOnly>
+      <component
+        :is="deleteModelModal.component"
+        content="Are you sure you want to delete this model?"
+      />
+    </ClientOnly>
   </section>
   <div v-if="model.target">
     <ModelTable

@@ -22,6 +22,24 @@ export default class ModelServices extends SupabaseService {
     return models.data[0];
   }
 
+  async delete(params: { id: string; appId: string }) {
+    const model = await this.client
+      .from('models')
+      .update({
+        deleted_at: new Date().toISOString(),
+      })
+      .eq('id', params.id)
+      .eq('app_id', params.appId)
+      .eq('user_id', this.user.id)
+      .select('*');
+
+    if (model.error !== null) {
+      throw ErrorResponse.supabase(model.error);
+    }
+
+    return model.data[0];
+  }
+
   async find(id: string) {
     const models = await this.client
       .from('models')
