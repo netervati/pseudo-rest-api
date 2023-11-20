@@ -92,7 +92,7 @@
 
 <template>
   <div class="pl-6 pr-6">
-    <ProjectSecretKeyBox :secret-key="secretKey" />
+    <AppSecretKeyBox :secret-key="secretKey" />
     <div class="card border border-gray-300 mt-6">
       <div class="card-body">
         <section v-if="app.isLoading || !isMounted" class="animate-pulse">
