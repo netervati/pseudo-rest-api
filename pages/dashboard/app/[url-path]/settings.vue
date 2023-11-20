@@ -22,7 +22,7 @@
     form.setValues({
       description: app.target?.description,
       title: app.target?.title,
-      apiKey,
+      apiKey: apiKey.value,
     });
 
     const querySecretKey = useRoute().query?.secret_key;
@@ -44,13 +44,13 @@
           await app.refresh();
 
           app.target = app.list.filter(
-            (proj) => proj.app_keys[0]?.api_key === apiKey
+            (proj) => proj.app_keys[0]?.api_key === apiKey.value
           )[0];
 
           form.setValues({
             description: app.target?.description,
             title: app.target?.title,
-            apiKey,
+            apiKey: apiKey.value,
           });
         },
       }

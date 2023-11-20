@@ -32,7 +32,14 @@ export default defineStore('models', () => {
     }
   );
 
-  const list = computed(() => data.value || []);
+  const list = computed(() => {
+    if (pending.value) {
+      return [];
+    }
+
+    return data.value || [];
+  });
+
   const isDisabled = computed(() => list.value.length === 10 || pending.value);
 
   const setTarget = (md: NormalizedModel) => {
@@ -47,7 +54,7 @@ export default defineStore('models', () => {
     await $fetch('/models', {
       method: 'POST',
       body: {
-        apiKey,
+        apiKey: apiKey.value,
         name: body.name,
         schema: body.schema,
       },
@@ -72,7 +79,7 @@ export default defineStore('models', () => {
   const del = async (id: string): Promise<void> => {
     await $fetch(`/models/${id}`, {
       method: 'DELETE',
-      query: { apiKey },
+      query: { apiKey: apiKey.value },
       async onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Deleted the model!');
@@ -89,7 +96,7 @@ export default defineStore('models', () => {
       name?: string;
       schema: Schema;
     } = {
-      apiKey,
+      apiKey: apiKey.value,
       schema: body.schema,
     };
 
