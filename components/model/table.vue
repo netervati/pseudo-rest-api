@@ -11,7 +11,7 @@
   const modelData = useModelData();
   const select = useSelect();
 
-  const createModelDataModal = useModal(ModalCreateModelData, { id: 'create-model-data' });
+  const createModelDataModal = useModal(ModalCreateModelData, {id: 'create-model-data' });
 
   const deleteModelDataModal = useModal(ModalConfirm, {
     id: 'confirm-delete-model-data',

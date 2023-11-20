@@ -2,13 +2,20 @@ import { defineStore } from 'pinia';
 import cloneDeep from 'lodash/cloneDeep';
 import { NormalizedModel } from '~/types/models';
 
+type Schema = { name: string; type: string }[];
+
 type CreateProps = {
   name: string;
-  schema: { name: string; type: string }[];
+  schema: Schema;
+};
+
+type UpdateProps = {
+  name: string;
+  schema: Schema;
 };
 
 type Options = {
-  onSuccess?: (key: string) => void;
+  onSuccess?: (params?: NormalizedModel) => void | Promise<void>;
 };
 
 export default defineStore('models', () => {
@@ -49,10 +56,14 @@ export default defineStore('models', () => {
           toast.success('Created a model!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess(response._data.secretKey);
+            options.onSuccess();
           }
 
           await refresh();
+        }
+
+        if (response.status === 400) {
+          toast.error(response._data.statusMessage);
         }
       },
     });
@@ -72,6 +83,37 @@ export default defineStore('models', () => {
     });
   };
 
+  const update = async (body: UpdateProps, options: Options): Promise<void> => {
+    const payload: {
+      apiKey: string;
+      name?: string;
+      schema: Schema;
+    } = {
+      apiKey,
+      schema: body.schema,
+    };
+
+    if (body.name) {
+      payload.name = body.name;
+    }
+
+    await $fetch(`/models/${target.value?.id}`, {
+      method: 'PUT',
+      body: payload,
+      async onResponse({ response }) {
+        if (response.status === 200) {
+          toast.success('Updated the model!');
+
+          if (typeof options.onSuccess === 'function') {
+            await options.onSuccess(response._data);
+          }
+
+          await refresh();
+        }
+      },
+    });
+  };
+
   return {
     /** PROPERTIES */
     isDisabled,
@@ -83,7 +125,9 @@ export default defineStore('models', () => {
     /** METHODS */
     create,
     delete: del,
+    refresh,
     setTarget,
     unsetTarget,
+    update,
   };
 });

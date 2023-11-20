@@ -2,6 +2,7 @@
   import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
   import { NormalizedModel } from '~~/types/models';
   import useModel from '~~/stores/useModel';
+  import ModalEditModel from '../modal/editModel.vue';
   import ModalConfirm from '~~/components/modal/confirm.vue';
 
   const model = useModel();
@@ -18,16 +19,21 @@
     model.setTarget(md);
   };
 
+  const editModelModal = useModal(ModalEditModel, {
+    id: 'edit-model',
+  });
+
   const deleteModelModal = useModal(ModalConfirm, {
     id: 'confirm-delete-model',
     onConfirm: async (closeModal) => {
       const deleteId = model.target?.id;
 
-      await model.delete(deleteId);
+      if (deleteId) {
+        await model.delete(deleteId);
+        model.unsetTarget();
+      }
 
       closeModal();
-
-      model.unsetTarget();
     },
   });
 </script>
@@ -46,7 +52,9 @@
         <Cog6ToothIcon class="h-4 w-4" />
       </template>
       <template #options>
-        <DropdownOption>Edit</DropdownOption>
+        <DropdownOption @click="editModelModal.open()">
+          Edit
+        </DropdownOption>
         <DropdownOption @click="deleteModelModal.open()">
           Delete
         </DropdownOption>
@@ -72,6 +80,7 @@
       </a>
     </div>
     <ClientOnly>
+      <component :is="editModelModal.component" />
       <component
         :is="deleteModelModal.component"
         content="Are you sure you want to delete this model?"

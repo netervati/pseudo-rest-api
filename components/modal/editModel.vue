@@ -10,19 +10,26 @@
     id: string;
   }>();
 
+  const model = useModel();
+
   type SchemaRow = { name: string, type: string, immutable: boolean };
-  const defaultSchema = { name: 'id', type: 'uuid', immutable: true };
+  const defaultSchema = model.target?.schema
+    ? model.target?.schema?.map((sch) => ({
+        name: sch.name,
+        type: sch.type,
+        immutable: true,
+      }))
+    : [{ name: 'id', type: 'uuid', immutable: true }];
 
   const form = useForm({
     initialValues: {
-      name: '',
-      schema: [defaultSchema],
+      name: model.target?.name ?? '',
+      schema: defaultSchema,
     }
   });
-  const model = useModel();
   const isDisabled = computed(() => form.isSubmitting.value === true);
 
-  const { remove, push, fields } = useFieldArray<SchemaRow>('schema'); 
+  const { remove, push, fields } = useFieldArray<SchemaRow>('schema');
 
   const handleClose = () => {
     form.resetForm();
@@ -42,13 +49,17 @@
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await model.create(
+    await model.update(
       {
         name: values.name,
         schema: values.schema,
       },
       {
-        onSuccess: () => {
+        onSuccess: (updated) => {
+          if (updated) {
+            model.setTarget(updated);
+          }
+
           emit('success');
           handleClose();
         },
@@ -60,7 +71,7 @@
 <template>
   <ModalBase :id="id" @close="handleClose">
     <form @submit="onSubmit">
-      <h3 class="text-lg font-bold">Create a new Model</h3>
+      <h3 class="text-lg font-bold">Edit the Model</h3>
       <ModalBaseModel
         :is-disabled="form.isSubmitting.value"
         :fields="fields"
