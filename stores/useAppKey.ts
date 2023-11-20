@@ -18,7 +18,7 @@ export default defineStore('appKeys', (): AppKeyStore => {
     await $fetch(`/apps/${id}/generate-secret-key`, {
       method: 'POST',
       body: {
-        appKey: useAppRefKey(),
+        appKey: useAppRefKey().value,
       },
       onResponse({ response }) {
         if (response.status === 200) {

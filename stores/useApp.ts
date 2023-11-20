@@ -77,7 +77,7 @@ export default defineStore('apps', () => {
       body: {
         description: payload.description,
         title: payload.title,
-        apiKey: useAppRefKey(),
+        apiKey: useAppRefKey().value,
       },
       async onResponse({ response }) {
         if (response.status === 200) {

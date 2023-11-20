@@ -51,7 +51,7 @@ export default defineStore('model-data', () => {
   const bulkDelete = async (ids: string): Promise<void> => {
     await $fetch(`/models/${modelId.value}/model-data`, {
       method: 'DELETE',
-      query: { ids, apiKey },
+      query: { ids, apiKey: apiKey.value },
       async onResponse({ response }) {
         if (response.status === 200) {
           toast.success('Deleted the model data!');
@@ -66,7 +66,7 @@ export default defineStore('model-data', () => {
     await $fetch(`/models/${modelId.value}/model-data`, {
       method: 'POST',
       body: {
-        apiKey,
+        apiKey: apiKey.value,
         increase: body.increase,
         schema: body.schema,
       },
