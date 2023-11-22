@@ -14,7 +14,7 @@
       base.push(
         ...[
           {
-            name: 'Apps',
+            name: 'Models',
             icon: CircleStackIcon,
             to: `/dashboard/app/${route.params.urlpath}/models`,
           },

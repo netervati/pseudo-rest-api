@@ -14,6 +14,11 @@ export default defineNuxtConfig({
       noscript: [{ children: 'JavaScript is required' }],
     },
   },
+  content: {
+    highlight: {
+      theme: 'github-light',
+    },
+  },
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxt/content',

@@ -1,3 +1,3 @@
 <template>
-  <li class="mb-6 mt-6"><slot /></li>
+  <li class="mb-2 mt-2 md:mb-4 md:mt-4 md:text-lg"><slot /></li>
 </template>
