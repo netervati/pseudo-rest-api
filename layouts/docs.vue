@@ -19,7 +19,7 @@
           </label>
           <LogoLink class="md:hidden" to="/docs" />
         </div>
-        <div class="navbar-end">
+        <div class="navbar-end hidden md:flex">
           <NuxtLink
             class="btn btn-ghost gap-x-2 font-normal normal-case"
             to="/dashboard"
@@ -28,7 +28,7 @@
             <ArrowUpRightIcon class="w-4 h-4" />
           </NuxtLink>
           <NuxtLink
-            class="btn btn-ghost gap-x-2 font-normal normal-case"
+            class="btn btn-ghost font-normal normal-case"
             to="https://github.com/netervati/pseudo-rest-api"
           >
             Source
@@ -49,6 +49,24 @@
             class="btn btn-ghost font-normal normal-case text-lg w-full justify-start"
           >
             {{ doc.text }}
+          </NuxtLink>
+        </li>
+        <li class="p-6"><hr /></li>
+        <li>
+          <NuxtLink
+            class="btn btn-ghost gap-x-2 font-normal normal-case text-lg w-full justify-start"
+            to="/dashboard"
+          >
+            Dashboard
+            <ArrowUpRightIcon class="w-4 h-4" />
+          </NuxtLink>
+        </li>
+        <li>
+          <NuxtLink
+            class="btn btn-ghost font-normal normal-case text-lg w-full justify-start"
+            to="https://github.com/netervati/pseudo-rest-api"
+          >
+            Source
           </NuxtLink>
         </li>
       </ul>
