@@ -131,7 +131,7 @@ export default class ModelServices extends SupabaseService {
   async createUnique(params: { name: string; appId: string; schema: Schema }) {
     const list = await this.list(params.appId);
 
-    if (list.length >= MAX_RESOURCE_MODELS_ALLOWED) {
+    if (list.length >= MAX_MODELS_ALLOWED) {
       throw ErrorResponse.badRequest(
         'You have exceeded the allowed number of Models.'
       );

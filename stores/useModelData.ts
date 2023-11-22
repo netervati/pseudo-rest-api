@@ -80,6 +80,10 @@ export default defineStore('model-data', () => {
 
           await refresh();
         }
+
+        if (response.status === 400) {
+          toast.error(response._data.statusMessage);
+        }
       },
     });
   };

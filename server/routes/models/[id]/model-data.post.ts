@@ -12,7 +12,7 @@ type FakeSchema = {
 
 type BodyParams = {
   apiKey: string;
-  increase: number;
+  increase: string;
   schema: FakeSchema[];
 };
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
 
   const currentTotal = await new ModelDataServices(event).count(model.id);
 
-  if (currentTotal + body.increase > MAX_RESOURCE_DATA_ALLOWED) {
+  if (currentTotal + Number(body.increase) > MAX_MODEL_DATA_ALLOWED) {
     throw ErrorResponse.badRequest(
       'You have exceeded the allowed number of Model Data for this Model.'
     );

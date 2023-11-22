@@ -123,7 +123,7 @@ export default class AppServices extends SupabaseService {
   }) {
     const list = await this.list();
 
-    if (list.length === MAX_PROJECTS_ALLOWED) {
+    if (list.length === MAX_APPS_ALLOWED) {
       throw ErrorResponse.badRequest(
         'You have exceeded the allowed number of Apps.'
       );
