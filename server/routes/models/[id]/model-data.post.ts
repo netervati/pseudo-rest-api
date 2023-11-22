@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const created = await new ModelDataServices(event).bulkCreate({
-    data: generateModelData(body.schema, body.increase),
+    data: generateModelData(body.schema, Number(body.increase)),
     modelId: model.id,
   });
 
