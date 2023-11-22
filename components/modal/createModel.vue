@@ -42,10 +42,15 @@
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
+    const data = values.schema.map((sch) => ({
+      name: sch.name,
+      type: sch.type,
+    }));
+
     await model.create(
       {
         name: values.name,
-        schema: values.schema,
+        schema: data,
       },
       {
         onSuccess: () => {
