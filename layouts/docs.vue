@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { Bars3Icon } from '@heroicons/vue/24/solid';
+  import { ArrowUpRightIcon, Bars3Icon } from '@heroicons/vue/24/solid';
 
   const docLinks = [
     { link: '/docs', text: 'Home' },
     { link: '/docs/getting-started', text: 'Getting Started' },
-    { link: '/docs/api-reference', text: 'API Reference' },
+    { link: '/docs/http-methods', text: 'HTTP Methods' },
   ];
 </script>
 
@@ -19,7 +19,21 @@
           </label>
           <LogoLink class="md:hidden" to="/docs" />
         </div>
-        <div class="flex-none" />
+        <div class="navbar-end">
+          <NuxtLink
+            class="btn btn-ghost gap-x-2 font-normal normal-case"
+            to="/dashboard"
+          >
+            Dashboard
+            <ArrowUpRightIcon class="w-4 h-4" />
+          </NuxtLink>
+          <NuxtLink
+            class="btn btn-ghost gap-x-2 font-normal normal-case"
+            to="https://github.com/netervati/pseudo-rest-api"
+          >
+            Source
+          </NuxtLink>
+        </div>
       </nav>
       <slot />
     </div> 
