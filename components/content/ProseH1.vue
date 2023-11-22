@@ -10,7 +10,10 @@
 </script>
 
 <template>
-  <h1 :id="id" class="font-bold mt-6 mb-6 text-3xl">
+  <h1
+    :id="id"
+    class="font-bold mt-6 mb-6 md:mb-8 md:mt-8 text-2xl md:text-3xl"
+  >
     <a v-if="id && generate" :href="`#${id}`">
       <slot />
     </a>
