@@ -28,7 +28,7 @@ Now that you've obtained your API key, let's create your models!
 
 - The table should now display your mock data.
 
-## Testing the mock server
+## Testing your mock server
 
 You can test your API endpoint using cURL with the following format:
 

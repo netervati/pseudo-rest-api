@@ -51,8 +51,8 @@
             {{ doc.text }}
           </NuxtLink>
         </li>
-        <li class="p-6"><hr /></li>
-        <li>
+        <li class="block md:hidden p-6 md:p-0"><hr /></li>
+        <li class="block md:hidden">
           <NuxtLink
             class="btn btn-ghost gap-x-2 font-normal normal-case text-lg w-full justify-start"
             to="/dashboard"
@@ -61,7 +61,7 @@
             <ArrowUpRightIcon class="w-4 h-4" />
           </NuxtLink>
         </li>
-        <li>
+        <li class="block md:hidden">
           <NuxtLink
             class="btn btn-ghost font-normal normal-case text-lg w-full justify-start"
             to="https://github.com/netervati/pseudo-rest-api"
