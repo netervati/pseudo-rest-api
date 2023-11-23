@@ -1,4 +1,4 @@
-![PseudoRESTAPI - Landing Page](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/public/landing-page.png)
+![PseudoRESTAPI - Landing Page](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/public/landing-page-v2.png)
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/netervati/pseudo-rest-api/build.yml?branch=main&style=flat-square)
 ![GitHub deployments](https://img.shields.io/github/deployments/netervati/pseudo-rest-api/production?label=vercel&logo=vercel&logoColor=white)
