@@ -25,6 +25,6 @@
     :class="mergeClass()"
     class="font-bold gap-x-2 normal-case text-xl"
   >
-    <img width="36" src="/logo.png" /> PseudoRESTAPI
+    <img width="36" src="/logo.png" /> PseudoRESTAPI <small class="mb-2 text-violet-600 text-xs">[BETA]</small>
   </NuxtLink>
 </template>
