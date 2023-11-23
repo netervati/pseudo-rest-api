@@ -44,10 +44,10 @@
 
   const DATA_TYPES = {
     boolean: 'Boolean',
-    float: 'Float',
+    // float: 'Float',
     number: 'Number',
     string: 'String',
-    timestamp: 'Timestamp',
+    // timestamp: 'Timestamp',
     uuid: 'UUID'
   };
 
