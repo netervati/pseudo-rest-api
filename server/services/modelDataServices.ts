@@ -21,12 +21,9 @@ export default class ModelDataService extends SupabaseService {
       params.ids.map((id) => {
         return this.client
           .from('model_data')
-          .update({
-            deleted_at: new Date().toISOString(),
-          })
+          .delete()
           .eq('id', id)
-          .eq('model_id', params.modelId)
-          .select('*');
+          .eq('model_id', params.modelId);
       })
     );
   }
@@ -35,7 +32,6 @@ export default class ModelDataService extends SupabaseService {
     const modelData = await this.client
       .from('model_data')
       .select('*', { count: 'exact', head: true })
-      .is('deleted_at', null)
       .eq('model_id', modelId)
       .order('created_at', { ascending: false });
 
@@ -46,11 +42,17 @@ export default class ModelDataService extends SupabaseService {
     return modelData.count ?? 0;
   }
 
+  async deleteByModelId(modelId: string) {
+    return await this.client
+    .from('model_data')
+    .delete()
+    .eq('model_id', modelId);
+  }
+
   async list(modelId: string) {
     const modelData = await this.client
       .from('model_data')
       .select('id, schema')
-      .is('deleted_at', null)
       .eq('model_id', modelId)
       .order('created_at', { ascending: false });
 

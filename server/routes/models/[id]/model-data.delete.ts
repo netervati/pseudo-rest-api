@@ -13,10 +13,10 @@ export default defineEventHandler(async (event) => {
 
   const ids = query.ids.split(',');
 
-  const deleted = await new ModelDataServices(event).bulkDelete({
+  await new ModelDataServices(event).bulkDelete({
     ids,
     modelId: event.context.params?.id ?? '',
   });
 
-  return deleted;
+  return null;
 });
