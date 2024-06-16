@@ -53,7 +53,7 @@ export default defineStore('model-data', () => {
       method: 'DELETE',
       query: { ids, apiKey: apiKey.value },
       async onResponse({ response }) {
-        if (response.status === 200) {
+        if (response.status === 204) {
           toast.success('Deleted the model data!');
 
           await refresh();

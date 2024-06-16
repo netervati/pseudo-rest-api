@@ -81,7 +81,7 @@ export default defineStore('models', () => {
       method: 'DELETE',
       query: { apiKey: apiKey.value },
       async onResponse({ response }) {
-        if (response.status === 200) {
+        if (response.status === 204) {
           toast.success('Deleted the model!');
 
           await refresh();
