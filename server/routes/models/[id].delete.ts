@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
   const { appId } = await extractAppKey(event, query.apiKey);
   const modelId = event.context.params?.id ?? '';
 
-  const model = await new ModelServices(event).delete({
+  await new ModelServices(event).delete({
     id: modelId,
     appId,
   });
 
-  return model;
+  return null;
 });

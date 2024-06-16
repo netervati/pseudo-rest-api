@@ -22,24 +22,20 @@ export default class AppServices extends SupabaseService {
   async delete(id: string) {
     const apps = await this.client
       .from('apps')
-      .update({
-        deleted_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .select('*');
+      .delete()
+      .eq('id', id);
 
     if (apps.error !== null) {
       throw ErrorResponse.supabase(apps.error);
     }
 
-    return apps.data[0];
+    return null;
   }
 
   async find(id: string) {
     const apps = await this.client
       .from('apps')
       .select('*')
-      .is('deleted_at', null)
       .eq('id', id)
       .eq('user_id', this.user.id);
 
@@ -58,7 +54,6 @@ export default class AppServices extends SupabaseService {
     const app = await this.client
       .from('apps')
       .select('*')
-      .is('deleted_at', null)
       .eq('title', title)
       .eq('user_id', this.user.id);
 
@@ -73,7 +68,6 @@ export default class AppServices extends SupabaseService {
     const apps = await this.client
       .from('apps')
       .select('id, title, description, app_keys(api_key)')
-      .is('deleted_at', null)
       .is('app_keys.deleted_at', null)
       .eq('user_id', this.user.id)
       .order('created_at', { ascending: false });

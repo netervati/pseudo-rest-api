@@ -25,26 +25,22 @@ export default class ModelServices extends SupabaseService {
   async delete(params: { id: string; appId: string }) {
     const model = await this.client
       .from('models')
-      .update({
-        deleted_at: new Date().toISOString(),
-      })
+      .delete()
       .eq('id', params.id)
       .eq('app_id', params.appId)
-      .eq('user_id', this.user.id)
-      .select('*');
+      .eq('user_id', this.user.id);
 
     if (model.error !== null) {
       throw ErrorResponse.supabase(model.error);
     }
 
-    return model.data[0];
+    return null;
   }
 
   async findByName(params: { name: string; appId: string }) {
     const models = await this.client
       .from('models')
       .select('*')
-      .is('deleted_at', null)
       .eq('name', params.name)
       .eq('app_id', params.appId)
       .eq('user_id', this.user.id);
@@ -60,7 +56,6 @@ export default class ModelServices extends SupabaseService {
     const models = await this.client
       .from('models')
       .select('*')
-      .is('deleted_at', null)
       .eq('id', id)
       .eq('user_id', this.user.id);
 
@@ -79,7 +74,6 @@ export default class ModelServices extends SupabaseService {
     const models = await this.client
       .from('models')
       .select('id, name, schema')
-      .is('deleted_at', null)
       .eq('app_id', appId)
       .eq('user_id', this.user.id)
       .order('created_at', { ascending: false });
