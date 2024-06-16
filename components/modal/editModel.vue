@@ -76,7 +76,7 @@
 <template>
   <ModalBase :id="id" @close="handleClose">
     <form @submit="onSubmit">
-      <h3 class="text-lg font-bold">Edit the Model</h3>
+      <ModalTitleModel>Edit the Model</ModalTitleModel>
       <ModalBaseModel
         :is-disabled="form.isSubmitting.value"
         :fields="fields"
