@@ -6,7 +6,7 @@
 
 ```js
 curl -X GET \
-  https://gateway.pseudorestapi.com/api/{model-name} \
+  https://gateway.pseudorestapi.com/{model-name} \
   -H "Accept: application/json" \
   -u {api-key}:{secret-key}
 ```
@@ -15,7 +15,7 @@ curl -X GET \
 
 ```js
 curl -X GET \
-  https://gateway.pseudorestapi.com/api/{model-name}/{id} \
+  https://gateway.pseudorestapi.com/{model-name}/{id} \
   -H "Accept: application/json" \
   -u {api-key}:{secret-key}
 ```
