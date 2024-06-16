@@ -4,7 +4,7 @@
 
 ## Creating your first app
 
-Think of apps as mock servers, which can help you organize and group your fake endpoints.
+Think of apps as fake servers, which can help you organize and group your fake endpoints.
 
 - To create an app, click the **New App** button on the dashboard and complete the form. Click, the **Proceed** button afterwards.
 
@@ -26,9 +26,9 @@ Now that you've obtained your API key, let's create your models!
 
 - Adjust the slider based on the number of data that you want to generate, and complete the form. Then, click **Proceed**.
 
-- The table should now display your mock data.
+- The table should now display your fake data.
 
-## Testing your mock server
+## Testing your fake server
 
 You can test your API endpoint using cURL with the following format:
 

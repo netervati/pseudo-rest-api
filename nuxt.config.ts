@@ -40,6 +40,7 @@ export default defineNuxtConfig({
       testUrl: process.env.NUXT_PUBLIC_TEST_URL,
     },
   },
+  telemetry: false,
   veeValidate: {
     // disable or enable auto imports
     autoImports: true,

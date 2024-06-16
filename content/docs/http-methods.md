@@ -1,6 +1,6 @@
 # HTTP Methods
 
-**PseudoRESTAPI** exposes your models via [PseudoGatewayAPI](https://gateway.pseudorestapi.com/). You can use any tool to send requests to your mock server. Just make sure to encode your credentials in **base64** string.
+**PseudoRESTAPI** exposes your models via [PseudoGatewayAPI](https://gateway.pseudorestapi.com/). You can use any tool to send requests to your fake server. Just make sure to encode your credentials in **base64** string.
 
 ## GET
 
