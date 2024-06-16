@@ -26,7 +26,11 @@
         title: values.title,
       },
       {
-        onSuccess: (key: string) => {
+        onSuccess: (key?: string) => {
+          if (!key) {
+            throw new Error('Key not provided in onSuccess callback.');
+          }
+
           emit('success', key);
           handleClose();
         },

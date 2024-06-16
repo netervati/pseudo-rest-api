@@ -14,7 +14,7 @@ type UpdateProps = {
 };
 
 type Options = {
-  onSuccess?: (key: string) => void;
+  onSuccess?: (key?: string) => void;
 };
 
 export default defineStore('apps', () => {
@@ -55,11 +55,11 @@ export default defineStore('apps', () => {
     await $fetch(`/apps/${id}`, {
       method: 'DELETE',
       async onResponse({ response }) {
-        if (response.status === 200) {
+        if (response.status === 204) {
           toast.success('Deleted the app!');
 
           if (typeof options.onSuccess === 'function') {
-            options.onSuccess(response._data);
+            options.onSuccess();
           }
 
           await refresh();
