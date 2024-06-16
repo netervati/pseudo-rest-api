@@ -20,10 +20,7 @@ export default class AppServices extends SupabaseService {
   }
 
   async delete(id: string) {
-    const apps = await this.client
-      .from('apps')
-      .delete()
-      .eq('id', id);
+    const apps = await this.client.from('apps').delete().eq('id', id);
 
     if (apps.error !== null) {
       throw ErrorResponse.supabase(apps.error);

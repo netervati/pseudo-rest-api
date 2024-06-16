@@ -44,9 +44,9 @@ export default class ModelDataService extends SupabaseService {
 
   async deleteByModelId(modelId: string) {
     return await this.client
-    .from('model_data')
-    .delete()
-    .eq('model_id', modelId);
+      .from('model_data')
+      .delete()
+      .eq('model_id', modelId);
   }
 
   async list(modelId: string) {
