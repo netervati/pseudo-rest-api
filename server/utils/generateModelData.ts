@@ -101,8 +101,8 @@ function setValue(schema: FakeSchema) {
     case 'timestamp':
       return faker.date.between({
         from: schema.range.start,
-        to: schema.range.end
-      })
+        to: schema.range.end,
+      });
   }
 }
 
