@@ -9,6 +9,6 @@ export default class SupabaseService {
 
   constructor(event: H3Event) {
     this.client = serverSupabaseServiceRole<Database>(event);
-    this.user = event.context.auth.user;
+    this.user = event.context._user;
   }
 }
