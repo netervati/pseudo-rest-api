@@ -22,6 +22,7 @@
     max: undefined,
     min: undefined,
     name: sch.name,
+    range: undefined,
     type: sch.type,
     option: '',
     immutable: sch.name === 'id'
@@ -47,7 +48,7 @@
     // float: 'Float',
     number: 'Number',
     string: 'String',
-    // timestamp: 'Timestamp',
+    timestamp: 'Timestamp',
     uuid: 'UUID'
   };
 
@@ -103,7 +104,7 @@
           />
         </section>
       </div>
-      <div class="flex gap-x-2" v-for="(sch, idx) in fields" :key="idx">
+      <div class="grid grid-cols-4 gap-x-2" v-for="(sch, idx) in fields" :key="idx">
         <section class="form-control mt-2">
           <FormInput
             :disabled="true"
@@ -158,6 +159,17 @@
           />
         </section>
         <!-- ================== -->
+        <!-- ======== TIMESTAMP -->
+        <!-- ================== -->
+        <section
+          v-show="sch.value.type === 'timestamp'"
+          class="form-control mt-2 col-span-2"
+        >
+          <CalendarPicker
+            :disabled="isDisabled"
+            :name="`schema[${idx}].range`"
+          />
+        </section>
       </div>
       <section class="mt-10">
         <Button :disabled="isDisabled" size="sm" @click="handleClose">

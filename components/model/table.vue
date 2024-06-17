@@ -3,9 +3,15 @@
   import useModelData from '~~/stores/useModelData';
   import ModalCreateModelData from '~~/components/modal/createModelData.vue';
   import ModalConfirm from '~~/components/modal/confirm.vue';
+  import format from 'date-fns/format';
+
+  type Schema = {
+    name: string;
+    type: string;
+  }
 
   defineProps<{
-    schema: { name: string; type: string }[];
+    schema: Schema[];
   }>();
 
   const modelData = useModelData();
@@ -25,6 +31,15 @@
       select.clear();
     },
   });
+
+  const render = (model: { schema: any }, schema: Schema) => {
+    if (schema.type === 'timestamp') {
+      const parsedDate = Date.parse(model.schema[schema.name]);
+      return format(parsedDate, 'MMMM d, yyy');
+    }
+
+    return model.schema[schema.name];
+  };
 </script>
 
 <template>
@@ -72,7 +87,7 @@
           </tr>
         </thead>
         <tbody>
-          <TableLoader v-if="modelData.isLoading" :colspan="4" />
+          <TableLoader v-if="modelData.isLoading" :colspan="schema.length + 2" />
           <tr v-for="md in modelData.list" v-else :key="md.id">
             <td colspan="2">
               <input
@@ -86,7 +101,7 @@
               v-for="sch in schema"
               class="font-normal normal-case text-base"
             >
-              {{ md.schema[sch.name as any] }}
+              {{ render(md, sch) }}
             </td>
           </tr>
         </tbody>
