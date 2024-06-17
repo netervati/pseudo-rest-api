@@ -79,6 +79,10 @@ type FakeSchema = {
   min?: number;
   name: string;
   option: string;
+  range: {
+    start: string;
+    end: string;
+  };
   type: string;
 };
 
@@ -94,6 +98,11 @@ function setValue(schema: FakeSchema) {
       return uuidv4();
     case 'boolean':
       return faker.datatype.boolean();
+    case 'timestamp':
+      return faker.date.between({
+        from: schema.range.start,
+        to: schema.range.end,
+      });
   }
 }
 

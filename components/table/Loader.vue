@@ -6,10 +6,10 @@
 
 <template>
   <tr>
-    <td :colspan="colspan">
-      <div class="flex h-full w-full">
+    <td rowspan="4" :colspan="colspan">
+      <figure class="flex mt-32 w-full">
         <LoaderSpinner />
-      </div>
+      </figure>
     </td>
   </tr>
 </template>

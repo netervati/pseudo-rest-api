@@ -7,6 +7,10 @@ type FakeSchema = {
   min?: number;
   name: string;
   option: string;
+  range: {
+    start: string;
+    end: string;
+  };
   type: string;
 };
 
