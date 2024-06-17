@@ -1,4 +1,4 @@
-![PseudoRESTAPI - Demo](https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/public/demo.mp4)
+https://raw.githubusercontent.com/netervati/pseudo-rest-api/main/public/demo.mp4
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/netervati/pseudo-rest-api/build.yml?branch=main&style=flat-square)
 ![GitHub deployments](https://img.shields.io/github/deployments/netervati/pseudo-rest-api/production?label=vercel&logo=vercel&logoColor=white)
